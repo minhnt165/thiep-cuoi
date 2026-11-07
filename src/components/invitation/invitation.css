@@ -2213,37 +2213,41 @@
   font-size: 68px;
 }
 
-/* ===== Tối giản đen trắng: kiểu tạp chí, căn trái, kẻ mảnh, chữ to ===== */
-.t-mono-minimal .sec,
-.t-mono-minimal .end {
-  text-align: left;
-}
-
+/* ===== Tối giản đen trắng: căn giữa, kẻ mảnh, chữ to, nhãn sans in hoa ===== */
 .t-mono-minimal .sec-title {
   font-family: var(--font-ui), sans-serif;
   font-size: 11px;
   letter-spacing: 0.34em;
   color: var(--ink);
-  padding-bottom: 12px;
-  border-bottom: 1px solid var(--ink);
 }
 
 .t-mono-minimal .divider {
+  width: 40px;
+  height: 1px;
+  margin-top: 14px;
+  background: var(--ink);
+  color: transparent;
+}
+
+.t-mono-minimal .divider svg {
   display: none;
 }
 
-.t-mono-minimal .eyebrow {
+.t-mono-minimal .eyebrow,
+.t-mono-minimal .announce,
+.t-mono-minimal .gift .side {
   font-family: var(--font-ui), sans-serif;
+}
+
+.t-mono-minimal .announce {
+  font-size: 11px;
+  letter-spacing: 0.24em;
 }
 
 .t-mono-minimal .panel {
   box-shadow: none;
   border: 1px solid var(--ink);
-  padding: 28px 22px 34px;
-}
-
-.t-mono-minimal .parents {
-  text-align: left;
+  padding: 30px 22px 36px;
 }
 
 .t-mono-minimal .parents > div + div {
@@ -2251,16 +2255,8 @@
   border-left-color: var(--line);
 }
 
-.t-mono-minimal .announce {
-  margin-left: 0;
-  max-width: none;
-  font-family: var(--font-ui), sans-serif;
-  font-size: 11px;
-  letter-spacing: 0.24em;
-}
-
 .t-mono-minimal .couple .nm {
-  font-size: 46px;
+  font-size: 44px;
   line-height: 1;
 }
 
@@ -2275,34 +2271,16 @@
   border-top-color: var(--line);
 }
 
-.t-mono-minimal .when,
-.t-mono-minimal .actions,
-.t-mono-minimal .swatches,
-.t-mono-minimal .times {
-  justify-content: flex-start;
-}
-
-.t-mono-minimal .bigdate {
-  margin-top: 12px;
-}
-
 .t-mono-minimal .bigdate .d {
-  font-size: 96px;
+  font-size: 88px;
   border-right-color: var(--line);
 }
 
-.t-mono-minimal .cd {
-  margin-left: 0;
-  max-width: 320px;
-  text-align: left;
-}
-
 .t-mono-minimal .cd b {
-  font-size: 44px;
+  font-size: 40px;
 }
 
 .t-mono-minimal .cal {
-  margin-left: 0;
   border-radius: 0;
   border-color: var(--line);
 }
@@ -2310,10 +2288,6 @@
 .t-mono-minimal .cal-g .on::before {
   clip-path: none;
   border-radius: 50%;
-}
-
-.t-mono-minimal .frm .btn {
-  justify-self: start;
 }
 
 .t-mono-minimal .frm input:not([type="radio"]),
@@ -2349,53 +2323,43 @@
 }
 
 .t-mono-minimal .std-p1 {
-  left: 0;
+  left: 10px;
   top: 0;
-  width: 190px;
+  width: 180px;
 }
 
 .t-mono-minimal .std-p1 .photo {
-  height: 250px;
+  height: 240px;
 }
 
 .t-mono-minimal .std-p2 {
-  right: 0;
-  top: 120px;
+  right: 10px;
+  top: 110px;
   width: 130px;
 }
 
 .t-mono-minimal .std-p2 .photo {
-  height: 170px;
+  height: 175px;
 }
 
 .t-mono-minimal .std-l1 {
-  right: 0;
-  top: 40px;
-  width: 120px;
-  text-align: right;
+  right: 10px;
+  top: 30px;
 }
 
 .t-mono-minimal .std-l2 {
-  left: 0;
-  bottom: 10px;
-  text-align: left;
+  left: 10px;
+  bottom: 0;
 }
 
 .t-mono-minimal .std-names {
-  font-size: 56px;
+  font-size: 50px;
   line-height: 0.95;
-  text-align: left;
 }
 
 .t-mono-minimal .std-names .amp {
-  display: inline;
   font-style: italic;
-  font-size: 40px;
-  margin: 0 10px;
-}
-
-.t-mono-minimal .stage-foot {
-  max-width: none;
+  font-size: 36px;
 }
 
 .t-mono-minimal .stage-cap {
@@ -2406,18 +2370,10 @@
   box-shadow: 0 0 0 1px var(--line), 0 20px 40px -24px rgba(0, 0, 0, 0.5);
 }
 
-.t-mono-minimal .story {
-  text-align: left;
-}
-
 .t-mono-minimal .story-y {
   border-radius: 0;
   border-color: var(--ink);
   color: var(--ink);
-}
-
-.t-mono-minimal .gift .side {
-  font-family: var(--font-ui), sans-serif;
 }
 
 .t-mono-minimal .btn {
@@ -2439,14 +2395,14 @@
 
 .t-mono-minimal .cover-card {
   box-shadow: none;
-  padding: 40px 28px 44px;
-  text-align: left;
+  border: 1px solid var(--ink);
+  padding: 48px 28px 44px;
 }
 
 .t-mono-minimal .cover-heart {
-  margin: 0 0 56px;
   width: 44px;
   height: 44px;
+  margin-bottom: 28px;
   background: none;
   color: var(--ink);
   border: 1px solid var(--ink);
@@ -2454,7 +2410,7 @@
 }
 
 .t-mono-minimal .cover-names {
-  font-size: 54px;
+  font-size: 50px;
   line-height: 0.95;
   color: var(--ink);
 }
@@ -2463,7 +2419,6 @@
   font-style: italic;
   font-size: 36px;
   margin: 8px 0;
-  text-align: left;
 }
 
 .t-mono-minimal .cover-date,
@@ -2475,24 +2430,21 @@
 }
 
 .t-mono-minimal .cover-date {
-  margin-top: 26px;
+  margin: 26px auto 0;
   padding-top: 16px;
+  width: 220px;
   border-top: 1px solid var(--ink);
 }
 
 .t-mono-minimal .cover .btn {
   animation: none;
-  margin-top: 34px;
+  margin-top: 30px;
 }
 
 .t-mono-minimal .end .big {
   font-style: italic;
   font-size: 60px;
   padding: 0;
-}
-
-.t-mono-minimal .end .thanks {
-  margin-inline: 0;
 }
 
 /* ===== Xanh đêm sao: art-deco, khung viền kim đôi ===== */
