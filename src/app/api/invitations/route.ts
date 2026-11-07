@@ -12,11 +12,16 @@ const CreateSchema = z.object({
 export async function POST(req: Request) {
   const body = CreateSchema.safeParse(await req.json().catch(() => null));
   if (!body.success) return Response.json({ error: body.error.issues[0]?.message ?? "Dữ liệu không hợp lệ" }, { status: 400 });
-  const store = await getStore();
-  if (await store.getInvitation(body.data.slug)) return Response.json({ error: "Đường dẫn này đã có người dùng" }, { status: 409 });
-  const inv = sampleInvitation(body.data.slug, body.data.template, makeId() + makeId());
-  await store.saveInvitation(inv);
-  return Response.json({ slug: inv.slug, editKey: inv.editKey }, { status: 201 });
+  try {
+    const store = await getStore();
+    if (await store.getInvitation(body.data.slug)) return Response.json({ error: "Đường dẫn này đã có người dùng" }, { status: 409 });
+    const inv = sampleInvitation(body.data.slug, body.data.template, makeId() + makeId());
+    await store.saveInvitation(inv);
+    return Response.json({ slug: inv.slug, editKey: inv.editKey }, { status: 201 });
+  } catch (e) {
+    console.error("Tạo thiệp lỗi:", e);
+    return Response.json({ error: `Không lưu được thiệp: ${(e as Error).message}` }, { status: 500 });
+  }
 }
 
 export async function GET() {
