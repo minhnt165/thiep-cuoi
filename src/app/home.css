@@ -431,55 +431,77 @@
   flex: none;
 }
 
-/* ---------- mời cà phê ---------- */
+/* ---------- mời cà phê: kín đáo, bấm mới mở ---------- */
 .donate {
+  justify-self: center;
+  max-width: 520px;
+  width: 100%;
+  margin-top: -40px;
+  font-size: 13px;
+  color: var(--ui-muted);
+}
+
+.donate summary {
+  cursor: pointer;
+  list-style: none;
+  text-align: center;
+  padding: 6px 10px;
+  user-select: none;
+}
+
+.donate summary::-webkit-details-marker {
+  display: none;
+}
+
+.donate summary:hover {
+  color: var(--ui-fg);
+}
+
+.donate[open] summary {
+  color: var(--ui-fg);
+}
+
+.donate-body {
   display: grid;
   grid-template-columns: auto 1fr;
   align-items: center;
-  gap: 24px;
-  padding: 24px 28px;
-  border-radius: 20px;
-  background: linear-gradient(135deg, #f6efe6, #efe6dc);
+  gap: 18px;
+  margin-top: 10px;
+  padding: 16px 18px;
+  border-radius: 16px;
+  background: var(--ui-surface);
   border: 1px solid var(--ui-line);
 }
 
 .donate-qr {
-  padding: 8px;
+  padding: 6px;
   background: #fff;
-  border-radius: 14px;
-  box-shadow: 0 10px 24px -16px rgba(0, 0, 0, 0.4);
+  border-radius: 12px;
+  border: 1px solid var(--ui-line);
 }
 
 .donate-qr img {
-  width: 150px;
-  height: 150px;
+  width: 140px;
+  height: 140px;
   object-fit: contain;
-  border-radius: 8px;
-}
-
-.donate-text h2 {
-  font-family: var(--font-playfair), Georgia, serif;
-  font-size: 24px;
-  font-weight: 400;
-  margin: 4px 0 8px;
+  border-radius: 6px;
 }
 
 .donate-text p {
   margin: 0;
-  font-size: 14px;
+  font-size: 13px;
   color: var(--ui-muted);
   line-height: 1.6;
-  max-width: 60ch;
 }
 
 .donate-acc {
-  margin-top: 10px !important;
+  margin-top: 8px !important;
   color: var(--ui-fg) !important;
   font-variant-numeric: tabular-nums;
 }
 
 @media (max-width: 600px) {
-  .donate {
+  .donate-body {
     grid-template-columns: 1fr;
     justify-items: center;
     text-align: center;
