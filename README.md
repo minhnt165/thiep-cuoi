@@ -1,36 +1,48 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Thiệp cưới online
 
-## Getting Started
+Tạo thiệp cưới online: chọn mẫu, điền thông tin, tải ảnh, gửi link cho khách. Khách mở thiệp trên điện thoại, xem lịch lễ, chỉ đường, album, để lại lời chúc, xác nhận tham dự và quét QR mừng cưới.
 
-First, run the development server:
+## Chạy trên máy
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Mở <http://localhost:3100>. Dữ liệu ghi vào thư mục `data/` (không commit). Không cần tài khoản gì.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Lệnh khác: `npm test` (lịch âm, ngày tháng), `npm run typecheck`, `npm run lint`, `npm run build`.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Cấu trúc
 
-## Learn More
+| Thư mục | Nội dung |
+| --- | --- |
+| `src/lib/schema.ts` | Mô hình dữ liệu một thiệp (zod). Nội dung tách khỏi mẫu: đổi mẫu không mất dữ liệu. |
+| `src/lib/templates/` | Bốn mẫu: token màu, chữ, chất liệu nền, họa tiết, kiểu bìa. |
+| `src/lib/lunar.ts` | Đổi dương lịch sang âm lịch (thuật toán Hồ Ngọc Đức), tên can chi. |
+| `src/lib/store/` | Lớp lưu trữ: `file-store` (mặc định) và `supabase-store`. Chọn bằng `STORE`. |
+| `src/components/invitation/` | Thiệp cho khách xem: bìa, các phần, slideshow, CSS. |
+| `src/components/ornaments/` | Họa tiết SVG vẽ tay và chất liệu nền (feTurbulence). |
+| `src/components/editor/` | Trình chỉnh sửa: form theo tab + xem trước trong khung điện thoại. |
+| `src/app/[slug]` | Trang thiệp công khai. `/demo/[template]` xem thử mẫu với dữ liệu giả. |
+| `src/app/api/` | Tạo/lưu thiệp, lời chúc, RSVP, tải file. |
 
-To learn more about Next.js, take a look at the following resources:
+## Luồng dùng
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. Trang chủ → **Tạo thiệp** (chọn đường dẫn + mẫu) → chuyển sang `/edit/<slug>`.
+2. Trình chỉnh sửa lưu **khóa sửa** vào trình duyệt. Tab **Chia sẻ** có link chỉnh sửa kèm khóa để mở trên máy khác.
+3. Bấm **Lưu** (hoặc Ctrl+S) → link `/<slug>` cập nhật ngay.
+4. Tab **Khách** xem ai đã xác nhận và lời chúc.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Đưa lên mạng (Vercel + Supabase)
 
-## Deploy on Vercel
+1. Tạo project Supabase, chạy `supabase/migrations/0001_init.sql` trong SQL editor.
+2. Đặt biến môi trường: `STORE=supabase`, `NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `NEXT_PUBLIC_SITE_URL`.
+3. Deploy lên Vercel. Bản Supabase chưa được chạy thử thật, cần kiểm tra lại khi có tài khoản.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Chưa làm (giai đoạn sau)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Tài khoản người dùng, nhiều người cùng dùng, thanh toán.
+- Link riêng cho từng khách (tên khách trên bìa).
+- Xuất video/ảnh thiệp.
+- Hình họa tiết chất lượng cao hơn (mua bản quyền hoặc vẽ tay).

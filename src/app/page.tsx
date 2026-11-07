@@ -1,69 +1,74 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+import Link from "next/link";
+import { THEME_LIST } from "@/lib/templates";
+import { getStore } from "@/lib/store";
+import { CreateForm } from "@/components/editor/CreateForm";
+import "./home.css";
 
-export default function Home() {
+// Danh sách thiệp đọc từ store mỗi lần mở trang
+export const dynamic = "force-dynamic";
+
+export default async function Home() {
+  const store = await getStore();
+  const list = await store.listInvitations();
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className={styles.intro}>
-          <h1>
-            To get started, edit the{" "}
-            <code className={styles.code}>page.tsx</code> file.
-          </h1>
-          <p>
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <main className="home">
+      <header className="home-head">
+        <p className="home-kicker">Thiệp cưới online</p>
+        <h1>Chọn mẫu, điền thông tin, gửi link cho khách</h1>
+        <p className="home-lede">
+          Mỗi thiệp có bìa mở, đếm ngược, lịch lễ kèm chỉ đường, album, sổ lưu bút, xác nhận tham dự và hộp mừng cưới. Đổi mẫu bất cứ lúc nào, nội dung giữ nguyên.
+        </p>
+      </header>
+
+      <section>
+        <h2 className="home-h2">Mẫu thiệp</h2>
+        <div className="tpl-grid">
+          {THEME_LIST.map((t) => (
+            <article className="tpl" key={t.id} style={{ "--c-accent": t.colors.accent, "--c-bg": t.colors.bg, "--c-gold": t.colors.gold, "--c-outer": t.colors.outer } as React.CSSProperties}>
+              <div className="tpl-thumb">
+                <div className="tpl-card">
+                  <span className="tpl-heart" />
+                  <span className="tpl-line tpl-line-1" />
+                  <span className="tpl-line tpl-line-2" />
+                  <span className="tpl-dot" />
+                  <span className="tpl-btn" />
+                </div>
+              </div>
+              <div className="tpl-body">
+                <p className="tpl-tag">{t.tagline}</p>
+                <h3>{t.name}</h3>
+                <p className="tpl-desc">{t.description}</p>
+                <Link className="tpl-link" href={`/demo/${t.id}`}>Xem thử</Link>
+              </div>
+            </article>
+          ))}
         </div>
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+      </section>
+
+      <section className="home-create">
+        <h2 className="home-h2">Tạo thiệp mới</h2>
+        <CreateForm />
+      </section>
+
+      {list.length > 0 && (
+        <section>
+          <h2 className="home-h2">Thiệp đã tạo trên máy này</h2>
+          <ul className="inv-list">
+            {list.map((i) => (
+              <li key={i.slug}>
+                <div>
+                  <b>{i.groom.shortName} &amp; {i.bride.shortName}</b>
+                  <span>/{i.slug} · {i.mainEvent.date} · {THEME_LIST.find((t) => t.id === i.template)?.name}</span>
+                </div>
+                <div className="inv-list-actions">
+                  <Link href={`/${i.slug}`}>Xem</Link>
+                  <Link href={`/edit/${i.slug}`}>Sửa</Link>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+    </main>
   );
 }

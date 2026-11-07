@@ -3,22 +3,28 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint"
+    "dev": "cross-env NODE_OPTIONS=--use-system-ca next dev -p 3100",
+    "build": "cross-env NODE_OPTIONS=--use-system-ca next build",
+    "start": "next start -p 3100",
+    "lint": "eslint",
+    "typecheck": "next typegen && tsc --noEmit",
+    "test": "vitest run"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.119.0",
     "next": "16.4.3",
     "react": "19.3.0",
-    "react-dom": "19.3.0"
+    "react-dom": "19.3.0",
+    "zod": "^4.6.7"
   },
   "devDependencies": {
-    "@types/node": "^20",
+    "@types/node": "^24.19.2",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "cross-env": "^10.1.0",
     "eslint": "^9",
     "eslint-config-next": "16.4.3",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^5.1.0"
   }
 }
