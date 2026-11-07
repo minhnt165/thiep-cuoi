@@ -8,8 +8,11 @@ import "./home.css";
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const store = await getStore();
-  const list = await store.listInvitations();
+  // Danh sách thiệp chỉ hiện khi chạy trên máy cá nhân (file store).
+  // Trên site thật (Supabase) ai cũng vào được trang chủ nên không lộ thiệp của người khác.
+  const isLocal = process.env.STORE !== "supabase";
+  const list = isLocal ? await (await getStore()).listInvitations() : [];
+  const needsCode = Boolean(process.env.CREATE_CODE);
   return (
     <main className="home">
       <header className="home-head">
@@ -47,7 +50,7 @@ export default async function Home() {
 
       <section className="home-create">
         <h2 className="home-h2">Tạo thiệp mới</h2>
-        <CreateForm />
+        <CreateForm needsCode={needsCode} />
       </section>
 
       {list.length > 0 && (

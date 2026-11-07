@@ -5,7 +5,7 @@ import { useState, type FormEvent } from "react";
 import { THEME_LIST } from "@/lib/templates";
 import { rememberKey } from "@/lib/client/edit-key";
 
-export function CreateForm() {
+export function CreateForm({ needsCode = false }: { needsCode?: boolean }) {
   const router = useRouter();
   const [err, setErr] = useState("");
   const [busy, setBusy] = useState(false);
@@ -15,10 +15,11 @@ export function CreateForm() {
     const f = new FormData(e.currentTarget);
     const slug = String(f.get("slug") ?? "").trim().toLowerCase();
     const template = String(f.get("template") ?? "");
+    const code = String(f.get("code") ?? "").trim();
     setBusy(true);
     setErr("");
     try {
-      const res = await fetch("/api/invitations", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ slug, template }) });
+      const res = await fetch("/api/invitations", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ slug, template, code }) });
       const body = await res.json();
       if (!res.ok) throw new Error(body.error ?? "Tạo chưa được");
       rememberKey(body.slug, body.editKey);
@@ -45,6 +46,13 @@ export function CreateForm() {
         </select>
         <span className="hint">Đổi mẫu sau vẫn được, nội dung không mất.</span>
       </label>
+      {needsCode && (
+        <label>
+          Mã tạo thiệp
+          <input name="code" required autoComplete="off" />
+          <span className="hint">Chủ site cấp mã này để tránh người lạ tạo thiệp rác.</span>
+        </label>
+      )}
       {err && <p className="err">{err}</p>}
       <button type="submit" disabled={busy}>{busy ? "Đang tạo…" : "Tạo thiệp"}</button>
     </form>
