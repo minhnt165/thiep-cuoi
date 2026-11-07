@@ -967,46 +967,60 @@
   opacity: 0.85;
 }
 
-/* ---------- album: slideshow ---------- */
-.slider {
+/* ---------- album: thẻ ảnh 3D ---------- */
+.stage {
   position: relative;
-  margin-top: 22px;
-  aspect-ratio: 3 / 4;
+  margin: 26px auto 0;
+  height: min(440px, 118vw);
   max-width: 100%;
-  border-radius: var(--radius);
-  overflow: hidden;
-  box-shadow: 0 22px 40px -20px rgba(0, 0, 0, 0.55);
+  perspective: 900px;
+  transform-style: preserve-3d;
   touch-action: pan-y;
   user-select: none;
-  background: var(--bg2);
+  -webkit-user-select: none;
 }
 
-.slider-track {
-  display: flex;
-  height: 100%;
-  transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
-  will-change: transform;
-}
-
-.slide {
-  flex: 0 0 100%;
-  height: 100%;
-  padding: 0;
+.card {
+  position: absolute;
+  left: 15%;
+  right: 15%;
+  top: 0;
+  bottom: 0;
+  padding: 8px 8px 30px;
   border: 0;
-  background: none;
+  border-radius: 4px;
+  background: #fff;
+  box-shadow: 0 24px 46px -18px rgba(0, 0, 0, 0.5), 0 2px 6px rgba(0, 0, 0, 0.08);
   cursor: zoom-in;
+  transition: transform 0.75s cubic-bezier(0.2, 0.7, 0.2, 1), opacity 0.6s ease;
+  will-change: transform;
+  transform-origin: center;
+  backface-visibility: hidden;
 }
 
-.slide .photo {
+.card .photo {
   height: 100%;
+  border-radius: 2px;
 }
 
-.slide .photo img {
+.card .photo img {
   transform: scale(1);
 }
 
-.slide .photo.is-active img {
-  animation: kenburns 7s ease-out forwards;
+.card.is-active .photo img {
+  animation: kenburns 8s ease-out forwards;
+}
+
+.card-num {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 7px;
+  font-family: var(--f-display), Georgia, serif;
+  font-size: 13px;
+  letter-spacing: 0.3em;
+  color: var(--muted);
+  text-align: center;
 }
 
 @keyframes kenburns {
@@ -1018,90 +1032,99 @@
   }
 }
 
-.slider-btn {
+.stage-btn {
   position: absolute;
   top: 50%;
-  width: 38px;
-  height: 38px;
-  margin-top: -19px;
-  border: 0;
+  width: 36px;
+  height: 36px;
+  margin-top: -18px;
+  border: 1px solid var(--line);
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.82);
+  background: rgba(255, 255, 255, 0.9);
   color: var(--accent);
   display: grid;
   place-items: center;
   cursor: pointer;
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
-  z-index: 2;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.18);
+  z-index: 20;
 }
 
-.slider-btn svg {
-  width: 20px;
-  height: 20px;
+.stage-btn svg {
+  width: 18px;
+  height: 18px;
 }
 
-.slider-l {
-  left: 10px;
+.stage-l {
+  left: 0;
 }
 
-.slider-r {
-  right: 10px;
+.stage-r {
+  right: 0;
 }
 
-.slider-count {
+.stage-foot {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: baseline;
+  gap: 4px 12px;
+  margin: 18px auto 0;
+  max-width: 300px;
+  text-align: left;
+}
+
+.stage-cap {
+  font-size: 26px;
+  line-height: 1;
+  color: var(--accent);
+}
+
+.stage-count {
+  font-family: var(--f-display), Georgia, serif;
+  font-size: 13px;
+  letter-spacing: 0.2em;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.stage-bar {
+  grid-column: 1 / -1;
+  display: block;
+  height: 1px;
+  background: var(--line);
+  overflow: hidden;
+}
+
+.stage-bar i {
+  display: block;
+  height: 100%;
+  width: 100%;
+  background: var(--accent);
+  transform-origin: left;
+  animation: progress linear forwards;
+}
+
+@keyframes progress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.lb-count {
   position: absolute;
-  right: 12px;
-  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
   padding: 3px 10px;
   border-radius: 999px;
-  background: rgba(0, 0, 0, 0.45);
+  background: rgba(255, 255, 255, 0.12);
   color: #fff;
   font-family: var(--font-ui), sans-serif;
   font-size: 11px;
   letter-spacing: 0.08em;
   font-variant-numeric: tabular-nums;
-  z-index: 2;
-}
-
-.strip {
-  display: flex;
-  gap: 8px;
-  margin: 12px -24px 0;
-  padding: 4px 24px;
-  overflow-x: auto;
-  scrollbar-width: none;
-  scroll-snap-type: x proximity;
-}
-
-.strip::-webkit-scrollbar {
-  display: none;
-}
-
-.strip-i {
-  flex: 0 0 56px;
-  height: 72px;
-  padding: 0;
-  border: 2px solid transparent;
-  border-radius: calc(var(--radius) * 0.6);
-  overflow: hidden;
-  background: none;
-  cursor: pointer;
-  opacity: 0.6;
-  transition: opacity 0.2s, border-color 0.2s;
-  scroll-snap-align: center;
-}
-
-.strip-i .photo {
-  height: 100%;
-}
-
-.strip-i .photo-empty {
-  display: none;
-}
-
-.strip-i.on {
-  opacity: 1;
-  border-color: var(--accent);
 }
 
 .lightbox {
@@ -1164,17 +1187,19 @@
   z-index: 2;
 }
 
-.lightbox .slider-btn {
+.lightbox .stage-btn {
   background: rgba(255, 255, 255, 0.15);
+  border-color: transparent;
   color: #fff;
   box-shadow: none;
 }
 
-.lightbox .slider-count {
-  right: auto;
-  left: 50%;
-  transform: translateX(-50%);
-  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+.lightbox .stage-l {
+  left: 10px;
+}
+
+.lightbox .stage-r {
+  right: 10px;
 }
 
 /* ---------- tiệc cưới ---------- */

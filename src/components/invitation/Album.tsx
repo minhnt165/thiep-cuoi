@@ -1,73 +1,80 @@
 "use client";
 
 /* eslint-disable @next/next/no-img-element */
-import { useCallback, useEffect, useRef, useState, type PointerEvent } from "react";
+import { useCallback, useEffect, useRef, useState, type CSSProperties, type PointerEvent } from "react";
 import type { PublicInvitation } from "@/lib/schema";
 import { Divider } from "@/components/ornaments";
 import { Photo } from "./Photo";
 
-const AUTOPLAY_MS = 3800;
+const AUTOPLAY_MS = 4200;
+const ROMAN = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "XIII", "XIV", "XV", "XVI", "XVII", "XVIII", "XIX", "XX"];
 
 function Arrow({ dir }: { dir: "l" | "r" }) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       {dir === "l" ? <path d="M15 5l-7 7 7 7" /> : <path d="M9 5l7 7-7 7" />}
     </svg>
   );
 }
 
-/** Theo dõi vuốt ngang: trả về handler pointer và độ lệch đang kéo */
+/**
+ * Vuốt ngang. Không dùng setPointerCapture: nó chuyển hướng cả sự kiện click
+ * về container nên nút mũi tên và ảnh không bấm được.
+ */
 function useSwipe(onSwipe: (dir: 1 | -1) => void) {
-  const start = useRef<{ x: number; y: number } | null>(null);
-  const [drag, setDrag] = useState(0);
-  const onDown = (e: PointerEvent) => {
-    start.current = { x: e.clientX, y: e.clientY };
-    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+  const start = useRef<{ x: number; y: number; w: number } | null>(null);
+  const moved = useRef(false);
+  /** px: độ lệch tay kéo · frac: độ lệch so với chiều rộng phần tử */
+  const [drag, setDrag] = useState({ px: 0, frac: 0 });
+  const onPointerDown = (e: PointerEvent) => {
+    if (e.pointerType === "mouse" && e.button !== 0) return;
+    start.current = { x: e.clientX, y: e.clientY, w: (e.currentTarget as HTMLElement).clientWidth || 320 };
+    moved.current = false;
   };
-  const onMove = (e: PointerEvent) => {
+  const onPointerMove = (e: PointerEvent) => {
     if (!start.current) return;
     const dx = e.clientX - start.current.x;
     const dy = e.clientY - start.current.y;
-    if (Math.abs(dx) > Math.abs(dy)) setDrag(dx);
+    if (Math.abs(dx) > 6 && Math.abs(dx) > Math.abs(dy)) {
+      moved.current = true;
+      setDrag({ px: dx, frac: dx / start.current.w });
+    }
   };
-  const onUp = () => {
-    if (start.current && Math.abs(drag) > 40) onSwipe(drag < 0 ? 1 : -1);
+  const end = () => {
+    if (start.current && Math.abs(drag.px) > 40) onSwipe(drag.px < 0 ? 1 : -1);
     start.current = null;
-    setDrag(0);
+    setDrag({ px: 0, frac: 0 });
   };
-  return { drag, handlers: { onPointerDown: onDown, onPointerMove: onMove, onPointerUp: onUp, onPointerCancel: onUp } };
+  /** true nếu vừa kéo xong, để bỏ qua click ngay sau đó */
+  const justDragged = () => moved.current;
+  return { drag, justDragged, handlers: { onPointerDown, onPointerMove, onPointerUp: end, onPointerCancel: end, onPointerLeave: end } };
+}
+
+/** Khoảng cách vòng tròn ngắn nhất từ ảnh i tới ảnh đang xem */
+function circular(i: number, idx: number, n: number): number {
+  let d = i - idx;
+  if (d > n / 2) d -= n;
+  if (d < -n / 2) d += n;
+  return d;
 }
 
 export function Album({ data }: { data: PublicInvitation }) {
-  const photos = data.photos.album.length ? data.photos.album : ["", "", "", ""];
+  const photos = data.photos.album.length ? data.photos.album : ["", "", "", "", ""];
   const n = photos.length;
   const [idx, setIdx] = useState(0);
   const [paused, setPaused] = useState(false);
   const [lightbox, setLightbox] = useState<number | null>(null);
-  const stripRef = useRef<HTMLDivElement>(null);
 
   const go = useCallback((d: 1 | -1) => setIdx((i) => (i + d + n) % n), [n]);
   const swipe = useSwipe(go);
   const lbSwipe = useSwipe((d) => setLightbox((i) => (i === null ? null : (i + d + n) % n)));
 
-  // Tự chạy, dừng khi đang chạm/kéo hoặc đang xem toàn màn hình
   useEffect(() => {
     if (paused || lightbox !== null || n < 2) return;
     const id = setInterval(() => go(1), AUTOPLAY_MS);
     return () => clearInterval(id);
-  }, [paused, lightbox, n, go]);
+  }, [paused, lightbox, n, go, idx]);
 
-  // Cuộn dải ảnh nhỏ theo ảnh đang xem. Chỉ cuộn chính dải ảnh,
-  // không dùng scrollIntoView vì nó kéo cả trang (và bìa) đi.
-  useEffect(() => {
-    const strip = stripRef.current;
-    const el = strip?.children[idx] as HTMLElement | undefined;
-    if (!strip || !el) return;
-    const left = el.offsetLeft - strip.clientWidth / 2 + el.clientWidth / 2;
-    strip.scrollTo({ left, behavior: "smooth" });
-  }, [idx]);
-
-  // Phím mũi tên / Esc khi xem toàn màn hình
   useEffect(() => {
     if (lightbox === null) return;
     const h = (e: KeyboardEvent) => {
@@ -79,56 +86,77 @@ export function Album({ data }: { data: PublicInvitation }) {
     return () => window.removeEventListener("keydown", h);
   }, [lightbox, n]);
 
+  const dragFrac = swipe.drag.frac;
+
+  function cardStyle(i: number): CSSProperties {
+    const off = circular(i, idx, n) + (n > 1 ? -dragFrac : 0);
+    const a = Math.abs(off);
+    const hidden = a > 1.6;
+    return {
+      transform: `translateX(${off * 72}%) translateZ(${-a * 140}px) rotateY(${-off * 18}deg) scale(${1 - a * 0.1})`,
+      opacity: hidden ? 0 : 1 - a * 0.35,
+      zIndex: 10 - Math.round(a * 4),
+      transition: swipe.drag.px ? "none" : undefined,
+      pointerEvents: a < 0.5 ? "auto" : "none",
+    };
+  }
+
+  const openLightbox = (i: number) => {
+    if (swipe.justDragged()) return;
+    setLightbox(i);
+  };
+
   return (
     <section className="sec reveal" id="s-album">
       <h2 className="sec-title">Album ảnh</h2>
       <Divider className="divider" />
 
       <div
-        className="slider"
+        className="stage"
         onPointerEnter={() => setPaused(true)}
-        onPointerLeave={() => setPaused(false)}
         {...swipe.handlers}
+        onPointerLeave={() => {
+          setPaused(false);
+          swipe.handlers.onPointerLeave();
+        }}
       >
-        <div className="slider-track" style={{ transform: `translateX(calc(${-idx * 100}% + ${swipe.drag}px))`, transition: swipe.drag ? "none" : undefined }}>
-          {photos.map((p, i) => (
-            <button type="button" className="slide" key={i} onClick={() => !swipe.drag && setLightbox(i)} aria-label={`Xem ảnh ${i + 1} toàn màn hình`} tabIndex={i === idx ? 0 : -1}>
-              <Photo src={p} alt={`Ảnh cưới ${i + 1}`} label={`Ảnh ${i + 1}`} className={i === idx ? "is-active" : ""} />
-            </button>
-          ))}
-        </div>
+        {photos.map((p, i) => (
+          <button type="button" className={`card ${i === idx ? "is-active" : ""}`} key={i} style={cardStyle(i)} onClick={() => openLightbox(i)} aria-label={`Xem ảnh ${i + 1} toàn màn hình`} tabIndex={i === idx ? 0 : -1} aria-hidden={i !== idx}>
+            <Photo src={p} alt={`Ảnh cưới ${i + 1}`} label={`Ảnh ${i + 1}`} />
+            <span className="card-num">{ROMAN[i] ?? i + 1}</span>
+          </button>
+        ))}
         {n > 1 && (
           <>
-            <button type="button" className="slider-btn slider-l" onClick={() => go(-1)} aria-label="Ảnh trước"><Arrow dir="l" /></button>
-            <button type="button" className="slider-btn slider-r" onClick={() => go(1)} aria-label="Ảnh sau"><Arrow dir="r" /></button>
-            <span className="slider-count">{idx + 1} / {n}</span>
+            <button type="button" className="stage-btn stage-l" onClick={() => go(-1)} aria-label="Ảnh trước"><Arrow dir="l" /></button>
+            <button type="button" className="stage-btn stage-r" onClick={() => go(1)} aria-label="Ảnh sau"><Arrow dir="r" /></button>
           </>
         )}
       </div>
 
       {n > 1 && (
-        <div className="strip" ref={stripRef}>
-          {photos.map((p, i) => (
-            <button type="button" key={i} className={`strip-i ${i === idx ? "on" : ""}`} onClick={() => setIdx(i)} aria-label={`Chọn ảnh ${i + 1}`} aria-current={i === idx}>
-              <Photo src={p} alt="" label="" />
-            </button>
-          ))}
+        <div className="stage-foot">
+          <span className="script stage-cap">Khoảnh khắc</span>
+          <span className="stage-count">{String(idx + 1).padStart(2, "0")} / {String(n).padStart(2, "0")}</span>
+          <span className="stage-bar" aria-hidden="true">
+            <i key={idx} style={{ animationDuration: `${AUTOPLAY_MS}ms`, animationPlayState: paused || lightbox !== null ? "paused" : "running" }} />
+          </span>
         </div>
       )}
 
       {lightbox !== null && (
         <div className="lightbox" role="dialog" aria-modal="true" aria-label="Xem ảnh" {...lbSwipe.handlers}>
           <button type="button" className="lb-close" onClick={() => setLightbox(null)} aria-label="Đóng">×</button>
-          <div className="lb-stage" style={{ transform: `translateX(${lbSwipe.drag}px)`, transition: lbSwipe.drag ? "none" : undefined }}>
-            {photos[lightbox] ? <img src={photos[lightbox]} alt={`Ảnh cưới ${lightbox + 1}`} /> : <Photo src="" alt="" label={`Ảnh ${lightbox + 1}`} className="lb-empty" />}
+          <div className="lb-stage" style={{ transform: `translateX(${lbSwipe.drag.px}px)`, transition: lbSwipe.drag.px ? "none" : undefined }}>
+            {photos[lightbox] ? <img src={photos[lightbox]} alt={`Ảnh cưới ${lightbox + 1}`} draggable={false} /> : <Photo src="" alt="" label={`Ảnh ${lightbox + 1}`} className="lb-empty" />}
           </div>
           {n > 1 && (
             <>
-              <button type="button" className="slider-btn slider-l" onClick={() => setLightbox((lightbox - 1 + n) % n)} aria-label="Ảnh trước"><Arrow dir="l" /></button>
-              <button type="button" className="slider-btn slider-r" onClick={() => setLightbox((lightbox + 1) % n)} aria-label="Ảnh sau"><Arrow dir="r" /></button>
+              <button type="button" className="stage-btn stage-l" onClick={() => setLightbox((lightbox - 1 + n) % n)} aria-label="Ảnh trước"><Arrow dir="l" /></button>
+              <button type="button" className="stage-btn stage-r" onClick={() => setLightbox((lightbox + 1) % n)} aria-label="Ảnh sau"><Arrow dir="r" /></button>
             </>
           )}
-          <span className="slider-count">{lightbox + 1} / {n}</span>
+          <span className="lb-count">{lightbox + 1} / {n}</span>
         </div>
       )}
     </section>
