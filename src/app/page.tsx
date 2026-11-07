@@ -132,10 +132,9 @@ export default async function Home() {
         </section>
       )}
 
-      <Donate />
-
       <footer className="home-foot">
         <span>Thiệp cưới online · mã nguồn mở, tự chạy trên Vercel + Supabase</span>
+        <Donate />
       </footer>
     </main>
   );

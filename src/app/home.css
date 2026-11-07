@@ -431,88 +431,206 @@
   flex: none;
 }
 
-/* ---------- mời cà phê: kín đáo, bấm mới mở ---------- */
-.donate {
-  justify-self: center;
-  max-width: 520px;
-  width: 100%;
-  margin-top: -40px;
-  font-size: 13px;
-  color: var(--ui-muted);
-}
-
-.donate summary {
-  cursor: pointer;
-  list-style: none;
-  text-align: center;
-  padding: 6px 10px;
-  user-select: none;
-}
-
-.donate summary::-webkit-details-marker {
-  display: none;
-}
-
-.donate summary:hover {
-  color: var(--ui-fg);
-}
-
-.donate[open] summary {
-  color: var(--ui-fg);
-}
-
-.donate-body {
-  display: grid;
-  grid-template-columns: auto 1fr;
+/* ---------- mời cà phê: nút nhỏ ở chân trang, bấm mở hộp QR ---------- */
+.coffee-btn {
+  display: inline-flex;
   align-items: center;
-  gap: 18px;
-  margin-top: 10px;
-  padding: 16px 18px;
-  border-radius: 16px;
-  background: var(--ui-surface);
-  border: 1px solid var(--ui-line);
-}
-
-.donate-qr {
-  padding: 6px;
-  background: #fff;
-  border-radius: 12px;
-  border: 1px solid var(--ui-line);
-}
-
-.donate-qr img {
-  width: 140px;
-  height: 140px;
-  object-fit: contain;
-  border-radius: 6px;
-}
-
-.donate-text p {
-  margin: 0;
+  gap: 8px;
+  padding: 8px 16px 8px 12px;
+  border: 1px solid #d9c9b6;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #fbf5ec, #f3e8d9);
+  color: #5a3f2e;
   font-size: 13px;
-  color: var(--ui-muted);
-  line-height: 1.6;
+  font-weight: 500;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(60, 40, 20, 0.08);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
-.donate-acc {
-  margin-top: 8px !important;
-  color: var(--ui-fg) !important;
-  font-variant-numeric: tabular-nums;
+.coffee-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px -10px rgba(60, 40, 20, 0.5);
 }
 
-@media (max-width: 600px) {
-  .donate-body {
-    grid-template-columns: 1fr;
-    justify-items: center;
-    text-align: center;
+.coffee-ic {
+  width: 22px;
+  height: 22px;
+}
+
+.steam {
+  opacity: 0;
+  animation: steam 2.4s ease-in-out infinite;
+}
+
+.steam.s2 {
+  animation-delay: 0.5s;
+}
+
+.steam.s3 {
+  animation-delay: 1s;
+}
+
+@keyframes steam {
+  0% {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  40% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-5px);
   }
 }
 
+.coffee-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  background: rgba(30, 22, 16, 0.55);
+  backdrop-filter: blur(3px);
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  animation: coffee-in 0.2s ease;
+}
+
+@keyframes coffee-in {
+  from {
+    opacity: 0;
+  }
+}
+
+.coffee-card {
+  position: relative;
+  width: min(380px, 100%);
+  padding: 28px 24px 24px;
+  border-radius: 24px;
+  background: #fffaf3;
+  color: #3b2a21;
+  text-align: center;
+  box-shadow: 0 40px 80px -30px rgba(0, 0, 0, 0.6);
+  animation: coffee-up 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes coffee-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.98);
+  }
+}
+
+.coffee-close {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: #9a8572;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.coffee-close:hover {
+  background: #f1e6d8;
+}
+
+.coffee-big {
+  width: 56px;
+  height: 56px;
+  color: #8a5a3c;
+  margin: 0 auto 6px;
+  display: block;
+}
+
+.coffee-kicker {
+  margin: 0;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #a4876b;
+}
+
+.coffee-head h3 {
+  font-family: var(--font-playfair), Georgia, serif;
+  font-size: 24px;
+  font-weight: 400;
+  margin: 4px 0 8px;
+}
+
+.coffee-head p:last-child {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #7a6552;
+}
+
+.coffee-qr {
+  width: 196px;
+  margin: 18px auto 14px;
+  padding: 8px;
+  background: #fff;
+  border: 1px solid #ead9c4;
+  border-radius: 16px;
+}
+
+.coffee-qr img {
+  width: 180px;
+  height: 180px;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+.coffee-acc {
+  display: grid;
+  gap: 2px;
+  font-size: 13px;
+  color: #7a6552;
+}
+
+.coffee-acc b {
+  font-size: 20px;
+  letter-spacing: 0.08em;
+  color: #3b2a21;
+  font-variant-numeric: tabular-nums;
+}
+
+.coffee-bank {
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.coffee-copy {
+  margin-top: 14px;
+  padding: 10px 20px;
+  border: 0;
+  border-radius: 999px;
+  background: #5a3f2e;
+  color: #fff6ea;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.coffee-copy:hover {
+  background: #3b2a21;
+}
+
 .home-foot {
+  display: grid;
+  justify-items: center;
+  gap: 14px;
   text-align: center;
   font-size: 12px;
   color: var(--ui-muted);
-  padding-top: 8px;
+  padding-top: 18px;
   border-top: 1px solid var(--ui-line);
 }
 
