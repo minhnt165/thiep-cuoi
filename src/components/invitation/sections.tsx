@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useRef, useState, useSyncExternalStore, type FormEvent } from "react";
 import type { GiftAccount, PublicInvitation, Rsvp, WeddingEvent, Wish } from "@/lib/schema";
 import type { Theme } from "@/lib/templates";
 import { lunarLabel } from "@/lib/lunar";
@@ -118,21 +118,28 @@ export function Family({ data }: { data: PublicInvitation }) {
 }
 
 /* ---------- Tiệc cưới: đếm ngược, lịch, RSVP ---------- */
+/** Giây hiện tại; null khi render ở server để HTML server và client khớp nhau */
+const tick = (cb: () => void) => {
+  const id = setInterval(cb, 1000);
+  return () => clearInterval(id);
+};
+function useNowSec(): number | null {
+  return useSyncExternalStore(tick, () => Math.floor(Date.now() / 1000), () => null);
+}
+
 function Countdown({ target }: { target: Date }) {
-  const [t, setT] = useState(() => countdown(target));
-  useEffect(() => {
-    const id = setInterval(() => setT(countdown(target)), 1000);
-    return () => clearInterval(id);
-  }, [target]);
-  if (t.passed) return <p className="cd-title">Ngày vui đã diễn ra</p>;
+  const now = useNowSec();
+  const t = now === null ? null : countdown(target, new Date(now * 1000));
+  if (t?.passed) return <p className="cd-title">Ngày vui đã diễn ra</p>;
+  const v = (n?: number) => (n === undefined ? "--" : pad(n));
   return (
     <>
       <p className="cd-title">Cùng đếm ngược</p>
       <div className="cd" aria-live="off">
-        <div><b>{t.days}</b><span>Ngày</span></div>
-        <div><b>{pad(t.hours)}</b><span>Giờ</span></div>
-        <div><b>{pad(t.minutes)}</b><span>Phút</span></div>
-        <div><b>{pad(t.seconds)}</b><span>Giây</span></div>
+        <div><b>{t ? t.days : "--"}</b><span>Ngày</span></div>
+        <div><b>{v(t?.hours)}</b><span>Giờ</span></div>
+        <div><b>{v(t?.minutes)}</b><span>Phút</span></div>
+        <div><b>{v(t?.seconds)}</b><span>Giây</span></div>
       </div>
     </>
   );
@@ -196,7 +203,7 @@ export function Party({ data, onRsvp }: { data: PublicInvitation; onRsvp?: (inpu
     <section className="sec reveal" id="s-party">
       <div className="panel">
         <Title>Thông tin tiệc cưới</Title>
-        <p className="announce" style={{ marginTop: 18 }}>{ev.title} sẽ diễn ra vào lúc</p>
+        <p className="announce announce-mt">{ev.title} sẽ diễn ra vào lúc</p>
         <div className="when">
           <span>{ev.time}</span>
           <span>{weekdayLabel(ev.date)}</span>

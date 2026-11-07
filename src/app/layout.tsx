@@ -30,6 +30,8 @@ const fontVars = [ui, viaoda, beau, garamond, playfair, greatVibes, cormorant, a
 export const metadata: Metadata = {
   title: { default: "Thiệp cưới online", template: "%s · Thiệp cưới online" },
   description: "Tạo thiệp cưới online: chọn mẫu, thêm ảnh, gửi link cho khách.",
+  // Icon theo quy ước file trong src/app: favicon.ico, icon.svg, apple-icon.png, manifest.ts
+  appleWebApp: { title: "Thiệp cưới", statusBarStyle: "default" },
 };
 
 export const viewport: Viewport = {

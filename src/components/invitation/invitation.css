@@ -864,13 +864,18 @@
   opacity: 1;
 }
 
-.announce {
+/* .inv .announce để thắng .inv p { margin: 0 }, nếu không khối hẹp bị dồn sang trái */
+.inv .announce {
   font-size: 15px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   line-height: 1.7;
   max-width: 30ch;
   margin: 0 auto;
+}
+
+.inv .announce-mt {
+  margin-top: 18px;
 }
 
 .couple {
