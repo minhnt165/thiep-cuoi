@@ -26,10 +26,12 @@ export interface Theme {
   };
   fonts: { display: string; script: string; body: string };
   radius: string;
-  texture: "marble" | "paper" | "linen" | "none";
-  ornament: "goldLeaf" | "burgundyRose" | "songHy" | "whiteBlossom";
-  cover: "card" | "envelope" | "band" | "polaroid";
+  texture: "marble" | "paper" | "linen" | "stars" | "none";
+  ornament: "goldLeaf" | "burgundyRose" | "songHy" | "whiteBlossom" | "eucalyptus" | "peony" | "stars" | "none";
+  cover: "card" | "envelope" | "band" | "polaroid" | "arch" | "wreath";
   /** hiệu ứng rơi */ fall: "sparkle" | "petal" | "none";
+  /** nền tối: form, lưu bút, hộp quà đổi sang nền mờ thay vì trắng */
+  dark?: boolean;
 }
 
 export const THEMES: Record<TemplateId, Theme> = {
@@ -100,6 +102,75 @@ export const THEMES: Record<TemplateId, Theme> = {
     ornament: "whiteBlossom",
     cover: "polaroid",
     fall: "petal",
+  },
+  "sage-arch": {
+    id: "sage-arch",
+    name: "Xanh sage vòm",
+    tagline: "Hiện đại · ảnh khung vòm",
+    description: "Kem nhạt và xanh sage dịu, ảnh cưới khung vòm lớn ngay trên bìa, cành bạch đàn ở góc. Gọn và mát mắt.",
+    colors: {
+      bg: "#F7F5EF", bg2: "#EEEBE2", ink: "#2E3A33", muted: "#76827A", accent: "#6B7F6A", accentInk: "#FFFFFF",
+      gold: "#C8B27A", line: "#DAD9CC", panel: "#6B7F6A", panelInk: "#F7F5EF", panelMuted: "#D6DED3",
+      outer: "linear-gradient(160deg,#AEBBA6,#7F9280 60%,#5F7360)", placeholder: "linear-gradient(135deg,#E9E4D2,#AFBFA8)",
+    },
+    fonts: { display: "var(--font-cormorant)", script: "var(--font-alex-brush)", body: "var(--font-lora)" },
+    radius: "20px",
+    texture: "none",
+    ornament: "eucalyptus",
+    cover: "arch",
+    fall: "none",
+  },
+  "navy-gold": {
+    id: "navy-gold",
+    name: "Xanh đêm sao",
+    tagline: "Dạ tiệc · navy và vàng kim",
+    description: "Nền xanh đêm thẫm, chữ vàng kim, sao nhỏ lấp lánh khắp nền. Hợp tiệc tối ở khách sạn, nhà hàng.",
+    colors: {
+      bg: "#101C2E", bg2: "#15243A", ink: "#F1E8D2", muted: "#A9B0BD", accent: "#D4B46A", accentInk: "#101C2E",
+      gold: "#D4B46A", line: "#2B3A52", panel: "#17263D", panelInk: "#F1E8D2", panelMuted: "#A9B0BD",
+      outer: "linear-gradient(160deg,#1E3350,#0E1A2B 60%,#080F1B)", placeholder: "linear-gradient(135deg,#243650,#3C5277)",
+    },
+    fonts: { display: "var(--font-playfair)", script: "var(--font-great-vibes)", body: "var(--font-garamond)" },
+    radius: "14px",
+    texture: "stars",
+    ornament: "stars",
+    cover: "card",
+    fall: "sparkle",
+    dark: true,
+  },
+  "blush-rose": {
+    id: "blush-rose",
+    name: "Hồng phấn",
+    tagline: "Lãng mạn · hoa mẫu đơn",
+    description: "Hồng phấn nhẹ, hoa mẫu đơn vẽ tay, ảnh tròn trên bìa như vòng hoa, cánh hoa hồng rơi.",
+    colors: {
+      bg: "#FBF4F2", bg2: "#F6E9E6", ink: "#4A3238", muted: "#9A7B82", accent: "#B8606F", accentInk: "#FFF7F5",
+      gold: "#D3A96A", line: "#EBD7D5", panel: "#FFFFFF", panelInk: "#4A3238", panelMuted: "#9A7B82",
+      outer: "linear-gradient(160deg,#E8B9BF,#C98893 60%,#A96672)", placeholder: "linear-gradient(135deg,#F6E1DF,#D9A7B0)",
+    },
+    fonts: { display: "var(--font-playfair)", script: "var(--font-beau)", body: "var(--font-garamond)" },
+    radius: "18px",
+    texture: "paper",
+    ornament: "peony",
+    cover: "wreath",
+    fall: "petal",
+  },
+  "mono-minimal": {
+    id: "mono-minimal",
+    name: "Tối giản đen trắng",
+    tagline: "Hiện đại · chữ là chính",
+    description: "Trắng, đen và một đường kẻ mảnh. Không hoa văn, chữ serif lớn, chữ thường sans. Cho cặp đôi thích gọn.",
+    colors: {
+      bg: "#FFFFFF", bg2: "#F5F5F3", ink: "#151515", muted: "#7A7A76", accent: "#151515", accentInk: "#FFFFFF",
+      gold: "#9A9A94", line: "#E2E2DE", panel: "#FFFFFF", panelInk: "#151515", panelMuted: "#7A7A76",
+      outer: "linear-gradient(160deg,#2A2A2A,#141414 60%,#0A0A0A)", placeholder: "linear-gradient(135deg,#EDEDEA,#C9C9C4)",
+    },
+    fonts: { display: "var(--font-cormorant)", script: "var(--font-cormorant)", body: "var(--font-ui)" },
+    radius: "0px",
+    texture: "none",
+    ornament: "none",
+    cover: "card",
+    fall: "none",
   },
 };
 

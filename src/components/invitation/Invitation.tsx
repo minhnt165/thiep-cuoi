@@ -8,6 +8,7 @@ import { textureCss } from "@/components/ornaments/textures";
 import { IconNote } from "@/components/ornaments";
 import { Cover } from "./Cover";
 import { Album } from "./Album";
+import { SideArt } from "./Corner";
 import { DressCode, Family, Footer, Gift, Guestbook, Party, SaveTheDate, Story, Timeline, type RsvpInput } from "./sections";
 import "./invitation.css";
 
@@ -123,8 +124,9 @@ export function Invitation({ data, wishes: initialWishes, mode, startOpened = fa
 
   return (
     <div className={`inv-root ${embedded ? "is-embedded" : ""}`} style={style} ref={rootRef}>
-      <div className={`inv t-${theme.id} ${open ? "" : "is-locked"}`}>
+      <div className={`inv t-${theme.id} ${theme.dark ? "is-dark" : ""} ${open ? "" : "is-locked"}`}>
         {theme.fall !== "none" && <FallEffect kind={theme.fall} />}
+        {open && <SideArt theme={theme} />}
         <Cover data={data} theme={theme} open={open} onOpen={onOpen} guest={guest} />
         {data.sections.map((id) => sectionMap[id])}
         <Footer data={data} />

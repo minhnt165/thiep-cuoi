@@ -1,7 +1,7 @@
 import type { PublicInvitation } from "@/lib/schema";
 import type { Theme } from "@/lib/templates";
 import { longDate } from "@/lib/dates";
-import { HeartBadge, Lantern, WaxSeal } from "@/components/ornaments";
+import { HeartBadge, Lantern, PeonyCluster, WaxSeal } from "@/components/ornaments";
 import { Corners } from "./Corner";
 import { Photo } from "./Photo";
 
@@ -80,6 +80,44 @@ export function Cover({ data, theme, open, onOpen, guest = "" }: Props) {
           <p className="cover-names script" style={{ fontSize: 44, marginTop: 14 }}>
             {data.groom.shortName} &amp; {data.bride.shortName}
           </p>
+          <p className="cover-date">{date}</p>
+          <button type="button" className="btn" onClick={onOpen}>Mở thiệp</button>
+        </div>
+      );
+      break;
+    case "arch":
+      inner = (
+        <div className="cover-arch">
+          <Corners theme={theme} where={["tl", "br"]} />
+          <div className="arch-photo">
+            <Photo src={data.photos.cover || data.photos.saveTheDate[0]} alt="Ảnh cưới" label="Ảnh bìa" />
+          </div>
+          <p className="eyebrow">{greet}</p>
+          <h1 className="cover-names">
+            {data.groom.shortName}
+            <span className="amp">&amp;</span>
+            {data.bride.shortName}
+          </h1>
+          <p className="cover-date">{date}</p>
+          <button type="button" className="btn" onClick={onOpen}>Mở thiệp</button>
+        </div>
+      );
+      break;
+    case "wreath":
+      inner = (
+        <div className="cover-wreath">
+          <p className="eyebrow">{greet}</p>
+          <div className="wreath">
+            <span className="wreath-ring" />
+            <div className="wreath-photo">
+              <Photo src={data.photos.cover || data.photos.saveTheDate[0]} alt="Ảnh cưới" label="Ảnh bìa" />
+            </div>
+            <span className="wreath-orn wreath-o1"><PeonyCluster /></span>
+            <span className="wreath-orn wreath-o2"><PeonyCluster /></span>
+          </div>
+          <h1 className="cover-names script" style={{ fontSize: 46 }}>
+            {data.groom.shortName} &amp; {data.bride.shortName}
+          </h1>
           <p className="cover-date">{date}</p>
           <button type="button" className="btn" onClick={onOpen}>Mở thiệp</button>
         </div>

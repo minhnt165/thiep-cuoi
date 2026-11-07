@@ -110,6 +110,92 @@ export function BlossomCluster(props: P) {
   );
 }
 
+/** Cành bạch đàn lá tròn, xanh sage, dùng cho mẫu Xanh sage vòm */
+export function EucalyptusSprig(props: P) {
+  const leaf = (x: number, y: number, r: number, rot: number, fill: string) => (
+    <ellipse key={`${x}-${y}`} cx={x} cy={y} rx={r} ry={r * 0.86} fill={fill} transform={`rotate(${rot} ${x} ${y})`} />
+  );
+  const pairs: [number, number, number][] = [[46, 150, 13], [62, 126, 12.5], [80, 104, 12], [100, 84, 11], [120, 68, 10], [140, 54, 9]];
+  return (
+    <svg viewBox="0 0 180 180" aria-hidden="true" {...props}>
+      <path d="M30 172C58 140 90 100 164 44" fill="none" stroke="#7A8A72" strokeWidth="1.4" strokeLinecap="round" />
+      <path d="M62 126c-12-2-22 2-30 8M100 84c-12-4-24-2-34 4M140 54c-10-6-22-6-32-2" fill="none" stroke="#7A8A72" strokeWidth="0.9" strokeLinecap="round" />
+      {pairs.map(([x, y, r], i) => leaf(x - 12, y + 4, r, -30 + i * 4, "#9FB196"))}
+      {pairs.map(([x, y, r], i) => leaf(x + 10, y - 8, r * 0.92, 20 - i * 3, "#B7C7AC"))}
+      {leaf(160, 40, 7, 10, "#C9D6BF")}
+      <g fill="#C8B27A">
+        <circle cx="26" cy="140" r="2.2" />
+        <circle cx="18" cy="152" r="1.5" />
+        <circle cx="168" cy="30" r="1.8" />
+      </g>
+    </svg>
+  );
+}
+
+/** Chùm hoa mẫu đơn hồng phấn nhiều lớp cánh, dùng cho mẫu Hồng phấn */
+export function PeonyCluster(props: P) {
+  const peony = (x: number, y: number, r: number, rot: number) => (
+    <g transform={`translate(${x} ${y}) rotate(${rot})`}>
+      {[0, 45, 90, 135, 180, 225, 270, 315].map((a) => (
+        <ellipse key={`o${a}`} cx="0" cy={-r * 0.6} rx={r * 0.46} ry={r * 0.64} fill="#F2C9CE" stroke="#E4A9B2" strokeWidth="0.6" transform={`rotate(${a})`} />
+      ))}
+      {[22, 82, 142, 202, 262, 322].map((a) => (
+        <ellipse key={`m${a}`} cx="0" cy={-r * 0.38} rx={r * 0.34} ry={r * 0.46} fill="#F7DADD" stroke="#E4A9B2" strokeWidth="0.5" transform={`rotate(${a})`} />
+      ))}
+      {[0, 90, 180, 270].map((a) => (
+        <ellipse key={`i${a}`} cx="0" cy={-r * 0.18} rx={r * 0.22} ry={r * 0.28} fill="#EBB3BB" transform={`rotate(${a + 30})`} />
+      ))}
+      <circle r={r * 0.14} fill="#D3A96A" />
+    </g>
+  );
+  return (
+    <svg viewBox="0 0 200 180" aria-hidden="true" {...props}>
+      <g fill="#8FA58C">
+        <path d="M28 142C40 112 70 100 102 110 80 128 56 138 28 142Z" />
+        <path d="M118 150c22-14 46-10 62 8-20 8-44 8-62-8Z" />
+        <path d="M56 60C54 40 68 24 88 24 86 44 76 58 56 60Z" />
+        <path d="M152 76c6-20 24-30 44-26-6 18-24 30-44 26Z" />
+      </g>
+      <path d="M94 98C104 80 122 64 142 54M74 108C62 92 44 84 24 92" fill="none" stroke="#7E8F79" strokeWidth="1.1" />
+      {peony(98, 92, 34, 12)}
+      {peony(152, 60, 23, -20)}
+      {peony(50, 120, 19, 30)}
+      <g fill="#D3A96A">
+        <circle cx="26" cy="62" r="2.2" />
+        <circle cx="36" cy="50" r="1.5" />
+        <circle cx="180" cy="38" r="2" />
+        <circle cx="190" cy="52" r="1.3" />
+      </g>
+    </svg>
+  );
+}
+
+/** Chùm sao bốn cánh vàng kim rải thưa, dùng cho mẫu Xanh đêm sao */
+export function StarCluster(props: P) {
+  const star = (x: number, y: number, s: number, o = 1) => (
+    <path key={`${x}-${y}`} d={`M${x} ${y - s}C${x + s * 0.12} ${y - s * 0.3} ${x + s * 0.3} ${y - s * 0.12} ${x + s} ${y}C${x + s * 0.3} ${y + s * 0.12} ${x + s * 0.12} ${y + s * 0.3} ${x} ${y + s}C${x - s * 0.12} ${y + s * 0.3} ${x - s * 0.3} ${y + s * 0.12} ${x - s} ${y}C${x - s * 0.3} ${y - s * 0.12} ${x - s * 0.12} ${y - s * 0.3} ${x} ${y - s}Z`} fill="#E8CB7F" opacity={o} />
+  );
+  return (
+    <svg viewBox="0 0 180 180" aria-hidden="true" {...props}>
+      {star(40, 40, 16)}
+      {star(86, 24, 8, 0.9)}
+      {star(22, 92, 7, 0.8)}
+      {star(66, 74, 11, 0.95)}
+      {star(118, 56, 5, 0.7)}
+      {star(96, 108, 6, 0.75)}
+      {star(140, 30, 9, 0.85)}
+      <g fill="#E8CB7F">
+        <circle cx="58" cy="52" r="1.4" />
+        <circle cx="110" cy="40" r="1.1" />
+        <circle cx="36" cy="120" r="1.2" />
+        <circle cx="128" cy="92" r="1" />
+        <circle cx="150" cy="60" r="1.3" />
+      </g>
+      <path d="M12 150C50 120 90 100 160 60" fill="none" stroke="#E8CB7F" strokeWidth="0.6" strokeDasharray="1 5" opacity="0.5" />
+    </svg>
+  );
+}
+
 /** Đèn lồng đỏ, dùng cho mẫu Song Hỷ */
 export function Lantern(props: P) {
   return (

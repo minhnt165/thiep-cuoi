@@ -8,6 +8,7 @@ import { THEME_LIST } from "@/lib/templates";
 import { api } from "@/lib/client/api";
 import { formatWishTime } from "@/lib/dates";
 import { BANKS, vietQrUrl } from "@/lib/banks";
+import { MUSIC_PRESETS, presetUrl } from "@/lib/music";
 
 export type Patch = (fn: (d: Invitation) => void) => void;
 
@@ -69,6 +70,43 @@ function Upload({ slug, editKey, accept, multiple, onDone, label }: { slug: stri
   );
 }
 
+/**
+ * Menu nhạc có sẵn. Kiểm tra từng file trong /music có tồn tại không (HEAD)
+ * để chỉ cho chọn bài đã có file; bài chưa có thì mờ đi.
+ */
+function MusicPicker({ value, onPick }: { value: string; onPick: (url: string) => void }) {
+  const [avail, setAvail] = useState<Record<string, boolean> | null>(null);
+  useEffect(() => {
+    let alive = true;
+    Promise.all(
+      MUSIC_PRESETS.map((p) =>
+        fetch(presetUrl(p), { method: "HEAD" })
+          .then((r) => [p.id, r.ok && (r.headers.get("content-type") ?? "").startsWith("audio")] as const)
+          .catch(() => [p.id, false] as const),
+      ),
+    ).then((pairs) => { if (alive) setAvail(Object.fromEntries(pairs)); });
+    return () => { alive = false; };
+  }, []);
+  const ready = MUSIC_PRESETS.filter((p) => avail?.[p.id]);
+  const current = MUSIC_PRESETS.find((p) => presetUrl(p) === value)?.id ?? "";
+  const label = (p: (typeof MUSIC_PRESETS)[number]) => `${p.title}${p.artist ? ` · ${p.artist}` : ""}`;
+  return (
+    <F label="Chọn bài có sẵn">
+      <select value={current} onChange={(e) => { const p = MUSIC_PRESETS.find((x) => x.id === e.target.value); if (p) onPick(presetUrl(p)); }} disabled={avail === null}>
+        <option value="">{avail === null ? "Đang kiểm tra…" : ready.length ? "— Chọn bài —" : "Chưa có bài nào trong public/music"}</option>
+        {(["vi", "en"] as const).map((lang) => (
+          <optgroup key={lang} label={lang === "vi" ? "Tiếng Việt" : "Tiếng Anh"}>
+            {MUSIC_PRESETS.filter((p) => p.lang === lang).map((p) => (
+              <option key={p.id} value={p.id} disabled={!avail?.[p.id]}>{label(p)}{avail && !avail[p.id] ? " (chưa có file)" : ""}</option>
+            ))}
+          </optgroup>
+        ))}
+      </select>
+      <span className="hint">Bài mờ là chưa có file: bỏ MP3 bạn có quyền dùng vào thư mục <code>public/music/</code> đúng tên trong <code>src/lib/music.ts</code>, deploy lại là chọn được.</span>
+    </F>
+  );
+}
+
 /* ---------- Mẫu ---------- */
 export function TemplatePanel({ d, patch, editKey }: PanelProps) {
   return (
@@ -109,7 +147,8 @@ export function TemplatePanel({ d, patch, editKey }: PanelProps) {
         ) : (
           <p className="hint">Chưa có nhạc. Nhạc tự phát khi khách bấm Mở thiệp.</p>
         )}
-        <Upload slug={d.slug} editKey={editKey} accept="audio/mpeg,audio/mp4,audio/ogg" label="Tải file MP3" onDone={([u]) => patch((x) => { x.music = u; })} />
+        <MusicPicker value={d.music} onPick={(u) => patch((x) => { x.music = u; })} />
+        <Upload slug={d.slug} editKey={editKey} accept="audio/mpeg,audio/mp4,audio/ogg" label="Hoặc tải file MP3 của bạn" onDone={([u]) => patch((x) => { x.music = u; })} />
         <F label="Hoặc dán link file nhạc">
           <input value={d.music} onChange={(e) => patch((x) => { x.music = e.target.value; })} placeholder="https://…/nhac.mp3" />
         </F>
@@ -253,7 +292,7 @@ export function PhotosPanel({ d, patch, editKey }: PanelProps) {
           ))}
         </div>
         <Upload slug={d.slug} editKey={editKey} accept={img} multiple label="Tải thêm ảnh" onDone={(urls) => patch((x) => { x.photos.album.push(...urls); })} />
-        <p className="hint">Nên dùng ảnh dọc, mỗi ảnh dưới 8MB. 6–10 ảnh là vừa.</p>
+        <p className="hint">Ảnh dọc đẹp nhất; ảnh ngang vẫn được, sẽ hiện trọn trên nền mờ. Ảnh tự nén trước khi tải, 6–10 ảnh là vừa.</p>
       </fieldset>
     </>
   );

@@ -47,6 +47,11 @@ Lệnh khác: `npm test` (lịch âm, ngày tháng), `npm run typecheck`, `npm r
 - **Link riêng từng khách**: `/<slug>?to=Tên` hiện "Thân mời Tên" trên bìa và điền sẵn tên ở xác nhận. Tab Khách tạo link hàng loạt.
 - **QR mừng cưới tự sinh** chuẩn VietQR từ ngân hàng + số tài khoản (`src/lib/banks.ts`); vẫn tải ảnh QR riêng được.
 - Favicon theo màu mẫu của từng thiệp; `scripts/make-icons.py` sinh bộ icon.
+- **8 mẫu, mỗi mẫu một ngôn ngữ riêng** (`src/lib/templates/index.ts` + phần "điều chỉnh theo mẫu" trong `invitation.css`): cẩm thạch vàng, đỏ rượu phong bì, Song Hỷ, hoa trắng polaroid, xanh sage toàn vòm, xanh đêm sao art-deco (nền tối), hồng phấn màu nước, tối giản kiểu tạp chí. Họa tiết lớn rải dọc hai mép trang (`SideArt`).
+- **Chỉ đường từng lễ**: tiệc chính và các lễ được gom theo địa điểm, mỗi nơi một map (tối đa 3).
+- **Ảnh ngang trong album** hiện trọn trên nền chính ảnh đó làm mờ.
+- **Nhạc nền có sẵn**: danh sách trong `src/lib/music.ts`, file MP3 tự đặt vào `public/music/` (không kèm trong repo vì bản quyền).
+- Ảnh mẫu trên trang chủ là ảnh chụp bìa thật: `node scripts/shoot-templates.mjs` (cần dev server + playwright).
 
 ## Chưa làm (giai đoạn sau)
 

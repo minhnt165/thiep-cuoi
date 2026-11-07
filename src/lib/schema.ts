@@ -5,7 +5,7 @@ import { z } from "zod";
  * đổi mẫu chỉ đổi giao diện, dữ liệu giữ nguyên.
  */
 
-export const TEMPLATE_IDS = ["marble-gold", "burgundy-envelope", "song-hy", "white-blossom"] as const;
+export const TEMPLATE_IDS = ["marble-gold", "burgundy-envelope", "song-hy", "white-blossom", "sage-arch", "navy-gold", "blush-rose", "mono-minimal"] as const;
 export type TemplateId = (typeof TEMPLATE_IDS)[number];
 
 export const SECTION_IDS = [

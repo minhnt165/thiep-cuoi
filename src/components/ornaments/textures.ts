@@ -44,6 +44,25 @@ function grain(bg: string, freq: number, opacity: number): string {
   </svg>`);
 }
 
+/** Sao nhỏ rải thưa trên nền tối; vị trí cố định theo công thức để mỗi lần render giống nhau */
+function stars(bg: string, color: string): string {
+  const dots = Array.from({ length: 70 }, (_, i) => {
+    const x = (i * 149) % 900;
+    const y = (i * 263 + 37) % 900;
+    const r = 0.5 + ((i * 7) % 5) * 0.28;
+    const o = 0.25 + ((i * 11) % 6) * 0.1;
+    return `<circle cx='${x}' cy='${y}' r='${r.toFixed(2)}' fill='${color}' opacity='${o.toFixed(2)}'/>`;
+  }).join("");
+  const sparks = [120, 340, 610, 780].map((x, i) => {
+    const y = (x * 1.7 + i * 90) % 900;
+    return `<path d='M${x} ${y - 7}L${x + 1.6} ${y - 1.6} ${x + 7} ${y} ${x + 1.6} ${y + 1.6} ${x} ${y + 7} ${x - 1.6} ${y + 1.6} ${x - 7} ${y} ${x - 1.6} ${y - 1.6}Z' fill='${color}' opacity='0.8'/>`;
+  }).join("");
+  return svgUrl(`<svg xmlns='http://www.w3.org/2000/svg' width='900' height='900'>
+    <rect width='100%' height='100%' fill='${bg}'/>
+    ${dots}${sparks}
+  </svg>`);
+}
+
 export function textureCss(theme: Theme): string {
   const c = theme.colors;
   switch (theme.texture) {
@@ -53,6 +72,8 @@ export function textureCss(theme: Theme): string {
       return grain(c.bg, 0.9, 0.16);
     case "linen":
       return grain(c.bg, 1.6, 0.12);
+    case "stars":
+      return stars(c.bg, c.gold);
     default:
       return "none";
   }

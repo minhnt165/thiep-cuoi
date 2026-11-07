@@ -68,6 +68,15 @@ export function SaveTheDate({ data, theme }: { data: PublicInvitation; theme: Th
 }
 
 /* ---------- Thông tin lễ cưới ---------- */
+/** Có địa điểm để chỉ đường không (tên nơi, địa chỉ hoặc link map) */
+function hasPlace(ev: WeddingEvent): boolean {
+  return Boolean(ev.venue || ev.address || ev.mapUrl);
+}
+
+function placeUrl(ev: WeddingEvent): string {
+  return mapsUrl(`${ev.venue} ${ev.address}`.trim(), ev.mapUrl);
+}
+
 function EventBlock({ ev }: { ev: WeddingEvent }) {
   return (
     <div className="event">
@@ -81,6 +90,39 @@ function EventBlock({ ev }: { ev: WeddingEvent }) {
       <p className="lunar">(Tức {lunarLabel(ev.date).toLowerCase()})</p>
     </div>
   );
+}
+
+interface Place {
+  titles: string[];
+  venue: string;
+  address: string;
+  url: string;
+}
+
+const MAX_PLACES = 3;
+
+/**
+ * Gom tiệc chính và các lễ theo địa điểm: cùng nơi thì gộp tên, khác nơi thì
+ * mỗi nơi một map (vu quy nhà gái, thành hôn nhà trai, tiệc ở nhà hàng…).
+ * Tối đa 3 nơi để phần chỉ đường không dài quá.
+ */
+function groupPlaces(events: WeddingEvent[]): Place[] {
+  const out: Place[] = [];
+  const byKey = new Map<string, Place>();
+  for (const ev of events) {
+    if (!hasPlace(ev)) continue;
+    const key = (ev.mapUrl || `${ev.venue}|${ev.address}`).toLowerCase().replace(/\s+/g, " ").trim();
+    const found = byKey.get(key);
+    if (found) {
+      if (!found.titles.includes(ev.title)) found.titles.push(ev.title);
+      continue;
+    }
+    if (out.length >= MAX_PLACES) continue;
+    const p: Place = { titles: [ev.title], venue: ev.venue, address: ev.address, url: placeUrl(ev) };
+    byKey.set(key, p);
+    out.push(p);
+  }
+  return out;
 }
 
 export function Family({ data }: { data: PublicInvitation }) {
@@ -173,6 +215,7 @@ export function Party({ data, onRsvp, guest = "" }: { data: PublicInvitation; on
   const [err, setErr] = useState("");
   const [busy, setBusy] = useState(false);
   const target = toVnDate(ev.date, ev.time);
+  const places = groupPlaces([ev, ...data.events]);
 
   async function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -258,14 +301,20 @@ export function Party({ data, onRsvp, guest = "" }: { data: PublicInvitation; on
           </div>
         )}
       </div>
-      <div className="venue">
-        <p className="t">{ev.title} sẽ tổ chức tại</p>
-        <p className="n">{ev.venue}</p>
-        <p className="a">{ev.address}</p>
-        <div className="actions">
-          <a className="link" href={mapsUrl(`${ev.venue} ${ev.address}`, ev.mapUrl)} target="_blank" rel="noopener"><IconPin /> Chỉ đường</a>
+      {places.length > 0 && (
+        <div className="venue">
+          {places.map((p) => (
+            <div className="place" key={p.url}>
+              <p className="t">{p.titles.join(" · ")} sẽ tổ chức tại</p>
+              {p.venue && <p className="n">{p.venue}</p>}
+              {p.address && <p className="a">{p.address}</p>}
+              <div className="actions">
+                <a className="link" href={p.url} target="_blank" rel="noopener"><IconPin /> Chỉ đường</a>
+              </div>
+            </div>
+          ))}
         </div>
-      </div>
+      )}
     </section>
   );
 }

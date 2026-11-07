@@ -143,9 +143,17 @@
   box-shadow: none;
 }
 
+/* trong khối màu: nút đảo màu (nền = chữ khối) để luôn nổi rõ dù khối sáng hay tối */
 .panel .btn-ghost {
-  color: var(--panel-ink);
+  background: var(--panel-ink);
+  color: var(--panel);
   border-color: var(--panel-ink);
+  box-shadow: 0 10px 22px -12px rgba(0, 0, 0, 0.45);
+}
+
+.panel .frm label.fl,
+.panel .frm .fl {
+  color: var(--panel-muted);
 }
 
 .btn-sm {
@@ -231,6 +239,38 @@
   right: -14px;
   width: 130px;
   transform: scale(-1, -1);
+}
+
+/* họa tiết lớn dọc hai mép trang, nằm dưới nội dung */
+.orn-side {
+  width: 230px;
+  opacity: 0.9;
+  z-index: 0;
+}
+
+.orn-side-r {
+  right: -70px;
+}
+
+.orn-side-l {
+  left: -70px;
+  transform: scaleX(-1);
+}
+
+.orn-side.is-flip {
+  transform: scaleX(-1) scaleY(-1);
+}
+
+.orn-side-r.is-flip {
+  transform: scaleY(-1);
+}
+
+.sec {
+  z-index: 1;
+}
+
+.t-navy-gold .orn-side {
+  opacity: 0.55;
 }
 
 /* ---------- hiệu ứng rơi ---------- */
@@ -690,6 +730,116 @@
   transform: rotate(-4deg);
 }
 
+/* bìa ảnh vòm (Xanh sage) */
+.cover-arch {
+  position: relative;
+  width: 100%;
+  max-width: 340px;
+  padding: 26px 22px 36px;
+  border-radius: var(--radius);
+  background: var(--bg);
+  box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.5);
+  text-align: center;
+  overflow: hidden;
+}
+
+.arch-photo {
+  position: relative;
+  width: 210px;
+  height: 280px;
+  margin: 0 auto 18px;
+  padding: 7px;
+  border-radius: 110px 110px 14px 14px;
+  background: #fff;
+  box-shadow: 0 16px 30px -14px rgba(0, 0, 0, 0.4);
+  z-index: 2;
+}
+
+.arch-photo .photo {
+  height: 100%;
+  border-radius: 104px 104px 9px 9px;
+}
+
+.cover-arch .cover-names {
+  margin-top: 8px;
+  font-size: 32px;
+}
+
+/* bìa vòng hoa (Hồng phấn) */
+.cover-wreath {
+  position: relative;
+  width: 100%;
+  max-width: 340px;
+  padding: 34px 20px 36px;
+  border-radius: var(--radius);
+  background: var(--bg);
+  background-image: var(--texture);
+  background-size: 900px 900px;
+  box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.5);
+  text-align: center;
+  overflow: hidden;
+}
+
+.wreath {
+  position: relative;
+  width: 220px;
+  height: 220px;
+  margin: 18px auto 14px;
+}
+
+.wreath-ring {
+  position: absolute;
+  inset: -12px;
+  border-radius: 50%;
+  border: 1px solid var(--gold);
+}
+
+.wreath-ring::after {
+  content: "";
+  position: absolute;
+  inset: 5px;
+  border-radius: 50%;
+  border: 0.8px dashed var(--gold);
+  opacity: 0.6;
+}
+
+.wreath-photo {
+  position: absolute;
+  inset: 0;
+  padding: 5px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 16px 30px -14px rgba(0, 0, 0, 0.35);
+}
+
+.wreath-photo .photo {
+  height: 100%;
+  border-radius: 50%;
+}
+
+.wreath-orn {
+  position: absolute;
+  width: 128px;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.wreath-orn svg {
+  width: 100%;
+  height: auto;
+}
+
+.wreath-o1 {
+  left: -40px;
+  top: -30px;
+}
+
+.wreath-o2 {
+  right: -40px;
+  bottom: -30px;
+  transform: rotate(180deg);
+}
+
 /* ---------- Save the date ---------- */
 .std {
   padding-top: 56px;
@@ -1012,6 +1162,23 @@
   transform: scale(1);
 }
 
+/* ảnh ngang: nền là ảnh làm mờ, ảnh thật hiện trọn ở giữa */
+.photo .photo-blur {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: blur(16px) saturate(1.15);
+  transform: scale(1.2);
+  opacity: 0.9;
+}
+
+.photo.is-wide > img:not(.photo-blur) {
+  position: relative;
+  object-fit: contain;
+}
+
 .card.is-active .photo img {
   animation: kenburns 8s ease-out forwards;
 }
@@ -1328,6 +1495,12 @@
 
 .venue {
   margin-top: 28px;
+}
+
+.place + .place {
+  margin-top: 22px;
+  padding-top: 22px;
+  border-top: 1px solid var(--line);
 }
 
 .venue .t {
@@ -1846,4 +2019,637 @@
   background: rgba(255, 253, 249, 0.72);
   backdrop-filter: blur(2px);
   border: 1px solid var(--line);
+}
+
+/* ===== Xanh sage vòm: mọi khung đều vòm, chữ Cormorant thanh ===== */
+.t-sage-arch .sec-title {
+  text-transform: none;
+  letter-spacing: 0.04em;
+  font-size: 30px;
+  font-style: italic;
+}
+
+.t-sage-arch .panel {
+  border-radius: 180px 180px var(--radius) var(--radius);
+  padding: 70px 22px 40px;
+  box-shadow: 0 20px 40px -26px rgba(40, 60, 45, 0.6);
+}
+
+.t-sage-arch .std-photos {
+  height: 320px;
+}
+
+.t-sage-arch .std-photo {
+  padding: 6px;
+  border-radius: 86px 86px 10px 10px;
+  transform: none;
+}
+
+.t-sage-arch .std-photo .photo {
+  border-radius: 80px 80px 5px 5px;
+}
+
+.t-sage-arch .std-p1 {
+  left: 0;
+  top: 0;
+}
+
+.t-sage-arch .std-p2 {
+  right: 0;
+  top: 70px;
+}
+
+.t-sage-arch .std-l1 {
+  top: 232px;
+  left: 20px;
+  right: auto;
+  width: 130px;
+}
+
+.t-sage-arch .std-l2 {
+  top: 8px;
+  right: 10px;
+  left: auto;
+  bottom: auto;
+  width: 130px;
+}
+
+.t-sage-arch .std-names,
+.t-sage-arch .couple .nm {
+  font-weight: 300;
+}
+
+.t-sage-arch .cal {
+  border-radius: 150px 150px 14px 14px;
+  padding-top: 34px;
+  background: #fff;
+}
+
+.t-sage-arch .card {
+  border-radius: 120px 120px 6px 6px;
+  padding: 9px 9px 30px;
+}
+
+.t-sage-arch .card .photo {
+  border-radius: 112px 112px 3px 3px;
+}
+
+.t-sage-arch .story-i .photo {
+  border-radius: 80px 80px 8px 8px;
+  height: 190px;
+}
+
+.t-sage-arch .story-y {
+  border-radius: 22px 22px 6px 6px;
+}
+
+.t-sage-arch .wish,
+.t-sage-arch .gift,
+.t-sage-arch .done {
+  border-radius: 26px;
+}
+
+.t-sage-arch .gift .qr {
+  border-radius: 75px 75px 8px 8px;
+  padding: 10px;
+  width: 160px;
+  height: 160px;
+}
+
+.t-sage-arch .end .big {
+  font-size: 64px;
+}
+
+/* ===== Hồng phấn: vệt màu nước loang trên nền, bo tròn mềm ===== */
+.t-blush-rose {
+  background-image:
+    radial-gradient(ellipse 60% 40% at 8% 12%, rgba(232, 169, 178, 0.38), transparent 70%),
+    radial-gradient(ellipse 55% 35% at 92% 38%, rgba(214, 150, 170, 0.3), transparent 70%),
+    radial-gradient(ellipse 60% 40% at 10% 66%, rgba(240, 200, 205, 0.4), transparent 70%),
+    radial-gradient(ellipse 50% 35% at 90% 90%, rgba(232, 169, 178, 0.32), transparent 70%),
+    var(--texture);
+  background-size: 100% 100%, 100% 100%, 100% 100%, 100% 100%, 900px 900px;
+}
+
+.t-blush-rose .fall-petal i {
+  background: #F3C9D0;
+}
+
+.t-blush-rose .sec-title {
+  text-transform: none;
+  letter-spacing: 0.02em;
+  font-family: var(--f-script), cursive;
+  font-size: 40px;
+}
+
+.t-blush-rose .divider {
+  color: var(--gold);
+}
+
+.t-blush-rose .panel {
+  border: 1px solid var(--line);
+  border-radius: 34px;
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(3px);
+  box-shadow: 0 20px 40px -28px rgba(120, 50, 60, 0.4);
+}
+
+.t-blush-rose .std-photo {
+  padding: 6px;
+  border-radius: 18px;
+}
+
+.t-blush-rose .std-photo .photo {
+  border-radius: 13px;
+}
+
+.t-blush-rose .card {
+  border-radius: 20px;
+}
+
+.t-blush-rose .card .photo {
+  border-radius: 14px;
+}
+
+.t-blush-rose .cal {
+  border-radius: 24px;
+  background: #fff;
+}
+
+.t-blush-rose .cd b {
+  color: var(--accent);
+}
+
+.t-blush-rose .wish {
+  border-radius: 20px 20px 20px 4px;
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.t-blush-rose .gift {
+  border-radius: 26px;
+  background: rgba(255, 255, 255, 0.78);
+}
+
+.t-blush-rose .gift .qr {
+  border-radius: 50%;
+  padding: 14px;
+  width: 170px;
+  height: 170px;
+}
+
+.t-blush-rose .gift .qr img {
+  border-radius: 50%;
+}
+
+.t-blush-rose .swatches i {
+  border-radius: 60% 40% 60% 40% / 50% 60% 40% 50%;
+}
+
+.t-blush-rose .story-i .photo {
+  border-radius: 24px;
+}
+
+.t-blush-rose .end .big {
+  font-size: 68px;
+}
+
+/* ===== Tối giản đen trắng: kiểu tạp chí, căn trái, kẻ mảnh, chữ to ===== */
+.t-mono-minimal .sec,
+.t-mono-minimal .end {
+  text-align: left;
+}
+
+.t-mono-minimal .sec-title {
+  font-family: var(--font-ui), sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.34em;
+  color: var(--ink);
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--ink);
+}
+
+.t-mono-minimal .divider {
+  display: none;
+}
+
+.t-mono-minimal .eyebrow {
+  font-family: var(--font-ui), sans-serif;
+}
+
+.t-mono-minimal .panel {
+  box-shadow: none;
+  border: 1px solid var(--ink);
+  padding: 28px 22px 34px;
+}
+
+.t-mono-minimal .parents {
+  text-align: left;
+}
+
+.t-mono-minimal .parents > div + div {
+  border-image: none;
+  border-left-color: var(--line);
+}
+
+.t-mono-minimal .announce {
+  margin-left: 0;
+  max-width: none;
+  font-family: var(--font-ui), sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.24em;
+}
+
+.t-mono-minimal .couple .nm {
+  font-size: 46px;
+  line-height: 1;
+}
+
+.t-mono-minimal .couple .amp {
+  font-style: italic;
+  font-size: 34px;
+  margin: 6px 0;
+}
+
+.t-mono-minimal .event {
+  border-image: none;
+  border-top-color: var(--line);
+}
+
+.t-mono-minimal .when,
+.t-mono-minimal .actions,
+.t-mono-minimal .swatches,
+.t-mono-minimal .times {
+  justify-content: flex-start;
+}
+
+.t-mono-minimal .bigdate {
+  margin-top: 12px;
+}
+
+.t-mono-minimal .bigdate .d {
+  font-size: 96px;
+  border-right-color: var(--line);
+}
+
+.t-mono-minimal .cd {
+  margin-left: 0;
+  max-width: 320px;
+  text-align: left;
+}
+
+.t-mono-minimal .cd b {
+  font-size: 44px;
+}
+
+.t-mono-minimal .cal {
+  margin-left: 0;
+  border-radius: 0;
+  border-color: var(--line);
+}
+
+.t-mono-minimal .cal-g .on::before {
+  clip-path: none;
+  border-radius: 50%;
+}
+
+.t-mono-minimal .frm .btn {
+  justify-self: start;
+}
+
+.t-mono-minimal .frm input:not([type="radio"]),
+.t-mono-minimal .frm textarea,
+.t-mono-minimal .frm select,
+.t-mono-minimal .seg span,
+.t-mono-minimal .wish,
+.t-mono-minimal .gift,
+.t-mono-minimal .done,
+.t-mono-minimal .gift .qr,
+.t-mono-minimal .story-i .photo,
+.t-mono-minimal .card,
+.t-mono-minimal .card .photo {
+  border-radius: 0;
+}
+
+.t-mono-minimal .wish {
+  background: none;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  box-shadow: none;
+  padding: 12px 0;
+}
+
+.t-mono-minimal .wish b {
+  color: var(--ink);
+}
+
+.t-mono-minimal .std-photo {
+  transform: none;
+  padding: 0;
+  box-shadow: none;
+}
+
+.t-mono-minimal .std-p1 {
+  left: 0;
+  top: 0;
+  width: 190px;
+}
+
+.t-mono-minimal .std-p1 .photo {
+  height: 250px;
+}
+
+.t-mono-minimal .std-p2 {
+  right: 0;
+  top: 120px;
+  width: 130px;
+}
+
+.t-mono-minimal .std-p2 .photo {
+  height: 170px;
+}
+
+.t-mono-minimal .std-l1 {
+  right: 0;
+  top: 40px;
+  width: 120px;
+  text-align: right;
+}
+
+.t-mono-minimal .std-l2 {
+  left: 0;
+  bottom: 10px;
+  text-align: left;
+}
+
+.t-mono-minimal .std-names {
+  font-size: 56px;
+  line-height: 0.95;
+  text-align: left;
+}
+
+.t-mono-minimal .std-names .amp {
+  display: inline;
+  font-style: italic;
+  font-size: 40px;
+  margin: 0 10px;
+}
+
+.t-mono-minimal .stage-foot {
+  max-width: none;
+}
+
+.t-mono-minimal .stage-cap {
+  font-style: italic;
+}
+
+.t-mono-minimal .card {
+  box-shadow: 0 0 0 1px var(--line), 0 20px 40px -24px rgba(0, 0, 0, 0.5);
+}
+
+.t-mono-minimal .story {
+  text-align: left;
+}
+
+.t-mono-minimal .story-y {
+  border-radius: 0;
+  border-color: var(--ink);
+  color: var(--ink);
+}
+
+.t-mono-minimal .gift .side {
+  font-family: var(--font-ui), sans-serif;
+}
+
+.t-mono-minimal .btn {
+  border-radius: 0;
+  box-shadow: none;
+  font-family: var(--font-ui), sans-serif;
+  font-size: 12px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+
+.t-mono-minimal .btn-ghost,
+.t-mono-minimal .panel .btn-ghost {
+  background: var(--ink);
+  color: var(--bg);
+  border-color: var(--ink);
+  box-shadow: none;
+}
+
+.t-mono-minimal .cover-card {
+  box-shadow: none;
+  padding: 40px 28px 44px;
+  text-align: left;
+}
+
+.t-mono-minimal .cover-heart {
+  margin: 0 0 56px;
+  width: 44px;
+  height: 44px;
+  background: none;
+  color: var(--ink);
+  border: 1px solid var(--ink);
+  box-shadow: none;
+}
+
+.t-mono-minimal .cover-names {
+  font-size: 54px;
+  line-height: 0.95;
+  color: var(--ink);
+}
+
+.t-mono-minimal .cover-names .amp {
+  font-style: italic;
+  font-size: 36px;
+  margin: 8px 0;
+  text-align: left;
+}
+
+.t-mono-minimal .cover-date,
+.t-mono-minimal .cover-greet {
+  font-family: var(--font-ui), sans-serif;
+  font-size: 12px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+
+.t-mono-minimal .cover-date {
+  margin-top: 26px;
+  padding-top: 16px;
+  border-top: 1px solid var(--ink);
+}
+
+.t-mono-minimal .cover .btn {
+  animation: none;
+  margin-top: 34px;
+}
+
+.t-mono-minimal .end .big {
+  font-style: italic;
+  font-size: 60px;
+  padding: 0;
+}
+
+.t-mono-minimal .end .thanks {
+  margin-inline: 0;
+}
+
+/* ===== Xanh đêm sao: art-deco, khung viền kim đôi ===== */
+.t-navy-gold .sec-title {
+  color: var(--gold);
+  letter-spacing: 0.34em;
+}
+
+.t-navy-gold .divider {
+  color: var(--gold);
+}
+
+.t-navy-gold .panel,
+.t-navy-gold .cover-card {
+  border: 1px solid var(--gold);
+  box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.85);
+}
+
+.t-navy-gold .panel::before,
+.t-navy-gold .cover-card::before {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  border: 1px solid var(--gold);
+  border-radius: calc(var(--radius) - 5px);
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.t-navy-gold .cover-heart {
+  width: 72px;
+  height: 72px;
+  background: none;
+  color: var(--gold);
+  border: 1px solid var(--gold);
+  box-shadow: 0 0 0 5px var(--bg), 0 0 0 6px rgba(212, 180, 106, 0.5);
+}
+
+.t-navy-gold .cover-names {
+  color: var(--gold);
+}
+
+.t-navy-gold .cover-date {
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  font-size: 14px;
+}
+
+.t-navy-gold .btn {
+  border-radius: 3px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  font-size: 13px;
+}
+
+.t-navy-gold .cd {
+  gap: 6px;
+}
+
+.t-navy-gold .cd > div {
+  padding: 10px 0 8px;
+  border: 1px solid var(--gold);
+}
+
+.t-navy-gold .cd b {
+  color: var(--gold);
+}
+
+.t-navy-gold .cal {
+  border-radius: 4px;
+  border-color: var(--gold);
+}
+
+.t-navy-gold .cal-h {
+  color: var(--gold);
+  border-bottom-color: var(--line);
+}
+
+.t-navy-gold .std-names,
+.t-navy-gold .couple .nm,
+.t-navy-gold .bigdate .d {
+  color: var(--gold);
+}
+
+.t-navy-gold .std-names .amp {
+  color: var(--ink);
+}
+
+.t-navy-gold .stage-btn {
+  background: rgba(16, 28, 46, 0.85);
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.t-navy-gold .story-y {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.t-navy-gold .wish b,
+.t-navy-gold .end .big,
+.t-navy-gold .gift .side,
+.t-navy-gold .done .script {
+  color: var(--gold);
+}
+
+.t-navy-gold .done {
+  border-color: var(--gold);
+}
+
+.t-navy-gold .gift {
+  border: 1px solid var(--gold);
+  border-radius: 4px;
+}
+
+.t-navy-gold .wish {
+  border-radius: 4px;
+}
+
+/* mọi mẫu nền tối: ô nhập, lưu bút, hộp quà dùng nền mờ thay vì trắng */
+.is-dark .frm input:not([type="radio"]),
+.is-dark .frm textarea,
+.is-dark .frm select,
+.is-dark .seg span {
+  background: rgba(255, 255, 255, 0.07);
+  color: var(--ink);
+  border-color: var(--line);
+}
+
+.is-dark .frm select option {
+  color: #111;
+}
+
+.is-dark .wish,
+.is-dark .gift {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: var(--line);
+}
+
+.is-dark .gift .qr {
+  background: #fff;
+}
+
+.is-dark .cal {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.is-dark .std-photo,
+.is-dark .card,
+.is-dark .pol {
+  background: #F1E8D2;
+}
+
+.is-dark .card-num {
+  color: #6b6252;
+}
+
+.is-dark .music {
+  background: var(--panel);
 }

@@ -50,6 +50,27 @@ function useSwipe(onSwipe: (dir: 1 | -1) => void) {
   return { drag, justDragged, handlers: { onPointerDown, onPointerMove, onPointerUp: end, onPointerCancel: end, onPointerLeave: end } };
 }
 
+/**
+ * Ảnh trong thẻ album. Ảnh dọc phủ kín thẻ; ảnh ngang (nhận ra khi tải xong)
+ * hiện trọn, phía sau là chính ảnh đó làm mờ để không bị cắt hai bên.
+ */
+function CardPhoto({ src, index }: { src: string; index: number }) {
+  const [wide, setWide] = useState(false);
+  if (!src) return <Photo src="" alt="" label={`Ảnh ${index + 1}`} />;
+  return (
+    <div className={`photo ${wide ? "is-wide" : ""}`}>
+      {wide && <img className="photo-blur" src={src} alt="" aria-hidden="true" draggable={false} />}
+      <img
+        src={src}
+        alt={`Ảnh cưới ${index + 1}`}
+        loading="lazy"
+        draggable={false}
+        onLoad={(e) => setWide(e.currentTarget.naturalWidth > e.currentTarget.naturalHeight * 1.05)}
+      />
+    </div>
+  );
+}
+
 /** Khoảng cách vòng tròn ngắn nhất từ ảnh i tới ảnh đang xem */
 function circular(i: number, idx: number, n: number): number {
   let d = i - idx;
@@ -122,7 +143,7 @@ export function Album({ data }: { data: PublicInvitation }) {
       >
         {photos.map((p, i) => (
           <button type="button" className={`card ${i === idx ? "is-active" : ""}`} key={i} style={cardStyle(i)} onClick={() => openLightbox(i)} aria-label={`Xem ảnh ${i + 1} toàn màn hình`} tabIndex={i === idx ? 0 : -1} aria-hidden={i !== idx}>
-            <Photo src={p} alt={`Ảnh cưới ${i + 1}`} label={`Ảnh ${i + 1}`} />
+            <CardPhoto src={p} index={i} />
             <span className="card-num">{ROMAN[i] ?? i + 1}</span>
           </button>
         ))}
