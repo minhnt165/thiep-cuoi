@@ -38,7 +38,7 @@ Lệnh khác: `npm test` (lịch âm, ngày tháng), `npm run typecheck`, `npm r
 
 1. Tạo project Supabase, chạy `supabase/migrations/0001_init.sql` trong SQL editor.
 2. Đặt biến môi trường: `STORE=supabase`, `NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `NEXT_PUBLIC_SITE_URL`.
-3. Deploy lên Vercel. Bản Supabase chưa được chạy thử thật, cần kiểm tra lại khi có tài khoản.
+3. Deploy lên Vercel. Bản Supabase đã chạy thử đủ luồng (tạo thiệp, lời chúc, RSVP, tải ảnh, ảnh OG).
 
 ## Tính năng đáng chú ý
 

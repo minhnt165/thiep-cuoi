@@ -21,6 +21,16 @@ function db(): SupabaseClient {
 
 const BUCKET = "uploads";
 
+const MIME_EXT: Record<string, string> = {
+  "image/jpeg": ".jpg",
+  "image/png": ".png",
+  "image/webp": ".webp",
+  "image/gif": ".gif",
+  "audio/mpeg": ".mp3",
+  "audio/mp4": ".m4a",
+  "audio/ogg": ".ogg",
+};
+
 export const supabaseStore: Store = {
   async getInvitation(slug) {
     const { data, error } = await db().from("invitations").select("data").eq("slug", slug).maybeSingle();
@@ -69,8 +79,9 @@ export const supabaseStore: Store = {
   },
 
   async saveUpload(slug, fileName, data, contentType) {
-    const safe = fileName.replace(/[^a-zA-Z0-9._-]/g, "_").slice(0, 60);
-    const key = `${slug}/${Date.now().toString(36)}-${safe}`;
+    // Đuôi file theo nội dung thật (ảnh đã được nén sang WebP trước khi lưu)
+    const base = fileName.replace(/\.[^.]*$/, "").replace(/[^a-zA-Z0-9_-]/g, "_").slice(0, 40) || "file";
+    const key = `${slug}/${Date.now().toString(36)}-${base}${MIME_EXT[contentType] ?? ""}`;
     const { error } = await db().storage.from(BUCKET).upload(key, data, { contentType, upsert: false });
     if (error) throw error;
     return db().storage.from(BUCKET).getPublicUrl(key).data.publicUrl;
