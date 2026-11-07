@@ -19,4 +19,9 @@ export interface Store {
   saveUpload(slug: string, fileName: string, data: Uint8Array, contentType: string): Promise<string>;
   /** Đọc file đã tải lên (chỉ bản file dùng; Supabase trả URL public nên không cần) */
   readUpload?(slug: string, fileName: string): Promise<{ data: Uint8Array; contentType: string } | null>;
+  /**
+   * Cấp link ký sẵn để trình duyệt tải thẳng lên kho (bỏ qua giới hạn 4,5MB của Vercel).
+   * Chỉ bản Supabase có.
+   */
+  createSignedUpload?(slug: string, fileName: string, contentType: string): Promise<{ uploadUrl: string; publicUrl: string }>;
 }

@@ -31,6 +31,12 @@ const MIME_EXT: Record<string, string> = {
   "audio/ogg": ".ogg",
 };
 
+/** Đường dẫn file trong bucket; đuôi theo nội dung thật (ảnh nén là .webp) */
+function objectKey(slug: string, fileName: string, contentType: string): string {
+  const base = fileName.replace(/\.[^.]*$/, "").replace(/[^a-zA-Z0-9_-]/g, "_").slice(0, 40) || "file";
+  return `${slug}/${Date.now().toString(36)}-${base}${MIME_EXT[contentType] ?? ""}`;
+}
+
 export const supabaseStore: Store = {
   async getInvitation(slug) {
     const { data, error } = await db().from("invitations").select("data").eq("slug", slug).maybeSingle();
@@ -79,11 +85,16 @@ export const supabaseStore: Store = {
   },
 
   async saveUpload(slug, fileName, data, contentType) {
-    // Đuôi file theo nội dung thật (ảnh đã được nén sang WebP trước khi lưu)
-    const base = fileName.replace(/\.[^.]*$/, "").replace(/[^a-zA-Z0-9_-]/g, "_").slice(0, 40) || "file";
-    const key = `${slug}/${Date.now().toString(36)}-${base}${MIME_EXT[contentType] ?? ""}`;
+    const key = objectKey(slug, fileName, contentType);
     const { error } = await db().storage.from(BUCKET).upload(key, data, { contentType, upsert: false });
     if (error) throw error;
     return db().storage.from(BUCKET).getPublicUrl(key).data.publicUrl;
+  },
+
+  async createSignedUpload(slug, fileName, contentType) {
+    const key = objectKey(slug, fileName, contentType);
+    const { data, error } = await db().storage.from(BUCKET).createSignedUploadUrl(key);
+    if (error) throw error;
+    return { uploadUrl: data.signedUrl, publicUrl: db().storage.from(BUCKET).getPublicUrl(key).data.publicUrl };
   },
 };
