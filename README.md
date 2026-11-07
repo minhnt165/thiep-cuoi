@@ -49,7 +49,9 @@ Lệnh khác: `npm test` (lịch âm, ngày tháng), `npm run typecheck`, `npm r
 - Favicon theo màu mẫu của từng thiệp; `scripts/make-icons.py` sinh bộ icon.
 - **8 mẫu, mỗi mẫu một ngôn ngữ riêng** (`src/lib/templates/index.ts` + phần "điều chỉnh theo mẫu" trong `invitation.css`): cẩm thạch vàng, đỏ rượu phong bì, Song Hỷ, hoa trắng polaroid, xanh sage toàn vòm, xanh đêm sao art-deco (nền tối), hồng phấn màu nước, tối giản kiểu tạp chí. Họa tiết lớn rải dọc hai mép trang (`SideArt`).
 - **Chỉ đường từng lễ**: tiệc chính và các lễ được gom theo địa điểm, mỗi nơi một map (tối đa 3).
-- **Ảnh ngang trong album** hiện trọn trên nền chính ảnh đó làm mờ.
+- **Ảnh ngang trong album**: thẻ tự chuyển sang khung ngang, phần hở nhỏ lót bằng chính ảnh đó làm mờ.
+- **Ảnh demo** trong `public/demo/` lấy từ Unsplash (nguồn ghi ở `public/demo/CREDITS.md`), chỉ trang demo dùng; thiệp mới tạo để trống ảnh.
+- **Mời tác giả cốc cà phê** ở cuối trang chủ: đặt `DONATE_BANK_CODE`, `DONATE_ACCOUNT`, `DONATE_HOLDER` (xem `.env.example`), thiếu thì khối tự ẩn.
 - **Nhạc nền có sẵn**: danh sách trong `src/lib/music.ts`, file MP3 tự đặt vào `public/music/` (không kèm trong repo vì bản quyền).
 - Ảnh mẫu trên trang chủ là ảnh chụp bìa thật: `node scripts/shoot-templates.mjs` (cần dev server + playwright).
 

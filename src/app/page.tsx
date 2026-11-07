@@ -3,6 +3,7 @@ import Link from "next/link";
 import { THEME_LIST } from "@/lib/templates";
 import { getStore } from "@/lib/store";
 import { CreateForm } from "@/components/editor/CreateForm";
+import { Donate } from "@/components/Donate";
 import "./home.css";
 
 // Danh sách thiệp đọc từ store mỗi lần mở trang
@@ -130,6 +131,8 @@ export default async function Home() {
           </ul>
         </section>
       )}
+
+      <Donate />
 
       <footer className="home-foot">
         <span>Thiệp cưới online · mã nguồn mở, tự chạy trên Vercel + Supabase</span>

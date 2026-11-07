@@ -21,6 +21,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function DemoPage({ params }: Props) {
   const { template } = await params;
   if (!TEMPLATE_IDS.includes(template as TemplateId)) notFound();
-  const inv = sampleInvitation("demo", template as TemplateId, "demo-demo-demo");
+  const inv = sampleInvitation("demo", template as TemplateId, "demo-demo-demo", true);
   return <Invitation data={toPublic(inv)} wishes={SAMPLE_WISHES} mode="demo" />;
 }

@@ -431,6 +431,61 @@
   flex: none;
 }
 
+/* ---------- mời cà phê ---------- */
+.donate {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 24px;
+  padding: 24px 28px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #f6efe6, #efe6dc);
+  border: 1px solid var(--ui-line);
+}
+
+.donate-qr {
+  padding: 8px;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 10px 24px -16px rgba(0, 0, 0, 0.4);
+}
+
+.donate-qr img {
+  width: 150px;
+  height: 150px;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+.donate-text h2 {
+  font-family: var(--font-playfair), Georgia, serif;
+  font-size: 24px;
+  font-weight: 400;
+  margin: 4px 0 8px;
+}
+
+.donate-text p {
+  margin: 0;
+  font-size: 14px;
+  color: var(--ui-muted);
+  line-height: 1.6;
+  max-width: 60ch;
+}
+
+.donate-acc {
+  margin-top: 10px !important;
+  color: var(--ui-fg) !important;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 600px) {
+  .donate {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
+  }
+}
+
 .home-foot {
   text-align: center;
   font-size: 12px;

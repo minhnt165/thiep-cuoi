@@ -56,17 +56,19 @@ function useSwipe(onSwipe: (dir: 1 | -1) => void) {
  */
 function CardPhoto({ src, index }: { src: string; index: number }) {
   const [wide, setWide] = useState(false);
+  const ref = useRef<HTMLImageElement>(null);
+  const check = (img: HTMLImageElement | null) => {
+    if (img && img.naturalWidth) setWide(img.naturalWidth > img.naturalHeight * 1.05);
+  };
+  // Ảnh có thể đã tải xong trước khi React gắn onLoad (SSR + cache) nên kiểm tra thêm lúc gắn
+  useEffect(() => {
+    if (ref.current?.complete) check(ref.current);
+  }, [src]);
   if (!src) return <Photo src="" alt="" label={`Ảnh ${index + 1}`} />;
   return (
     <div className={`photo ${wide ? "is-wide" : ""}`}>
       {wide && <img className="photo-blur" src={src} alt="" aria-hidden="true" draggable={false} />}
-      <img
-        src={src}
-        alt={`Ảnh cưới ${index + 1}`}
-        loading="lazy"
-        draggable={false}
-        onLoad={(e) => setWide(e.currentTarget.naturalWidth > e.currentTarget.naturalHeight * 1.05)}
-      />
+      <img ref={ref} src={src} alt={`Ảnh cưới ${index + 1}`} loading="lazy" draggable={false} onLoad={(e) => check(e.currentTarget)} />
     </div>
   );
 }

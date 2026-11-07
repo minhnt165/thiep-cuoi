@@ -1162,7 +1162,15 @@
   transform: scale(1);
 }
 
-/* ảnh ngang: nền là ảnh làm mờ, ảnh thật hiện trọn ở giữa */
+/* ảnh ngang: thẻ đổi sang khung ngang (rộng hơn, thấp hơn) cho vừa ảnh */
+.card:has(.photo.is-wide) {
+  left: 1%;
+  right: 1%;
+  top: 19%;
+  bottom: 19%;
+}
+
+/* phần hở nhỏ còn lại (16:9 vào khung 3:2): nền là ảnh làm mờ, ảnh thật hiện trọn ở giữa */
 .photo .photo-blur {
   position: absolute;
   inset: 0;

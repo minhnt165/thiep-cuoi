@@ -14,5 +14,5 @@ export function generateStaticParams() {
 export default async function Image({ params }: { params: Promise<{ template: string }> }) {
   const { template } = await params;
   if (!TEMPLATE_IDS.includes(template as TemplateId)) return new ImageResponse(<div style={{ width: "100%", height: "100%", background: "#F6EFE3" }} />, OG_SIZE);
-  return ogImage(sampleInvitation("demo", template as TemplateId, "demo-demo-demo"));
+  return ogImage(sampleInvitation("demo", template as TemplateId, "demo-demo-demo", true));
 }

@@ -1,8 +1,20 @@
 import { makeId, type Invitation, type TemplateId } from "@/lib/schema";
 
-/** Dữ liệu mẫu: dùng cho trang demo và làm nội dung khởi tạo khi tạo thiệp mới. */
-export function sampleInvitation(slug: string, template: TemplateId, editKey = makeId() + makeId()): Invitation {
+/** Ảnh demo (Unsplash, xem public/demo/CREDITS.md). Chỉ trang demo dùng, thiệp mới tạo để trống. */
+const DEMO_PHOTOS = {
+  cover: "/demo/cover.webp",
+  saveTheDate: ["/demo/groom.webp", "/demo/bride.webp"],
+  album: ["/demo/album-1.webp", "/demo/album-2.webp", "/demo/album-3.webp", "/demo/album-4.webp", "/demo/album-5.webp", "/demo/album-6.webp", "/demo/album-7.webp", "/demo/album-8.webp"],
+  story: ["/demo/story-1.webp", "/demo/story-2.webp", "/demo/story-3.webp"],
+};
+
+/**
+ * Dữ liệu mẫu: dùng cho trang demo (withPhotos = true, có ảnh) và làm nội dung
+ * khởi tạo khi tạo thiệp mới (không ảnh).
+ */
+export function sampleInvitation(slug: string, template: TemplateId, editKey = makeId() + makeId(), withPhotos = false): Invitation {
   const now = new Date().toISOString();
+  const p = withPhotos ? DEMO_PHOTOS : null;
   return {
     slug,
     template,
@@ -48,12 +60,12 @@ export function sampleInvitation(slug: string, template: TemplateId, editKey = m
       { time: "14:30", title: "Kết thúc tiệc" },
     ],
     story: [
-      { label: "2019", title: "Lần đầu gặp", text: "Chung một nhóm thiện nguyện ở Mộc Châu.", photo: "" },
-      { label: "2022", title: "Chuyến đi đầu tiên", text: "Đà Lạt, mưa suốt ba ngày mà vẫn vui.", photo: "" },
-      { label: "2026", title: "Lời cầu hôn", text: "Bên hồ Tây, một buổi tối tháng Tư.", photo: "" },
+      { label: "2019", title: "Lần đầu gặp", text: "Chung một nhóm thiện nguyện ở Mộc Châu.", photo: p?.story[0] ?? "" },
+      { label: "2022", title: "Chuyến đi đầu tiên", text: "Đà Lạt, mưa suốt ba ngày mà vẫn vui.", photo: p?.story[1] ?? "" },
+      { label: "2026", title: "Lời cầu hôn", text: "Bên hồ Tây, một buổi tối tháng Tư.", photo: p?.story[2] ?? "" },
     ],
     dressCode: ["#2B2320", "#A8894F", "#F2EBDD"],
-    photos: { cover: "", saveTheDate: [], album: [] },
+    photos: p ? { cover: p.cover, saveTheDate: [...p.saveTheDate], album: [...p.album] } : { cover: "", saveTheDate: [], album: [] },
     texts: {
       coverGreeting: "Thân mời",
       saveTheDate: "Save the date",

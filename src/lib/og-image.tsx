@@ -35,6 +35,8 @@ async function coverImage(inv: Invitation): Promise<string | null> {
     const store = await getStore();
     if (m && store.readUpload) bytes = (await store.readUpload(m[1], m[2]))?.data ?? null;
     else if (src.startsWith("http")) bytes = new Uint8Array(await (await fetch(src)).arrayBuffer());
+    // ảnh tĩnh trong public/ (ảnh demo)
+    else if (src.startsWith("/") && !src.includes("..")) bytes = new Uint8Array(await readFile(path.join(process.cwd(), "public", src)));
     if (!bytes) return null;
     return await toDataUrl(bytes, PHOTO_W, OG_SIZE.height);
   } catch {
