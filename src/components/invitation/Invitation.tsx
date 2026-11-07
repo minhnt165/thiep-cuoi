@@ -22,6 +22,8 @@ interface Props {
   startOpened?: boolean;
   /** Nhúng trong khung điện thoại của trình chỉnh sửa */
   embedded?: boolean;
+  /** Tên khách trên link riêng (?to=) */
+  guest?: string;
 }
 
 function FallEffect({ kind }: { kind: "sparkle" | "petal" }) {
@@ -40,7 +42,7 @@ function FallEffect({ kind }: { kind: "sparkle" | "petal" }) {
   );
 }
 
-export function Invitation({ data, wishes: initialWishes, mode, startOpened = false, embedded = false }: Props) {
+export function Invitation({ data, wishes: initialWishes, mode, startOpened = false, embedded = false, guest = "" }: Props) {
   const theme = THEMES[data.template];
   const [open, setOpen] = useState(startOpened);
   const [wishes, setWishes] = useState(initialWishes);
@@ -103,7 +105,7 @@ export function Invitation({ data, wishes: initialWishes, mode, startOpened = fa
 
   async function addRsvp(input: RsvpInput) {
     if (mode !== "live") return;
-    const res = await fetch(`/api/invitations/${data.slug}/rsvp`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(input) });
+    const res = await fetch(`/api/invitations/${data.slug}/rsvp`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ ...input, invitedAs: guest }) });
     if (!res.ok) throw new Error("rsvp failed");
   }
 
@@ -111,7 +113,7 @@ export function Invitation({ data, wishes: initialWishes, mode, startOpened = fa
     saveTheDate: <SaveTheDate key="std" data={data} theme={theme} />,
     family: <Family key="family" data={data} />,
     album: <Album key="album" data={data} />,
-    party: <Party key="party" data={data} onRsvp={addRsvp} />,
+    party: <Party key="party" data={data} onRsvp={addRsvp} guest={guest} />,
     dressCode: <DressCode key="dress" data={data} />,
     timeline: <Timeline key="tl" data={data} />,
     story: <Story key="story" data={data} />,
@@ -123,7 +125,7 @@ export function Invitation({ data, wishes: initialWishes, mode, startOpened = fa
     <div className={`inv-root ${embedded ? "is-embedded" : ""}`} style={style} ref={rootRef}>
       <div className={`inv t-${theme.id} ${open ? "" : "is-locked"}`}>
         {theme.fall !== "none" && <FallEffect kind={theme.fall} />}
-        <Cover data={data} theme={theme} open={open} onOpen={onOpen} />
+        <Cover data={data} theme={theme} open={open} onOpen={onOpen} guest={guest} />
         {data.sections.map((id) => sectionMap[id])}
         <Footer data={data} />
       </div>

@@ -7,6 +7,7 @@ import { makeId } from "@/lib/schema";
 import { THEME_LIST } from "@/lib/templates";
 import { api } from "@/lib/client/api";
 import { formatWishTime } from "@/lib/dates";
+import { BANKS, vietQrUrl } from "@/lib/banks";
 
 export type Patch = (fn: (d: Invitation) => void) => void;
 
@@ -314,7 +315,7 @@ export function ContentPanel({ d, patch, editKey }: PanelProps) {
 export function GiftPanel({ d, patch, editKey }: PanelProps) {
   return (
     <>
-      <p className="hint">Mỗi tài khoản hiện thành một thẻ có mã QR. Tải ảnh QR từ app ngân hàng (VietQR) để khách quét được ngay.</p>
+      <p className="hint">Chọn ngân hàng và nhập số tài khoản là mã QR (chuẩn VietQR) tự sinh. Muốn dùng ảnh QR riêng thì tải lên, ảnh sẽ được ưu tiên.</p>
       {d.gifts.map((g, i) => (
         <div className="item" key={g.id}>
           <div className="item-h">
@@ -323,19 +324,36 @@ export function GiftPanel({ d, patch, editKey }: PanelProps) {
           </div>
           <div className="g2">
             <F label="Nhãn (Nhà trai / Nhà gái)"><input value={g.label} onChange={(e) => patch((x) => { x.gifts[i].label = e.target.value; })} /></F>
-            <F label="Ngân hàng"><input value={g.bank} onChange={(e) => patch((x) => { x.gifts[i].bank = e.target.value; })} /></F>
+            <F label="Ngân hàng">
+              <select
+                value={g.bankCode}
+                onChange={(e) => patch((x) => {
+                  const b = BANKS.find((bk) => bk.bin === e.target.value);
+                  x.gifts[i].bankCode = e.target.value;
+                  if (b) x.gifts[i].bank = b.name;
+                })}
+              >
+                <option value="">Khác (tự nhập tên)</option>
+                {BANKS.map((b) => <option key={b.bin} value={b.bin}>{b.name}</option>)}
+              </select>
+            </F>
           </div>
+          {!g.bankCode && <F label="Tên ngân hàng"><input value={g.bank} onChange={(e) => patch((x) => { x.gifts[i].bank = e.target.value; })} /></F>}
           <div className="g2">
             <F label="Số tài khoản"><input value={g.accountNumber} inputMode="numeric" onChange={(e) => patch((x) => { x.gifts[i].accountNumber = e.target.value.replace(/\s/g, ""); })} /></F>
-            <F label="Chủ tài khoản"><input value={g.holder} onChange={(e) => patch((x) => { x.gifts[i].holder = e.target.value.toUpperCase(); })} /></F>
+            <F label="Chủ tài khoản (không dấu)"><input value={g.holder} onChange={(e) => patch((x) => { x.gifts[i].holder = e.target.value.toUpperCase(); })} /></F>
           </div>
           <div className="row">
-            {g.qrImage && <div className="thumbs" style={{ width: 70 }}><Thumb src={g.qrImage} onRemove={() => patch((x) => { x.gifts[i].qrImage = ""; })} /></div>}
-            <Upload slug={d.slug} editKey={editKey} accept="image/jpeg,image/png,image/webp" label="Tải ảnh QR" onDone={([u]) => patch((x) => { x.gifts[i].qrImage = u; })} />
+            {g.qrImage ? (
+              <div className="thumbs" style={{ width: 70 }}><Thumb src={g.qrImage} onRemove={() => patch((x) => { x.gifts[i].qrImage = ""; })} /></div>
+            ) : g.bankCode && g.accountNumber ? (
+              <img src={vietQrUrl(g.bankCode, g.accountNumber, g.holder)} alt="QR VietQR" width={70} height={70} style={{ borderRadius: 8, border: "1px solid var(--ui-line)" }} />
+            ) : null}
+            <Upload slug={d.slug} editKey={editKey} accept="image/jpeg,image/png,image/webp" label="Tải ảnh QR riêng" onDone={([u]) => patch((x) => { x.gifts[i].qrImage = u; })} />
           </div>
         </div>
       ))}
-      <button type="button" className="btn2" onClick={() => patch((x) => { x.gifts.push({ id: makeId(), label: "", bank: "", accountNumber: "", holder: "", qrImage: "" }); })}>+ Thêm tài khoản</button>
+      <button type="button" className="btn2" onClick={() => patch((x) => { x.gifts.push({ id: makeId(), label: "", bank: "", bankCode: "", accountNumber: "", holder: "", qrImage: "" }); })}>+ Thêm tài khoản</button>
     </>
   );
 }
@@ -369,7 +387,60 @@ export function SectionsPanel({ d, patch }: PanelProps) {
 }
 
 /* ---------- Khách ---------- */
-export function GuestsPanel({ d, editKey }: PanelProps) {
+function GuestLinks({ d, patch }: PanelProps) {
+  const [origin] = useState(() => (typeof window === "undefined" ? "" : window.location.origin));
+  const [copied, setCopied] = useState("");
+  const [bulk, setBulk] = useState("");
+  const link = (name: string) => `${origin}/${d.slug}?to=${encodeURIComponent(name)}`;
+  async function copy(text: string, which: string) {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(which);
+      setTimeout(() => setCopied(""), 1500);
+    } catch {
+      /* bỏ qua */
+    }
+  }
+  function addBulk() {
+    const names = bulk.split(/\r?\n/).map((s) => s.trim()).filter(Boolean);
+    if (!names.length) return;
+    patch((x) => { x.guests.push(...names.map((name) => ({ id: makeId(), name, side: "groom" as const, note: "" }))); });
+    setBulk("");
+  }
+  const all = d.guests.map((g) => `${g.name}: ${link(g.name)}`).join("\n");
+  return (
+    <>
+      <p className="ed-h">Link riêng cho từng khách</p>
+      <p className="hint">Mỗi khách một link: tên hiện trên bìa (Thân gửi …) và điền sẵn ở phần xác nhận. Nhớ bấm Lưu sau khi thêm khách.</p>
+      <div className="fs">
+        <F label="Thêm nhanh, mỗi dòng một tên">
+          <textarea value={bulk} onChange={(e) => setBulk(e.target.value)} placeholder={"Cô Lan\nGia đình anh Hùng\nBạn Minh Anh"} />
+        </F>
+        <div className="row">
+          <button type="button" className="btn2" onClick={addBulk}>Thêm vào danh sách</button>
+          {d.guests.length > 0 && <button type="button" className="btn2" onClick={() => copy(all, "all")}>{copied === "all" ? "Đã sao chép" : `Sao chép tất cả (${d.guests.length})`}</button>}
+        </div>
+      </div>
+      {d.guests.map((g, i) => (
+        <div className="item" key={g.id}>
+          <div className="row">
+            <input value={g.name} style={{ flex: 1, minWidth: 140 }} onChange={(e) => patch((x) => { x.guests[i].name = e.target.value; })} />
+            <select value={g.side} onChange={(e) => patch((x) => { x.guests[i].side = e.target.value === "bride" ? "bride" : "groom"; })}>
+              <option value="groom">Nhà trai</option>
+              <option value="bride">Nhà gái</option>
+            </select>
+            <button type="button" className="btn2" onClick={() => copy(link(g.name), g.id)}>{copied === g.id ? "Đã sao chép" : "Sao chép link"}</button>
+            <a className="btn2" href={link(g.name)} target="_blank" rel="noopener" style={{ textDecoration: "none" }}>Mở</a>
+            <button type="button" className="btn2 danger" onClick={() => patch((x) => { x.guests.splice(i, 1); })}>×</button>
+          </div>
+        </div>
+      ))}
+    </>
+  );
+}
+
+export function GuestsPanel(props: PanelProps) {
+  const { d, editKey } = props;
   const [rsvps, setRsvps] = useState<Rsvp[] | null>(null);
   const [wishes, setWishes] = useState<Wish[] | null>(null);
   const [err, setErr] = useState("");
@@ -388,6 +459,7 @@ export function GuestsPanel({ d, editKey }: PanelProps) {
         <div><b>{(rsvps?.length ?? 0) - yes.length}</b>không đến được</div>
         <div><b>{wishes?.length ?? 0}</b>lời chúc</div>
       </div>
+      <GuestLinks {...props} />
       <p className="ed-h">Xác nhận tham dự</p>
       {rsvps && rsvps.length === 0 && <p className="hint">Chưa có ai xác nhận.</p>}
       {rsvps && rsvps.length > 0 && (
@@ -396,7 +468,7 @@ export function GuestsPanel({ d, editKey }: PanelProps) {
           <tbody>
             {rsvps.map((r) => (
               <tr key={r.id}>
-                <td>{r.name}</td>
+                <td>{r.name}{r.invitedAs && r.invitedAs !== r.name ? <span className="hint"> (link: {r.invitedAs})</span> : null}</td>
                 <td>{r.attending ? "Có" : "Không"}</td>
                 <td>{r.attending ? r.guests : ""}</td>
                 <td>{r.side === "groom" ? "Nhà trai" : "Nhà gái"}</td>

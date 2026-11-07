@@ -6,6 +6,7 @@ import type { Theme } from "@/lib/templates";
 import { lunarLabel } from "@/lib/lunar";
 import { countdown, dotDate, formatWishTime, googleCalendarUrl, mapsUrl, monthGrid, parseYmd, pad, toVnDate, weekdayLabel } from "@/lib/dates";
 import { Divider, IconCalendar, IconCopy, IconPin, WaxSeal } from "@/components/ornaments";
+import { vietQrUrl } from "@/lib/banks";
 import { Corners } from "./Corner";
 import { Photo } from "./Photo";
 
@@ -163,9 +164,9 @@ function Calendar({ ymd }: { ymd: string }) {
   );
 }
 
-export type RsvpInput = Omit<Rsvp, "id" | "createdAt">;
+export type RsvpInput = Omit<Rsvp, "id" | "createdAt" | "invitedAs">;
 
-export function Party({ data, onRsvp }: { data: PublicInvitation; onRsvp?: (input: RsvpInput) => Promise<void> }) {
+export function Party({ data, onRsvp, guest = "" }: { data: PublicInvitation; onRsvp?: (input: RsvpInput) => Promise<void>; guest?: string }) {
   const ev = data.mainEvent;
   const [showForm, setShowForm] = useState(false);
   const [done, setDone] = useState<RsvpInput | null>(null);
@@ -232,7 +233,7 @@ export function Party({ data, onRsvp }: { data: PublicInvitation; onRsvp?: (inpu
         )}
         {showForm && !done && (
           <form className="frm" onSubmit={submit} noValidate>
-            <input name="name" placeholder="Họ và tên của bạn" autoComplete="name" onInput={() => setErr("")} />
+            <input name="name" placeholder="Họ và tên của bạn" autoComplete="name" defaultValue={guest} onInput={() => setErr("")} />
             <div className="seg" role="radiogroup" aria-label="Tham dự">
               <label><input type="radio" name="attending" value="yes" defaultChecked /><span>Mình sẽ đến</span></label>
               <label><input type="radio" name="attending" value="no" /><span>Rất tiếc, không đến được</span></label>
@@ -389,11 +390,12 @@ function GiftCard({ g }: { g: GiftAccount }) {
       /* trình duyệt không cho phép, người dùng tự chép */
     }
   }
+  const qr = g.qrImage || (g.bankCode && g.accountNumber ? vietQrUrl(g.bankCode, g.accountNumber, g.holder) : "");
   return (
     <div className="gift">
       {g.label && <p className="side">{g.label}</p>}
       <div className="qr">
-        {g.qrImage ? <img src={g.qrImage} alt={`Mã QR ${g.bank}`} /> : <div className="qr-empty">Chưa có ảnh QR</div>}
+        {qr ? <img src={qr} alt={`Mã QR ${g.bank}`} loading="lazy" /> : <div className="qr-empty">Chưa có mã QR</div>}
       </div>
       <p className="bank">{g.bank}</p>
       <p className="acc">{g.accountNumber}</p>

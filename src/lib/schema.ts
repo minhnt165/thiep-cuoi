@@ -61,10 +61,20 @@ export const GiftAccountSchema = z.object({
   id: trimmed.min(1),
   label: trimmed.default(""),
   bank: trimmed.default(""),
+  /** Mã BIN ngân hàng để tự sinh QR VietQR; để trống thì dùng ảnh qrImage */
+  bankCode: trimmed.default(""),
   accountNumber: trimmed.default(""),
   holder: trimmed.default(""),
   qrImage: trimmed.default(""),
 });
+
+export const GuestSchema = z.object({
+  id: trimmed.min(1),
+  name: trimmed.min(1).max(80),
+  side: z.enum(["groom", "bride"]).default("groom"),
+  note: trimmed.max(200).default(""),
+});
+export type Guest = z.infer<typeof GuestSchema>;
 
 export const InvitationSchema = z.object({
   slug: z
@@ -107,6 +117,8 @@ export const InvitationSchema = z.object({
     }),
   gifts: z.array(GiftAccountSchema).default([]),
   music: trimmed.default(""),
+  /** Danh sách khách để tạo link riêng (?to=), chỉ chủ thiệp thấy */
+  guests: z.array(GuestSchema).default([]),
   sections: z.array(z.enum(SECTION_IDS)).default([...SECTION_IDS]),
   /** Khóa sửa: ai có khóa mới vào được trang chỉnh sửa */
   editKey: trimmed.min(8),
@@ -120,12 +132,12 @@ export type Person = z.infer<typeof PersonSchema>;
 export type WeddingEvent = z.infer<typeof EventSchema>;
 export type GiftAccount = z.infer<typeof GiftAccountSchema>;
 
-/** Dữ liệu công khai gửi về trình duyệt: không có editKey */
-export type PublicInvitation = Omit<Invitation, "editKey">;
+/** Dữ liệu công khai gửi về trình duyệt: không có editKey và danh sách khách */
+export type PublicInvitation = Omit<Invitation, "editKey" | "guests">;
 
 export function toPublic(inv: Invitation): PublicInvitation {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { editKey, ...rest } = inv;
+  const { editKey, guests, ...rest } = inv;
   return rest;
 }
 
@@ -146,11 +158,13 @@ export const RsvpSchema = z.object({
   guests: z.number().int().min(1).max(20).default(1),
   side: z.enum(["groom", "bride"]).default("groom"),
   note: trimmed.max(500).default(""),
+  /** Tên trên link riêng (?to=) nếu khách mở từ link đó */
+  invitedAs: trimmed.max(80).default(""),
   createdAt: z.string(),
 });
 export type Rsvp = z.infer<typeof RsvpSchema>;
 
-export const RsvpInputSchema = RsvpSchema.pick({ name: true, attending: true, guests: true, side: true, note: true });
+export const RsvpInputSchema = RsvpSchema.pick({ name: true, attending: true, guests: true, side: true, note: true, invitedAs: true });
 
 export function makeId(): string {
   return Math.random().toString(36).slice(2, 10) + Date.now().toString(36);

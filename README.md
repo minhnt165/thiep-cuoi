@@ -40,9 +40,16 @@ Lệnh khác: `npm test` (lịch âm, ngày tháng), `npm run typecheck`, `npm r
 2. Đặt biến môi trường: `STORE=supabase`, `NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `NEXT_PUBLIC_SITE_URL`.
 3. Deploy lên Vercel. Bản Supabase chưa được chạy thử thật, cần kiểm tra lại khi có tài khoản.
 
+## Tính năng đáng chú ý
+
+- **Ảnh tải lên được nén** (xoay theo EXIF, cạnh dài 1600px, WebP) bằng `sharp` trong `src/lib/images.ts`.
+- **Ảnh xem trước khi gửi link** (Zalo, Messenger, Facebook): `src/app/[slug]/opengraph-image.tsx` sinh ảnh 1200×630 theo màu mẫu, có ảnh cưới nếu đã tải. Font trong `src/assets/fonts/`.
+- **Link riêng từng khách**: `/<slug>?to=Tên` hiện "Thân mời Tên" trên bìa và điền sẵn tên ở xác nhận. Tab Khách tạo link hàng loạt.
+- **QR mừng cưới tự sinh** chuẩn VietQR từ ngân hàng + số tài khoản (`src/lib/banks.ts`); vẫn tải ảnh QR riêng được.
+- Favicon theo màu mẫu của từng thiệp; `scripts/make-icons.py` sinh bộ icon.
+
 ## Chưa làm (giai đoạn sau)
 
 - Tài khoản người dùng, nhiều người cùng dùng, thanh toán.
-- Link riêng cho từng khách (tên khách trên bìa).
 - Xuất video/ảnh thiệp.
 - Hình họa tiết chất lượng cao hơn (mua bản quyền hoặc vẽ tay).

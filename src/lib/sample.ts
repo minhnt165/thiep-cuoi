@@ -62,10 +62,11 @@ export function sampleInvitation(slug: string, template: TemplateId, editKey = m
       giftIntro: "Nếu không thể đến chung vui, bạn có thể gửi quà mừng qua mã dưới đây",
     },
     gifts: [
-      { id: "g1", label: "Nhà trai", bank: "Vietcombank", accountNumber: "0011004567890", holder: "NGUYEN ANH TUAN", qrImage: "" },
-      { id: "g2", label: "Nhà gái", bank: "Techcombank", accountNumber: "19035566778899", holder: "LE THU HA", qrImage: "" },
+      { id: "g1", label: "Nhà trai", bank: "Vietcombank", bankCode: "970436", accountNumber: "0011004567890", holder: "NGUYEN ANH TUAN", qrImage: "" },
+      { id: "g2", label: "Nhà gái", bank: "Techcombank", bankCode: "970407", accountNumber: "19035566778899", holder: "LE THU HA", qrImage: "" },
     ],
     music: "",
+    guests: [],
     sections: ["saveTheDate", "family", "album", "party", "dressCode", "timeline", "story", "guestbook", "gift"],
     editKey,
     createdAt: now,
