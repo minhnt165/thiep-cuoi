@@ -5,15 +5,46 @@ import { HeartBadge, Lantern, PeonyCluster, WaxSeal } from "@/components/ornamen
 import { Corners } from "./Corner";
 import { Photo } from "./Photo";
 
+export type CoverKind = Theme["cover"];
+/**
+ * closed: chờ khách bấm · opening: hiệu ứng riêng của bìa (bóc phong bì, tim đập…)
+ * · revealing: bìa phóng nhẹ và tan dần, nội dung hiện ra · open: bìa đã gỡ
+ */
+export type CoverPhase = "closed" | "opening" | "revealing" | "open";
+
 interface Props {
   data: PublicInvitation;
   theme: Theme;
-  open: boolean;
+  phase: CoverPhase;
   onOpen: () => void;
   guest?: string;
 }
 
-export function Cover({ data, theme, open, onOpen, guest = "" }: Props) {
+/** Hạt bung ra từ giữa lúc bìa tan: vị trí cố định theo chỉ số để render giống nhau mọi lần */
+const BURST = Array.from({ length: 22 }, (_, i) => {
+  const a = (i / 22) * Math.PI * 2 + (i % 2) * 0.14;
+  const dist = 120 + ((i * 37) % 90);
+  return {
+    x: `${Math.round(Math.cos(a) * dist)}px`,
+    y: `${Math.round(Math.sin(a) * dist * 1.15)}px`,
+    s: 5 + (i % 4) * 2,
+    d: `${(i % 5) * 40}ms`,
+    heart: i % 3 === 0,
+  };
+});
+
+function Burst() {
+  return (
+    <div className="burst" aria-hidden="true">
+      {BURST.map((b, i) => (
+        <i key={i} className={b.heart ? "is-heart" : ""} style={{ "--x": b.x, "--y": b.y, width: b.s, height: b.s, animationDelay: b.d } as React.CSSProperties} />
+      ))}
+    </div>
+  );
+}
+
+export function Cover({ data, theme, phase, onOpen, guest = "" }: Props) {
+  const open = phase !== "closed";
   const greet = guest ? `${data.texts.coverGreeting} ${guest}` : data.texts.coverGreeting;
   const initials = `${data.groom.shortName.slice(0, 1)}&${data.bride.shortName.slice(0, 1)}`;
   const date = longDate(data.mainEvent.date);
@@ -141,8 +172,9 @@ export function Cover({ data, theme, open, onOpen, guest = "" }: Props) {
   }
 
   return (
-    <div className={`cover ${open ? "is-open" : ""}`} aria-hidden={open}>
-      {inner}
+    <div className={`cover kind-${theme.cover} is-${phase}`} aria-hidden={open}>
+      <div className="cover-stage">{inner}</div>
+      {phase === "revealing" && <Burst />}
     </div>
   );
 }

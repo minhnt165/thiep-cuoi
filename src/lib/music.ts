@@ -5,7 +5,10 @@
  * có quyền dùng) vào thư mục `public/music/` đúng tên `file` bên dưới; bài nào
  * có file thì hiện trong menu chọn, chưa có thì mờ đi. Muốn thêm bài khác chỉ
  * cần thêm một dòng vào danh sách này và bỏ file tương ứng vào thư mục.
+ * Danh sách file có sẵn được lập lúc dev/build (scripts/list-music.mjs).
  */
+import musicFiles from "./music-files.json";
+
 export interface MusicPreset {
   id: string;
   title: string;
@@ -31,6 +34,13 @@ export const MUSIC_PRESETS: MusicPreset[] = [
   { id: "beautiful-in-white", title: "Beautiful in White", artist: "Westlife", lang: "en", file: "beautiful-in-white.mp3" },
   { id: "thinking-out-loud", title: "Thinking Out Loud", artist: "Ed Sheeran", lang: "en", file: "thinking-out-loud.mp3" },
 ];
+
+/** File có trong public/music, do scripts/list-music.mjs ghi lúc dev/build */
+const FILES = new Set<string>(musicFiles);
+
+export function presetAvailable(p: MusicPreset): boolean {
+  return FILES.has(p.file);
+}
 
 export function presetUrl(p: MusicPreset): string {
   return `/music/${p.file}`;

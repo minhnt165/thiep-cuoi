@@ -5,6 +5,7 @@ import { useCallback, useEffect, useRef, useState, type CSSProperties, type Poin
 import type { PublicInvitation } from "@/lib/schema";
 import { Divider } from "@/components/ornaments";
 import { Photo } from "./Photo";
+import { Modal } from "./Modal";
 
 const AUTOPLAY_MS = 4200;
 const ROMAN = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "XIII", "XIV", "XV", "XVI", "XVII", "XVIII", "XIX", "XX"];
@@ -168,7 +169,7 @@ export function Album({ data }: { data: PublicInvitation }) {
       )}
 
       {lightbox !== null && (
-        <div className="lightbox" role="dialog" aria-modal="true" aria-label="Xem ảnh" {...lbSwipe.handlers}>
+        <Modal className="lightbox" label="Xem ảnh" onClose={() => setLightbox(null)} overlayProps={lbSwipe.handlers}>
           <button type="button" className="lb-close" onClick={() => setLightbox(null)} aria-label="Đóng">×</button>
           <div className="lb-stage" style={{ transform: `translateX(${lbSwipe.drag.px}px)`, transition: lbSwipe.drag.px ? "none" : undefined }}>
             {photos[lightbox] ? <img src={photos[lightbox]} alt={`Ảnh cưới ${lightbox + 1}`} draggable={false} /> : <Photo src="" alt="" label={`Ảnh ${lightbox + 1}`} className="lb-empty" />}
@@ -180,7 +181,7 @@ export function Album({ data }: { data: PublicInvitation }) {
             </>
           )}
           <span className="lb-count">{lightbox + 1} / {n}</span>
-        </div>
+        </Modal>
       )}
     </section>
   );

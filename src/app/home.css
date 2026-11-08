@@ -3,7 +3,10 @@
   margin: 0 auto;
   padding: 32px max(16px, env(safe-area-inset-left, 0px)) 60px max(16px, env(safe-area-inset-right, 0px));
   display: grid;
+  /* minmax(0,1fr): cột không tự giãn theo phần tử rộng nhất (gây tràn ngang trên điện thoại) */
+  grid-template-columns: minmax(0, 1fr);
   gap: 72px;
+  overflow-x: clip;
 }
 
 /* ---------- hero ---------- */
@@ -363,6 +366,8 @@
 
 .create input,
 .create select {
+  width: 100%;
+  min-width: 0;
   padding: 10px 12px;
   border: 1px solid var(--ui-line);
   border-radius: var(--ui-radius);

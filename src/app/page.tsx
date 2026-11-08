@@ -1,4 +1,4 @@
-import Image from "next/image";
+/* eslint-disable @next/next/no-img-element -- ảnh mẫu đã là WebP nhỏ, gắn ?v= nên không qua next/image */
 import Link from "next/link";
 import { THEME_LIST } from "@/lib/templates";
 import { getStore } from "@/lib/store";
@@ -9,8 +9,13 @@ import "./home.css";
 // Danh sách thiệp đọc từ store mỗi lần mở trang
 export const dynamic = "force-dynamic";
 
-/** Ảnh chụp bìa thật của từng mẫu, sinh bằng `node scripts/shoot-templates.mjs` (840×1280) */
-const shot = (id: string) => `/templates/${id}.webp`;
+/**
+ * Ảnh chụp bìa thật của từng mẫu, sinh bằng `node scripts/shoot-templates.mjs` (840×1280).
+ * Đã là WebP nhỏ nên dùng <img> thường; tăng SHOT_VERSION mỗi lần chụp lại
+ * để trình duyệt và CDN không giữ ảnh cũ.
+ */
+const SHOT_VERSION = 3;
+const shot = (id: string) => `/templates/${id}.webp?v=${SHOT_VERSION}`;
 
 const FEATURES: { title: string; text: string; icon: React.ReactNode }[] = [
   { title: "Bìa mở có hiệu ứng", text: "Phong bì, dấu sáp, ảnh vòm, vòng hoa… mỗi mẫu một kiểu mở.", icon: <path d="M3 8l9 6 9-6M4 6h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1Z" /> },
@@ -52,7 +57,7 @@ export default async function Home() {
         <div className="hero-fan" aria-hidden="true">
           {fan.map((id, i) => (
             <div className={`fan fan-${i + 1}`} key={id}>
-              <Image src={shot(id)} alt="" width={420} height={640} priority={i === 1} />
+              <img src={shot(id)} alt="" width={420} height={640} loading={i === 1 ? "eager" : "lazy"} fetchPriority={i === 1 ? "high" : "auto"} />
             </div>
           ))}
         </div>
@@ -77,7 +82,7 @@ export default async function Home() {
           {THEME_LIST.map((t) => (
             <article className="tpl" key={t.id} style={{ "--c-outer": t.colors.outer } as React.CSSProperties}>
               <Link href={`/demo/${t.id}`} className="tpl-thumb" aria-label={`Xem thử mẫu ${t.name}`}>
-                <Image src={shot(t.id)} alt={`Bìa mẫu ${t.name}`} width={420} height={640} />
+                <img src={shot(t.id)} alt={`Bìa mẫu ${t.name}`} width={420} height={640} loading="lazy" decoding="async" />
                 <span className="tpl-hover">Xem thử</span>
               </Link>
               <div className="tpl-body">

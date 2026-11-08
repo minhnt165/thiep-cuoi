@@ -2,17 +2,17 @@
 
 Ảnh từ Unsplash (giấy phép Unsplash, dùng miễn phí). Chỉ dùng cho trang demo.
 
-- `cover.webp` — Couple in traditional vietnamese ao dai outfits — https://unsplash.com/photos/1767603087300-f4816785b685
-- `groom.webp` — A smiling man in a light-colored suit and tie — https://unsplash.com/photos/1766104798125-314e9659cf5a
-- `bride.webp` — A bride in a white ao dai holding a bouquet — https://unsplash.com/photos/1774240627288-e7c6eebb77a9
-- `album-1.webp` — Couple in traditional vietnamese ao dai poses by canal — https://unsplash.com/photos/1767603539928-e6f2cbc30651
-- `album-2.webp` — Woman in white wedding dress beside man in gray suit — https://unsplash.com/photos/1600164913117-2125c1f60b01
-- `album-3.webp` — Couple walking on a beach at sunset (ngang) — https://unsplash.com/photos/1769540209420-f137f98194e8
-- `album-4.webp` — A man in a suit and a woman in a red ao dai walking together — https://unsplash.com/photos/1790845160662-da5c604f96a5
-- `album-5.webp` — A bride and groom standing in the middle of a forest — https://unsplash.com/photos/1674232636722-e346adc6d678
-- `album-6.webp` — Couple in wedding attire by a serene lake at sunset (ngang) — https://unsplash.com/photos/1758727654358-a90614d694eb
-- `album-7.webp` — A bride and groom embracing in front of a window — https://unsplash.com/photos/1683238112862-0290be13cb7b
-- `album-8.webp` — Married couple standing beside beige wall — https://unsplash.com/photos/1544717304-14d94551b7dc
-- `story-1.webp` — Couple kissing under colorful lanterns on street — https://unsplash.com/photos/1767257718909-83b456319d89
-- `story-2.webp` — Couple in a boat adorned with flowers on a lake — https://unsplash.com/photos/1772940817118-f5eba2efe23f
-- `story-3.webp` — Couple in traditional hats walking by the water — https://unsplash.com/photos/1767257718914-c0a6b44e7538
+- `cover.webp` — Cặp đôi áo dài đỏ cầm tay nhau — https://images.unsplash.com/photo-1793345242426-d496a6bb8ff3
+- `groom.webp` — Cô dâu áo dài đỏ ren tựa vai chú rể — https://images.unsplash.com/photo-1790845741012-412641e90a77
+- `bride.webp` — Cô dâu váy ren trắng cầm hoa — https://images.unsplash.com/photo-1761459257216-563245209171
+- `album-1.webp` — Cô dâu chú rể trang phục trắng — https://images.unsplash.com/photo-1761574043568-587037ebc61c
+- `album-2.webp` — Cặp đôi buổi tối, cô dâu áo dài đỏ — https://images.unsplash.com/photo-1782790379216-53ab023c24de
+- `album-3.webp` — Cặp đôi bên xe Vespa (ảnh ngang) — https://images.unsplash.com/photo-1634963347014-d6d319ae8dc3
+- `album-4.webp` — Cặp đôi áo dài trong hẻm Hội An — https://images.unsplash.com/photo-1767603752934-6ba5227e3b2f
+- `album-5.webp` — Cô dâu chú rể ôm nhau trong lễ cưới — https://images.unsplash.com/photo-1785337573412-afaacba64502
+- `album-6.webp` — Cặp đôi đi giữa pháo giấy (ảnh ngang) — https://images.unsplash.com/photo-1783579084823-620ccab1db82
+- `album-7.webp` — Cặp đôi áo dài giữa lồng đèn Hội An — https://images.unsplash.com/photo-1767604013793-12d17fe6cbfa
+- `album-8.webp` — Cô dâu chú rể bên hoa trắng — https://images.unsplash.com/photo-1766316662552-6d3dd324019c
+- `story-1.webp` — Cặp đôi nắm tay trong hẻm — https://images.unsplash.com/photo-1760410179576-a2764d7ce91f
+- `story-2.webp` — Cặp đôi giữa đồi núi — https://images.unsplash.com/photo-1662013605217-984248f85f4b
+- `story-3.webp` — Cặp đôi buổi tối bên hồ — https://images.unsplash.com/photo-1782790379125-8b3b9a58cc9a

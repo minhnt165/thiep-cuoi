@@ -6,7 +6,7 @@ import { THEMES, themeVars } from "@/lib/templates";
 import { makeId } from "@/lib/schema";
 import { textureCss } from "@/components/ornaments/textures";
 import { IconNote } from "@/components/ornaments";
-import { Cover } from "./Cover";
+import { Cover, type CoverKind, type CoverPhase } from "./Cover";
 import { Album } from "./Album";
 import { SideArt } from "./Corner";
 import { DressCode, Family, Footer, Gift, Guestbook, Party, SaveTheDate, Story, Timeline, type RsvpInput } from "./sections";
@@ -43,13 +43,26 @@ function FallEffect({ kind }: { kind: "sparkle" | "petal" }) {
   );
 }
 
+/**
+ * Thời gian pha "đang mở" theo kiểu bìa (ms): phong bì cần bóc dấu sáp, lật nắp,
+ * rút thiệp nên lâu hơn; các bìa khác chỉ một nhịp ngắn.
+ */
+const OPENING_MS: Record<CoverKind, number> = { envelope: 1750, card: 700, band: 800, polaroid: 750, arch: 700, wreath: 800 };
+/** Thời gian bìa tan dần trước khi gỡ hẳn khỏi trang */
+const REVEAL_MS = 1100;
+
 export function Invitation({ data, wishes: initialWishes, mode, startOpened = false, embedded = false, guest = "" }: Props) {
   const theme = THEMES[data.template];
-  const [open, setOpen] = useState(startOpened);
+  const [phase, setPhase] = useState<CoverPhase>(startOpened ? "open" : "closed");
+  /** Nội dung đã được phép cuộn và hiện ra (bìa đang tan hoặc đã gỡ) */
+  const open = phase === "revealing" || phase === "open";
   const [wishes, setWishes] = useState(initialWishes);
   const [music, setMusic] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
   const rootRef = useRef<HTMLDivElement>(null);
+  const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
+
+  useEffect(() => () => timers.current.forEach(clearTimeout), []);
 
   const style = useMemo(
     () => ({ ...themeVars(theme, data.accent), "--texture": textureCss(theme) }) as CSSProperties,
@@ -75,10 +88,21 @@ export function Invitation({ data, wishes: initialWishes, mode, startOpened = fa
   }, [open, embedded, data.sections, data.template]);
 
   function onOpen() {
-    setOpen(true);
+    if (phase !== "closed") return;
+    // Phát nhạc ngay trong lúc bấm (trình duyệt chỉ cho phát khi có thao tác người dùng)
     if (data.music && audioRef.current) {
       audioRef.current.play().then(() => setMusic(true)).catch(() => setMusic(false));
     }
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setPhase("open");
+      return;
+    }
+    const opening = OPENING_MS[theme.cover];
+    setPhase("opening");
+    timers.current.push(
+      setTimeout(() => setPhase("revealing"), opening),
+      setTimeout(() => setPhase("open"), opening + REVEAL_MS),
+    );
   }
 
   function toggleMusic() {
@@ -127,7 +151,7 @@ export function Invitation({ data, wishes: initialWishes, mode, startOpened = fa
       <div className={`inv t-${theme.id} ${theme.dark ? "is-dark" : ""} ${open ? "" : "is-locked"}`}>
         {theme.fall !== "none" && <FallEffect kind={theme.fall} />}
         {open && <SideArt theme={theme} />}
-        <Cover data={data} theme={theme} open={open} onOpen={onOpen} guest={guest} />
+        {phase !== "open" && <Cover data={data} theme={theme} phase={phase} onOpen={onOpen} guest={guest} />}
         {data.sections.map((id) => sectionMap[id])}
         <Footer data={data} />
       </div>

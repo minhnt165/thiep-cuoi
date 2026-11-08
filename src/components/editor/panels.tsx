@@ -8,7 +8,7 @@ import { THEME_LIST } from "@/lib/templates";
 import { api } from "@/lib/client/api";
 import { formatWishTime } from "@/lib/dates";
 import { BANKS, vietQrUrl } from "@/lib/banks";
-import { MUSIC_PRESETS, presetUrl } from "@/lib/music";
+import { MUSIC_PRESETS, presetAvailable, presetUrl } from "@/lib/music";
 
 export type Patch = (fn: (d: Invitation) => void) => void;
 
@@ -71,33 +71,22 @@ function Upload({ slug, editKey, accept, multiple, onDone, label }: { slug: stri
 }
 
 /**
- * Menu nhạc có sẵn. Kiểm tra từng file trong /music có tồn tại không (HEAD)
- * để chỉ cho chọn bài đã có file; bài chưa có thì mờ đi.
+ * Menu nhạc có sẵn: chỉ cho chọn bài đã có file trong public/music (danh sách
+ * lập lúc build), bài chưa có thì mờ đi.
  */
 function MusicPicker({ value, onPick }: { value: string; onPick: (url: string) => void }) {
-  const [avail, setAvail] = useState<Record<string, boolean> | null>(null);
-  useEffect(() => {
-    let alive = true;
-    Promise.all(
-      MUSIC_PRESETS.map((p) =>
-        fetch(presetUrl(p), { method: "HEAD" })
-          .then((r) => [p.id, r.ok && (r.headers.get("content-type") ?? "").startsWith("audio")] as const)
-          .catch(() => [p.id, false] as const),
-      ),
-    ).then((pairs) => { if (alive) setAvail(Object.fromEntries(pairs)); });
-    return () => { alive = false; };
-  }, []);
-  const ready = MUSIC_PRESETS.filter((p) => avail?.[p.id]);
+  const avail: Record<string, boolean> = Object.fromEntries(MUSIC_PRESETS.map((p) => [p.id, presetAvailable(p)]));
+  const ready = MUSIC_PRESETS.filter((p) => avail[p.id]);
   const current = MUSIC_PRESETS.find((p) => presetUrl(p) === value)?.id ?? "";
   const label = (p: (typeof MUSIC_PRESETS)[number]) => `${p.title}${p.artist ? ` · ${p.artist}` : ""}`;
   return (
     <F label="Chọn bài có sẵn">
-      <select value={current} onChange={(e) => { const p = MUSIC_PRESETS.find((x) => x.id === e.target.value); if (p) onPick(presetUrl(p)); }} disabled={avail === null}>
-        <option value="">{avail === null ? "Đang kiểm tra…" : ready.length ? "— Chọn bài —" : "Chưa có bài nào trong public/music"}</option>
+      <select value={current} onChange={(e) => { const p = MUSIC_PRESETS.find((x) => x.id === e.target.value); if (p) onPick(presetUrl(p)); }}>
+        <option value="">{ready.length ? "— Chọn bài —" : "Chưa có bài nào trong public/music"}</option>
         {(["vi", "en"] as const).map((lang) => (
           <optgroup key={lang} label={lang === "vi" ? "Tiếng Việt" : "Tiếng Anh"}>
             {MUSIC_PRESETS.filter((p) => p.lang === lang).map((p) => (
-              <option key={p.id} value={p.id} disabled={!avail?.[p.id]}>{label(p)}{avail && !avail[p.id] ? " (chưa có file)" : ""}</option>
+              <option key={p.id} value={p.id} disabled={!avail[p.id]}>{label(p)}{avail[p.id] ? "" : " (chưa có file)"}</option>
             ))}
           </optgroup>
         ))}

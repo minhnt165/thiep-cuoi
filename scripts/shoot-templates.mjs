@@ -15,7 +15,7 @@ const BASE = process.env.BASE_URL ?? "http://localhost:3100";
 const IDS = ["marble-gold", "burgundy-envelope", "song-hy", "white-blossom", "sage-arch", "navy-gold", "blush-rose", "mono-minimal"];
 const CSS = `html,body{overflow:hidden;background:#000;height:1280px}
 .inv-root{width:420px!important;height:640px!important;min-height:0!important;transform:scale(2);transform-origin:0 0;overflow:hidden!important}
-.inv,.inv.is-locked{height:640px!important;min-height:0!important} nextjs-portal{display:none}`;
+.inv,.inv.is-locked{height:640px!important;min-height:0!important} .cover{height:640px!important} nextjs-portal{display:none}`;
 
 const { chromium } = await import("playwright").catch(() => {
   console.error("Chưa cài playwright: npm i -D playwright && npx playwright install chromium");

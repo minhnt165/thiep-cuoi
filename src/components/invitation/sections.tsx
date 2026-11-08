@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useSyncExternalStore, type FormEvent } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore, type FormEvent } from "react";
 import type { GiftAccount, PublicInvitation, Rsvp, WeddingEvent, Wish } from "@/lib/schema";
 import type { Theme } from "@/lib/templates";
 import { lunarLabel } from "@/lib/lunar";
@@ -9,6 +9,7 @@ import { Divider, IconCalendar, IconCopy, IconPin, WaxSeal } from "@/components/
 import { vietQrUrl } from "@/lib/banks";
 import { Corners } from "./Corner";
 import { Photo } from "./Photo";
+import { Modal } from "./Modal";
 
 const MONTHS = ["", "Tháng 01", "Tháng 02", "Tháng 03", "Tháng 04", "Tháng 05", "Tháng 06", "Tháng 07", "Tháng 08", "Tháng 09", "Tháng 10", "Tháng 11", "Tháng 12"];
 
@@ -428,7 +429,7 @@ export function Guestbook({ wishes, onAdd }: { wishes: Wish[]; onAdd?: (name: st
 
 /* ---------- Hộp quà mừng ---------- */
 /* eslint-disable @next/next/no-img-element */
-function GiftCard({ g }: { g: GiftAccount }) {
+function GiftCard({ g, delay = 0 }: { g: GiftAccount; delay?: number }) {
   const [copied, setCopied] = useState(false);
   async function copy() {
     try {
@@ -441,7 +442,7 @@ function GiftCard({ g }: { g: GiftAccount }) {
   }
   const qr = g.qrImage || (g.bankCode && g.accountNumber ? vietQrUrl(g.bankCode, g.accountNumber, g.holder) : "");
   return (
-    <div className="gift">
+    <div className="gift" style={{ animationDelay: `${delay + 120}ms` }}>
       {g.label && <p className="side">{g.label}</p>}
       <div className="qr">
         {qr ? <img src={qr} alt={`Mã QR ${g.bank}`} loading="lazy" /> : <div className="qr-empty">Chưa có mã QR</div>}
@@ -456,36 +457,59 @@ function GiftCard({ g }: { g: GiftAccount }) {
   );
 }
 
+/** Thời gian nắp hộp bật ra trước khi popup hiện (ms) */
+const GIFT_POP_MS = 650;
+
 export function Gift({ data }: { data: PublicInvitation }) {
-  const [open, setOpen] = useState(false);
+  /** idle: hộp đóng · popping: nắp đang bật · open: popup đang mở */
+  const [state, setState] = useState<"idle" | "popping" | "open">("idle");
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => { if (timer.current) clearTimeout(timer.current); }, []);
   if (!data.gifts.length) return null;
+
+  function pop() {
+    if (state !== "idle") return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setState("open");
+      return;
+    }
+    setState("popping");
+    timer.current = setTimeout(() => setState("open"), GIFT_POP_MS);
+  }
+
   return (
     <section className="sec reveal" id="s-gift">
       <Title>Hộp quà mừng</Title>
-      {!open ? (
-        <>
-          <button type="button" className="giftbox" onClick={() => setOpen(true)} aria-label="Mở hộp quà">
-            <svg viewBox="0 0 150 130" aria-hidden="true">
-              <rect x="25" y="58" width="100" height="62" rx="6" fill="currentColor" opacity="0.9" />
-              <rect x="68" y="58" width="14" height="62" fill="var(--gold)" />
-              <g className="lid">
-                <rect x="16" y="42" width="118" height="24" rx="5" fill="currentColor" />
-                <rect x="68" y="42" width="14" height="24" fill="var(--gold)" />
-                <path d="M75 42c-14-20-36-20-34-6 2 10 20 10 34 6Zm0 0c14-20 36-20 34-6-2 10-20 10-34 6Z" fill="none" stroke="var(--gold)" strokeWidth="4" strokeLinejoin="round" />
-              </g>
-            </svg>
-          </button>
-          <p className="gift-tap">Nhấn để mở</p>
-        </>
-      ) : (
-        <>
-          <p className="eyebrow" style={{ marginTop: 14, textTransform: "none", letterSpacing: 0, fontSize: 14 }}>{data.texts.giftIntro}</p>
-          <div className="gifts">
-            {data.gifts.map((g) => (
-              <GiftCard key={g.id} g={g} />
-            ))}
+      <button type="button" className={`giftbox is-${state}`} onClick={pop} aria-label="Mở hộp quà mừng" aria-haspopup="dialog">
+        <svg viewBox="0 0 150 130" aria-hidden="true">
+          <rect x="25" y="58" width="100" height="62" rx="6" fill="currentColor" opacity="0.9" />
+          <rect x="68" y="58" width="14" height="62" fill="var(--gold)" />
+          <g className="lid">
+            <rect x="16" y="42" width="118" height="24" rx="5" fill="currentColor" />
+            <rect x="68" y="42" width="14" height="24" fill="var(--gold)" />
+            <path d="M75 42c-14-20-36-20-34-6 2 10 20 10 34 6Zm0 0c14-20 36-20 34-6-2 10-20 10-34 6Z" fill="none" stroke="var(--gold)" strokeWidth="4" strokeLinejoin="round" />
+          </g>
+        </svg>
+        <span className="gift-sparks" aria-hidden="true">
+          {Array.from({ length: 9 }, (_, i) => <i key={i} style={{ "--a": `${-150 + i * 15}deg`, "--d": `${(i % 3) * 60}ms` } as React.CSSProperties} />)}
+        </span>
+      </button>
+      <p className="gift-tap">Nhấn để mở</p>
+
+      {state === "open" && (
+        <Modal className="gift-modal" label="Hộp quà mừng" onClose={() => setState("idle")}>
+          <div className="gift-sheet">
+            <button type="button" className="gift-close" onClick={() => setState("idle")} aria-label="Đóng">×</button>
+            <p className="script gift-title">Hộp quà mừng</p>
+            <Divider className="divider" />
+            <p className="gift-intro">{data.texts.giftIntro}</p>
+            <div className={`gifts ${data.gifts.length > 1 ? "is-multi" : ""}`}>
+              {data.gifts.map((g, i) => (
+                <GiftCard key={g.id} g={g} delay={i * 90} />
+              ))}
+            </div>
           </div>
-        </>
+        </Modal>
       )}
     </section>
   );
