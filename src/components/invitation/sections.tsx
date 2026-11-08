@@ -7,6 +7,7 @@ import { lunarLabel } from "@/lib/lunar";
 import { countdown, dotDate, formatWishTime, googleCalendarUrl, mapsUrl, monthGrid, parseYmd, pad, toVnDate, weekdayLabel } from "@/lib/dates";
 import { Divider, IconCalendar, IconCopy, IconPin, WaxSeal } from "@/components/ornaments";
 import { vietQrUrl } from "@/lib/banks";
+import { nameLengthClass } from "@/lib/names";
 import { Corners } from "./Corner";
 import { Photo } from "./Photo";
 import { Modal } from "./Modal";
@@ -41,7 +42,7 @@ export function SaveTheDate({ data, theme }: { data: PublicInvitation; theme: Th
   const [p1, p2] = data.photos.saveTheDate;
   const initials = `${data.groom.shortName.slice(0, 1)}&${data.bride.shortName.slice(0, 1)}`;
   return (
-    <section className="sec std reveal" id="s-std">
+    <section className={`sec std reveal ${nameLengthClass(data)}`} id="s-std">
       <Corners theme={theme} where={["tl", "br"]} />
       <p className="eyebrow">{data.texts.saveTheDate}</p>
       {theme.cover === "envelope" ? (

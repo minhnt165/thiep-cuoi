@@ -1,6 +1,7 @@
 import type { PublicInvitation } from "@/lib/schema";
 import type { Theme } from "@/lib/templates";
 import { longDate } from "@/lib/dates";
+import { nameLengthClass } from "@/lib/names";
 import { HeartBadge, Lantern, PeonyCluster, WaxSeal } from "@/components/ornaments";
 import { Corners } from "./Corner";
 import { Photo } from "./Photo";
@@ -172,7 +173,7 @@ export function Cover({ data, theme, phase, onOpen, guest = "" }: Props) {
   }
 
   return (
-    <div className={`cover kind-${theme.cover} is-${phase}`} aria-hidden={open}>
+    <div className={`cover kind-${theme.cover} is-${phase} ${nameLengthClass(data)}`} aria-hidden={open}>
       <div className="cover-stage">{inner}</div>
       {phase === "revealing" && <Burst />}
     </div>

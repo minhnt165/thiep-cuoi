@@ -1167,6 +1167,63 @@
   width: 120px;
 }
 
+/* Nhãn tên luôn nằm trên ảnh và không xuống dòng: trước đây tên dài ("Dương Bích")
+   rớt dòng 2 rồi bị ảnh cô dâu che mất. Tên dài thì thu chữ lại. */
+.std-label {
+  z-index: 3;
+  white-space: nowrap;
+}
+
+.std-l1,
+.std-l2 {
+  width: auto;
+  min-width: 120px;
+}
+
+.names-long .std-label .nm {
+  font-size: 18px;
+}
+
+.names-xlong .std-label .nm {
+  font-size: 15px;
+  white-space: normal;
+  max-width: 150px;
+}
+
+.names-xlong .std-names {
+  font-size: 30px;
+}
+
+/* tên trên bìa */
+.names-long .band-row .nm {
+  font-size: 16px;
+}
+
+.names-xlong .band-row .nm {
+  font-size: 14px;
+}
+
+.names-xlong .cover-names {
+  font-size: 28px;
+}
+
+.pol .cap {
+  white-space: nowrap;
+}
+
+.names-long .pol .cap {
+  font-size: 16px;
+}
+
+.names-xlong .pol .cap {
+  font-size: 13px;
+}
+
+/* ảnh polaroid đầu nằm trên, để chú thích tên của nó không bị ảnh thứ hai che */
+.pol-1 {
+  z-index: 2;
+}
+
 /* ảnh trong phong bì (mẫu đỏ rượu) */
 .std-env {
   position: relative;
@@ -1883,9 +1940,46 @@
   outline-offset: 2px;
 }
 
+/* dấu ✓ cho lựa chọn đang chọn, không chỉ dựa vào màu */
+.seg input:checked + span::before {
+  content: "✓ ";
+}
+
 .frm .btn {
   justify-self: center;
   margin-top: 4px;
+}
+
+/* Mẫu có khối nền chính là màu nhấn (Đỏ rượu, Song Hỷ, Xanh sage): nút chính và lựa
+   chọn đang chọn trong khối trùng màu nền nên chìm mất. Đảo sang màu chữ của khối. */
+.is-panel-accent .panel .btn:not(.btn-ghost),
+.is-panel-accent .panel .seg input:checked + span {
+  background: var(--panel-ink);
+  color: var(--panel);
+  border-color: var(--panel-ink);
+}
+
+.is-panel-accent .panel .seg input:focus-visible + span {
+  outline-color: var(--panel-ink);
+}
+
+/* ô chưa chọn: viền rỗng trên nền khối, để khác hẳn ô đang chọn (tô đầy) */
+.is-panel-accent .panel .seg input:not(:checked) + span {
+  background: transparent;
+  color: var(--panel-ink);
+  border-color: color-mix(in srgb, var(--panel-ink), transparent 45%);
+}
+
+.is-panel-accent .panel .seg input:checked + span {
+  font-weight: 600;
+}
+
+.is-panel-accent .panel .done {
+  border-color: var(--panel-ink);
+}
+
+.is-panel-accent .panel .done .script {
+  color: var(--panel-ink);
 }
 
 .err {
@@ -2070,7 +2164,7 @@
 
 /* ---------- mừng cưới ---------- */
 .giftbox {
-  margin: 22px auto 0;
+  margin: 36px auto 0;
   width: 150px;
   height: 130px;
   position: relative;
@@ -2084,6 +2178,8 @@
 .giftbox svg {
   width: 100%;
   height: 100%;
+  /* nắp bật bay lên vượt khỏi khung vẽ, không cắt nó */
+  overflow: visible;
 }
 
 .giftbox .lid {
@@ -2925,6 +3021,14 @@
 .t-mono-minimal .std-names {
   font-size: 50px;
   line-height: 0.95;
+}
+
+.t-mono-minimal .names-long .std-names {
+  font-size: 44px;
+}
+
+.t-mono-minimal .names-xlong .std-names {
+  font-size: 34px;
 }
 
 .t-mono-minimal .std-names .amp {

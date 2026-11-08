@@ -148,7 +148,7 @@ export function Invitation({ data, wishes: initialWishes, mode, startOpened = fa
 
   return (
     <div className={`inv-root ${embedded ? "is-embedded" : ""}`} style={style} ref={rootRef}>
-      <div className={`inv t-${theme.id} ${theme.dark ? "is-dark" : ""} ${open ? "" : "is-locked"}`}>
+      <div className={`inv t-${theme.id} ${theme.dark ? "is-dark" : ""} ${theme.colors.panel === theme.colors.accent ? "is-panel-accent" : ""} ${open ? "" : "is-locked"}`}>
         {theme.fall !== "none" && <FallEffect kind={theme.fall} />}
         {open && <SideArt theme={theme} />}
         {phase !== "open" && <Cover data={data} theme={theme} phase={phase} onOpen={onOpen} guest={guest} />}
