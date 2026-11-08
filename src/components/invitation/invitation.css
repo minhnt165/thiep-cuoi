@@ -3279,3 +3279,319 @@
 .is-dark .music {
   background: var(--panel);
 }
+
+/* =====================================================================
+   Hiệu ứng thêm (chỉ dùng transform/opacity/clip để mượt trên điện thoại)
+   ===================================================================== */
+
+/* --- bìa lúc chờ bấm: thiệp bồng bềnh, nút có vệt sáng, phong bì nhấp nhô --- */
+/* khi bấm mở, nhịp bồng bềnh dừng: trượt êm về chỗ thay vì giật */
+.cover-card {
+  transition: transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 0.7s ease, translate 0.6s ease;
+}
+
+.cover-band,
+.cover-pol,
+.cover-arch,
+.cover-wreath {
+  transition: translate 0.6s ease;
+}
+
+.env {
+  transition: transform 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) 0.75s, translate 0.5s ease;
+}
+
+.cover.is-closed .cover-card,
+.cover.is-closed .cover-band,
+.cover.is-closed .cover-pol,
+.cover.is-closed .cover-arch,
+.cover.is-closed .cover-wreath,
+.cover.is-closed .env {
+  animation: float 5.5s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 0 -7px;
+  }
+}
+
+.cover .btn {
+  position: relative;
+  overflow: hidden;
+}
+
+.cover.is-closed .btn::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, 0.45) 50%, transparent 70%);
+  translate: -120% 0;
+  animation: shine 3.6s ease-in-out 1.2s infinite;
+  pointer-events: none;
+}
+
+@keyframes shine {
+  0% {
+    translate: -120% 0;
+  }
+  35%,
+  100% {
+    translate: 120% 0;
+  }
+}
+
+.cover.is-closed .env-seal svg {
+  animation: seal-pulse 2.6s ease-in-out infinite;
+}
+
+@keyframes seal-pulse {
+  0%,
+  100% {
+    scale: 1;
+  }
+  50% {
+    scale: 1.07;
+  }
+}
+
+/* --- họa tiết hoa lá đung đưa như có gió (xoay nhẹ quanh gốc cành) --- */
+.orn svg {
+  transform-origin: 10% 10%;
+  animation: sway 7s ease-in-out infinite alternate;
+}
+
+.orn-side:nth-of-type(even) svg,
+.orn-br svg,
+.orn-bl svg {
+  animation-delay: -3.5s;
+  animation-duration: 8s;
+}
+
+@keyframes sway {
+  from {
+    rotate: -2.5deg;
+  }
+  to {
+    rotate: 3deg;
+  }
+}
+
+/* --- tiêu đề giãn chữ, đường kẻ tự vẽ từ giữa ra --- */
+.reveal.in .sec-title {
+  animation: title-in 1.1s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+/* không đổi letter-spacing (làm tiêu đề tạm xuống dòng, xô nội dung bên dưới) */
+@keyframes title-in {
+  from {
+    opacity: 0;
+    scale: 0.9;
+    filter: blur(5px);
+  }
+}
+
+.divider .dv-line {
+  stroke-dasharray: 1;
+}
+
+.divider .dv-gem {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.reveal.in .divider .dv-line {
+  animation: draw 1s cubic-bezier(0.6, 0, 0.2, 1) 0.3s both;
+}
+
+.reveal.in .divider .dv-gem {
+  animation: gem-in 0.7s cubic-bezier(0.3, 1.5, 0.5, 1) 0.15s both;
+}
+
+.reveal.in .divider .dv-dot {
+  animation: fade-in 0.5s ease 0.9s both;
+}
+
+@keyframes draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+}
+
+@keyframes gem-in {
+  from {
+    opacity: 0;
+    transform: scale(0) rotate(-90deg);
+  }
+}
+
+/* --- đếm ngược: số mới lật xuống mỗi lần đổi --- */
+.cd .tick {
+  overflow: hidden;
+}
+
+.cd .tick span {
+  display: inline-block;
+  animation: tick-in 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes tick-in {
+  from {
+    opacity: 0;
+    translate: 0 -60%;
+  }
+}
+
+/* --- lịch trình: từng mốc bật ra lần lượt, đường nối chạy dần xuống --- */
+.reveal.in .tl li {
+  animation: rise-in 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation-delay: calc(var(--i, 0) * 110ms + 0.3s);
+}
+
+.tl .dot::before {
+  transition: none;
+}
+
+.reveal.in .tl .dot::before {
+  animation: dot-pop 0.5s cubic-bezier(0.3, 1.8, 0.5, 1) both;
+  animation-delay: calc(var(--i, 0) * 110ms + 0.4s);
+}
+
+.tl li:not(:last-child) .dot::after {
+  transform-origin: top;
+}
+
+.reveal.in .tl li:not(:last-child) .dot::after {
+  animation: line-grow 0.5s ease both;
+  animation-delay: calc(var(--i, 0) * 110ms + 0.5s);
+}
+
+@keyframes dot-pop {
+  from {
+    scale: 0;
+  }
+}
+
+@keyframes line-grow {
+  from {
+    transform: scaleY(0);
+  }
+}
+
+/* --- chuyện tình: các mốc trượt vào xen kẽ trái/phải, ảnh thu dần vào khung --- */
+.reveal.in .story-i {
+  animation: slide-l 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation-delay: calc(var(--i, 0) * 150ms + 0.2s);
+}
+
+.reveal.in .story-i:nth-child(even) {
+  animation-name: slide-r;
+}
+
+.reveal.in .story-i .photo img {
+  animation: img-settle 1.6s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation-delay: calc(var(--i, 0) * 150ms + 0.2s);
+}
+
+@keyframes slide-l {
+  from {
+    opacity: 0;
+    translate: -36px 0;
+  }
+}
+
+@keyframes slide-r {
+  from {
+    opacity: 0;
+    translate: 36px 0;
+  }
+}
+
+@keyframes img-settle {
+  from {
+    scale: 1.18;
+  }
+}
+
+/* --- lưu bút hiện lần lượt (lời chúc mới gửi trượt vào), màu dress code bật ra --- */
+.reveal.in .wish {
+  animation: rise-in 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation-delay: calc(var(--i, 0) * 70ms + 0.2s);
+}
+
+.reveal.in .swatches i {
+  animation: dot-pop 0.6s cubic-bezier(0.3, 1.6, 0.5, 1) both;
+}
+
+.reveal.in .swatches i:nth-child(2) {
+  animation-delay: 0.12s;
+}
+
+.reveal.in .swatches i:nth-child(3) {
+  animation-delay: 0.24s;
+}
+
+.reveal.in .swatches i:nth-child(n + 4) {
+  animation-delay: 0.36s;
+}
+
+/* --- "Cảm ơn" hiện như đang viết tay (mở dần từ trái sang) --- */
+.end.in .big {
+  animation: write-on 1.8s cubic-bezier(0.55, 0, 0.25, 1) 0.15s both;
+}
+
+@keyframes write-on {
+  from {
+    clip-path: inset(-30% 105% -30% -10%);
+  }
+  to {
+    clip-path: inset(-30% -10% -30% -10%);
+  }
+}
+
+/* --- nút nhạc: sóng tỏa ra khi đang phát --- */
+.music.on::before,
+.music.on::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: 50%;
+  border: 1px solid var(--accent);
+  animation: ring 2.4s ease-out infinite;
+  pointer-events: none;
+}
+
+.music.on::after {
+  animation-delay: 1.2s;
+}
+
+@keyframes ring {
+  from {
+    opacity: 0.7;
+    scale: 1;
+  }
+  to {
+    opacity: 0;
+    scale: 1.9;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cover.is-closed .cover-card,
+  .cover.is-closed .cover-band,
+  .cover.is-closed .cover-pol,
+  .cover.is-closed .cover-arch,
+  .cover.is-closed .cover-wreath,
+  .cover.is-closed .env,
+  .cover.is-closed .btn::after,
+  .cover.is-closed .env-seal svg,
+  .orn svg,
+  .music.on::before,
+  .music.on::after {
+    animation: none;
+  }
+}

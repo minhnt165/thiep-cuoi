@@ -172,6 +172,15 @@ function useNowSec(): number | null {
   return useSyncExternalStore(tick, () => Math.floor(Date.now() / 1000), () => null);
 }
 
+/** Một ô số đếm ngược: đổi key theo giá trị để số mới lật xuống (animation khi gắn) */
+function Tick({ value }: { value: string }) {
+  return (
+    <b className="tick">
+      <span key={value}>{value}</span>
+    </b>
+  );
+}
+
 function Countdown({ target }: { target: Date }) {
   const now = useNowSec();
   const t = now === null ? null : countdown(target, new Date(now * 1000));
@@ -181,10 +190,10 @@ function Countdown({ target }: { target: Date }) {
     <>
       <p className="cd-title">Cùng đếm ngược</p>
       <div className="cd" aria-live="off">
-        <div><b>{t ? t.days : "--"}</b><span>Ngày</span></div>
-        <div><b>{v(t?.hours)}</b><span>Giờ</span></div>
-        <div><b>{v(t?.minutes)}</b><span>Phút</span></div>
-        <div><b>{v(t?.seconds)}</b><span>Giây</span></div>
+        <div><Tick value={t ? String(t.days) : "--"} /><span>Ngày</span></div>
+        <div><Tick value={v(t?.hours)} /><span>Giờ</span></div>
+        <div><Tick value={v(t?.minutes)} /><span>Phút</span></div>
+        <div><Tick value={v(t?.seconds)} /><span>Giây</span></div>
       </div>
     </>
   );
@@ -346,7 +355,7 @@ export function Timeline({ data }: { data: PublicInvitation }) {
         <Title>Lịch trình ngày cưới</Title>
         <ol className="tl">
           {data.timeline.map((t, i) => (
-            <li key={i}>
+            <li key={i} style={{ "--i": i } as React.CSSProperties}>
               <span className="t">{t.time}</span>
               <span className="dot" />
               <span className="n">{t.title}</span>
@@ -366,7 +375,7 @@ export function Story({ data }: { data: PublicInvitation }) {
       <Title>Chuyện của chúng mình</Title>
       <div className="story">
         {data.story.map((s, i) => (
-          <div className="story-i" key={i}>
+          <div className="story-i" key={i} style={{ "--i": i } as React.CSSProperties}>
             <span className="story-y">{s.label}</span>
             <div>
               {s.photo && <Photo src={s.photo} alt={s.title} />}
@@ -417,8 +426,8 @@ export function Guestbook({ wishes, onAdd }: { wishes: Wish[]; onAdd?: (name: st
         <button type="submit" className="btn" disabled={busy}>{busy ? "Đang gửi…" : "Gửi lời chúc"}</button>
       </form>
       <div className="wishes">
-        {wishes.map((w) => (
-          <div className="wish" key={w.id}>
+        {wishes.map((w, i) => (
+          <div className="wish" key={w.id} style={{ "--i": Math.min(i, 8) } as React.CSSProperties}>
             <div className="h"><b>{w.name}</b><time dateTime={w.createdAt}>{formatWishTime(w.createdAt)}</time></div>
             <p>{w.message}</p>
           </div>

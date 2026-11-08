@@ -229,11 +229,15 @@ export function WaxSeal({ text, color, ink, ...props }: P & { text: string; colo
 export function Divider(props: P) {
   return (
     <svg viewBox="0 0 160 16" aria-hidden="true" {...props}>
-      <path d="M0 8H62M98 8H160" stroke="currentColor" strokeWidth="0.8" />
-      <path d="M80 1.5L86.5 8 80 14.5 73.5 8Z" fill="none" stroke="currentColor" strokeWidth="0.9" />
-      <circle cx="80" cy="8" r="1.8" fill="currentColor" />
-      <circle cx="68" cy="8" r="1.2" fill="currentColor" />
-      <circle cx="92" cy="8" r="1.2" fill="currentColor" />
+      {/* hai nét vẽ từ giữa ra (pathLength=1 để CSS vẽ dần bằng stroke-dashoffset) */}
+      <path className="dv-line" d="M62 8H0" pathLength={1} stroke="currentColor" strokeWidth="0.8" />
+      <path className="dv-line" d="M98 8H160" pathLength={1} stroke="currentColor" strokeWidth="0.8" />
+      <g className="dv-gem">
+        <path d="M80 1.5L86.5 8 80 14.5 73.5 8Z" fill="none" stroke="currentColor" strokeWidth="0.9" />
+        <circle cx="80" cy="8" r="1.8" fill="currentColor" />
+      </g>
+      <circle className="dv-dot" cx="68" cy="8" r="1.2" fill="currentColor" />
+      <circle className="dv-dot" cx="92" cy="8" r="1.2" fill="currentColor" />
     </svg>
   );
 }
