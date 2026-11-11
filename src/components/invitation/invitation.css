@@ -873,35 +873,51 @@
   overflow: hidden;
 }
 
+/* hai ảnh đứng cạnh nhau, so le cao thấp, không che mặt nhau */
 .pol-stack {
   position: relative;
-  width: 230px;
-  height: 250px;
-  margin: 8px auto 0;
+  width: min(264px, 100%);
+  height: 232px;
+  margin: 14px auto 0;
 }
 
 .pol {
   position: absolute;
-  width: 140px;
-  padding: 8px 8px 28px;
+  width: 132px;
+  padding: 7px 7px 28px;
   background: #fff;
   box-shadow: 0 10px 20px rgba(50, 60, 40, 0.2);
 }
 
 .pol .photo {
-  height: 160px;
+  height: 150px;
 }
 
 .pol-1 {
   left: 0;
   top: 0;
-  transform: rotate(-7deg);
+  transform: rotate(-5deg);
 }
 
 .pol-2 {
   right: 0;
-  top: 70px;
-  transform: rotate(6deg);
+  top: 38px;
+  transform: rotate(5deg);
+}
+
+/* màn rất hẹp: thu ảnh theo bề ngang để hai ảnh vẫn không che nhau */
+@media (max-width: 350px) {
+  .pol {
+    width: 48%;
+  }
+
+  .pol .photo {
+    height: 132px;
+  }
+
+  .pol-stack {
+    height: 214px;
+  }
 }
 
 .pol .cap {
@@ -1078,11 +1094,11 @@
 
 /* polaroid: hai ảnh tách ra hai bên */
 .cover.is-opening .pol-1 {
-  transform: translate(-16px, -8px) rotate(-14deg);
+  transform: translate(-8px, -8px) rotate(-11deg);
 }
 
 .cover.is-opening .pol-2 {
-  transform: translate(16px, 6px) rotate(13deg);
+  transform: translate(8px, 6px) rotate(11deg);
 }
 
 /* vòng hoa: viền xoay, hoa nở */
