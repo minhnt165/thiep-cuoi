@@ -1,0 +1,530 @@
+/* Phần mở thiệp dùng chung cho mọi mẫu:
+   - bìa "gate": hai cánh cửa phủ kín màn hình, bấm thì tách ra hai bên
+   - màn "cinema": ảnh bìa tràn màn hình, tên phủ trên ảnh, ảnh trôi chậm khi cuộn
+   Màu lấy từ biến của theme. Mẫu nào cần khác thì đặt lại --gate-*, --seal-*, --cin-*
+   (cuối file), phần trang trí riêng nặng hơn thì để ở file của mẫu (vd marble-gold.css). */
+
+.inv {
+  /* cánh cửa: nền, nét kẻ, chữ chính, chữ phụ */
+  --gate-bg: var(--bg);
+  --gate-line: var(--gold);
+  --gate-ink: var(--accent);
+  --gate-muted: var(--muted);
+  /* dấu tròn giữa hai cánh */
+  --seal-bg: var(--accent);
+  --seal-ink: var(--accent-ink);
+  /* chữ phủ trên ảnh: tên, dòng phụ */
+  --cin-ink: #fff8ec;
+  --cin-sub: #f3ead6;
+}
+
+/* ---------- bìa hai cánh cửa ---------- */
+/* Bìa trong suốt và phủ kín bằng hai cánh cửa: cửa trượt ra là thấy ngay ảnh cưới bên dưới */
+.inv .cover.kind-gate {
+  padding: 0;
+  background: none;
+}
+
+.inv .kind-gate .cover-stage {
+  height: 100%;
+  align-items: stretch;
+}
+
+.inv .cover.kind-gate.is-revealing .cover-stage {
+  transform: none;
+}
+
+.inv .gate {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  overflow: hidden;
+  container-type: inline-size;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.inv .gate-door {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50%;
+  background-color: var(--gate-bg);
+  background-size: 100% 100%, 900px 900px;
+  overflow: hidden;
+  transition: transform 1.1s cubic-bezier(0.7, 0, 0.2, 1);
+}
+
+/* chất liệu nền chạy liền qua khe cửa: cánh phải lùi nền đúng bằng bề rộng một cánh */
+.inv .gate-l {
+  left: 0;
+  background-image: linear-gradient(90deg, transparent 72%, rgba(0, 0, 0, 0.09)), var(--texture);
+  box-shadow: inset -1px 0 0 var(--gate-line);
+}
+
+.inv .gate-r {
+  right: 0;
+  background-image: linear-gradient(270deg, transparent 72%, rgba(0, 0, 0, 0.09)), var(--texture);
+  background-position: 0 0, -50cqw 0;
+  box-shadow: inset 1px 0 0 var(--gate-line);
+}
+
+.inv .gate-door::before,
+.inv .gate-door::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+}
+
+.inv .gate-l::before {
+  inset: 14px 0 14px 14px;
+  border: 1px solid var(--gate-line);
+  border-right: 0;
+}
+
+.inv .gate-r::before {
+  inset: 14px 14px 14px 0;
+  border: 1px solid var(--gate-line);
+  border-left: 0;
+}
+
+.inv .gate-l::after {
+  inset: 20px 0 20px 20px;
+  border: 1px solid color-mix(in srgb, var(--gate-line), transparent 55%);
+  border-right: 0;
+}
+
+.inv .gate-r::after {
+  inset: 20px 20px 20px 0;
+  border: 1px solid color-mix(in srgb, var(--gate-line), transparent 55%);
+  border-left: 0;
+}
+
+.inv .gate-text {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 30px 90px;
+  text-align: center;
+}
+
+.inv .gate-text > * {
+  transition: opacity 0.4s ease;
+}
+
+.inv .gate-greet {
+  margin-bottom: 30px;
+  font-size: 11px;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: var(--gate-muted);
+}
+
+.inv .kind-gate .cover-names {
+  display: block;
+  font-size: 50px;
+  line-height: 1.1;
+  color: var(--gate-ink);
+}
+
+.inv .kind-gate.names-long .cover-names {
+  font-size: 42px;
+}
+
+.inv .kind-gate.names-xlong .cover-names {
+  font-size: 32px;
+}
+
+/* dấu tròn mang chữ cái đầu tên (mẫu Song Hỷ: chữ 囍) */
+.inv .gate-seal {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 84px;
+  height: 84px;
+  margin: 18px 0;
+  border-radius: 50%;
+  background: var(--seal-bg);
+  box-shadow: 0 14px 26px -10px rgba(0, 0, 0, 0.55);
+  color: var(--seal-ink);
+  font-family: var(--f-display), Georgia, serif;
+  font-size: 24px;
+}
+
+.inv .gate-seal::before {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  border-radius: 50%;
+  border: 1px solid color-mix(in srgb, var(--seal-ink), transparent 50%);
+}
+
+.inv .cover.is-closed .gate-seal {
+  animation: seal-pulse 2.6s ease-in-out infinite;
+}
+
+.inv .kind-gate .cover-date {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: auto;
+  margin: 30px 0 0;
+  padding-top: 0;
+  border-top: 0;
+  font-size: 12px;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--gate-ink);
+}
+
+.inv .kind-gate .cover-date::before,
+.inv .kind-gate .cover-date::after {
+  content: "";
+  width: 24px;
+  height: 1px;
+  background: var(--gate-line);
+}
+
+.inv .gate-tap {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(46px + env(safe-area-inset-bottom, 0px));
+  z-index: 2;
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--gate-ink);
+  transition: opacity 0.4s ease;
+}
+
+.inv .cover.is-closed .gate-tap {
+  animation: gate-tap 2.2s ease-in-out infinite;
+}
+
+@keyframes gate-tap {
+  50% {
+    opacity: 0.35;
+    translate: 0 -4px;
+  }
+}
+
+/* bấm mở: chữ lặng đi, dấu tròn xoay một vòng và tỏa sóng, rồi hai cánh trượt ra hai bên */
+.inv .cover:not(.is-closed) .gate-text > :not(.gate-seal),
+.inv .cover:not(.is-closed) .gate-tap {
+  opacity: 0;
+}
+
+.inv .cover.is-opening .gate-seal {
+  animation: gate-seal-open 0.9s cubic-bezier(0.3, 0, 0.3, 1) both;
+}
+
+.inv .cover.is-opening .gate-seal::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid var(--gate-line);
+  animation: ripple 0.9s ease-out forwards;
+}
+
+@keyframes gate-seal-open {
+  40% {
+    scale: 1.18;
+  }
+  100% {
+    rotate: 360deg;
+  }
+}
+
+.inv .cover.is-revealing .gate-seal {
+  opacity: 0;
+  scale: 1.5;
+  transition: opacity 0.5s ease, scale 0.6s ease;
+}
+
+.inv .cover.is-revealing .gate-l {
+  transform: translateX(-101%);
+}
+
+.inv .cover.is-revealing .gate-r {
+  transform: translateX(101%);
+}
+
+/* ---------- màn ảnh cưới tràn màn hình ---------- */
+.inv .std-cinema {
+  padding: 0;
+}
+
+/* luôn hiện sẵn sau bìa (không mờ dần như các phần khác) */
+.inv .std-cinema.reveal {
+  opacity: 1;
+  translate: none;
+}
+
+.inv .std-cinema.reveal.in > .cin {
+  animation: none;
+}
+
+.inv .cin {
+  position: relative;
+  height: 100dvh;
+  background: #1c1710;
+  overflow: hidden;
+}
+
+.is-embedded .inv .cin {
+  height: 100cqh;
+}
+
+.inv .cin-photo,
+.inv .cin-photo .photo {
+  position: absolute;
+  inset: 0;
+  border-radius: 0;
+}
+
+.inv .cin-photo img {
+  transform-origin: 50% 30%;
+}
+
+/* ảnh thu dần về khung (zoom chậm) từ lúc bìa mở */
+.inv .std-cinema.in .cin-photo img {
+  animation: cin-zoom 14s cubic-bezier(0.2, 0.6, 0.3, 1) both;
+}
+
+@keyframes cin-zoom {
+  from {
+    scale: 1.16;
+  }
+}
+
+/* lớp tối dần về đáy để chữ đọc rõ trên mọi ảnh */
+.inv .cin::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(20, 15, 8, 0.35) 0%, transparent 26%, transparent 40%, rgba(20, 15, 8, 0.6) 68%, rgba(20, 15, 8, 0.92) 100%);
+  pointer-events: none;
+}
+
+.inv .cin-text {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  padding: 0 24px calc(78px + env(safe-area-inset-bottom, 0px));
+  text-align: center;
+}
+
+.inv .cin-text .eyebrow {
+  color: var(--cin-sub);
+  letter-spacing: 0.42em;
+}
+
+.inv .cin-text .std-names {
+  margin-top: 14px;
+  font-size: 58px;
+  line-height: 1.02;
+  color: var(--cin-ink);
+  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.45);
+}
+
+.inv .cin-text .std-names .amp {
+  margin: 2px 0 0;
+  font-size: 40px;
+  color: inherit;
+  opacity: 0.9;
+}
+
+.inv .names-long .cin-text .std-names {
+  font-size: 46px;
+}
+
+.inv .names-xlong .cin-text .std-names {
+  font-size: 36px;
+}
+
+.inv .cin-date {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 18px;
+  font-size: 14px;
+  letter-spacing: 0.4em;
+  color: var(--cin-sub);
+}
+
+.inv .cin-date::before,
+.inv .cin-date::after {
+  content: "";
+  width: 28px;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.7;
+}
+
+/* chữ nổi lên lần lượt khi bìa đã hé */
+.inv .std-cinema:not(.in) .cin-text > * {
+  opacity: 0;
+}
+
+.inv .std-cinema.in .cin-text > * {
+  animation: rise-in 1.2s cubic-bezier(0.2, 0.7, 0.2, 1) 0.55s both;
+}
+
+.inv .std-cinema.in .cin-text > :nth-child(2) {
+  animation-delay: 0.75s;
+}
+
+.inv .std-cinema.in .cin-text > :nth-child(3) {
+  animation-delay: 1s;
+}
+
+/* vạch nhỏ gợi ý cuộn xuống */
+.inv .cin-cue {
+  position: absolute;
+  left: 50%;
+  bottom: calc(22px + env(safe-area-inset-bottom, 0px));
+  z-index: 2;
+  width: 1px;
+  height: 36px;
+  background: linear-gradient(var(--cin-sub), transparent);
+  transform-origin: top;
+  animation: cin-cue 2.2s ease-in-out 1.6s infinite both;
+}
+
+@keyframes cin-cue {
+  0% {
+    opacity: 0;
+    scale: 1 0;
+  }
+  45% {
+    opacity: 1;
+    scale: 1 1;
+  }
+  100% {
+    opacity: 0;
+    scale: 1 1;
+    translate: 0 10px;
+  }
+}
+
+/* cuộn xuống: ảnh trôi chậm hơn trang (parallax), chữ mờ dần đi.
+   Chỉ chạy khi trình duyệt hỗ trợ animation theo cuộn và trang cuộn bằng cửa sổ. */
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .inv-root:not(.is-embedded) .cin-photo {
+      animation: cin-photo-out linear both;
+      animation-timeline: scroll(root block);
+      animation-range: 0 100vh;
+    }
+
+    .inv-root:not(.is-embedded) .cin-text {
+      animation: cin-text-out linear both;
+      animation-timeline: scroll(root block);
+      animation-range: 0 70vh;
+    }
+  }
+}
+
+@keyframes cin-photo-out {
+  to {
+    translate: 0 22%;
+  }
+}
+
+@keyframes cin-text-out {
+  to {
+    opacity: 0;
+    translate: 0 -50px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .inv .std-cinema .cin-text > *,
+  .inv .std-cinema.in .cin-photo img,
+  .inv .cin-cue {
+    animation: none;
+    opacity: 1;
+  }
+}
+
+/* khối hai ảnh ngay dưới màn ảnh cưới */
+.inv .sec.std-duo {
+  padding-top: 56px;
+}
+
+/* ---------- chỉnh theo mẫu ---------- */
+/* Song Hỷ: cửa xanh rêu, chữ kem, dấu vàng mang chữ 囍, đèn lồng treo hai bên */
+.t-song-hy {
+  --gate-bg: var(--accent);
+  --gate-ink: var(--accent-ink);
+  --gate-muted: var(--panel-muted);
+  --seal-bg: var(--gold);
+  --seal-ink: var(--accent);
+  --cin-ink: #f3dfa6;
+}
+
+.t-song-hy .gate-door {
+  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 40%, rgba(0, 0, 0, 0.2));
+  background-size: auto;
+  background-position: 0 0;
+}
+
+.t-song-hy .gate-seal {
+  font-size: 38px;
+  line-height: 1;
+}
+
+.t-song-hy .gate .lantern {
+  top: 14px;
+  z-index: 1;
+}
+
+.t-song-hy .gate .lantern-l {
+  left: 36px;
+}
+
+.t-song-hy .gate .lantern-r {
+  right: 36px;
+}
+
+/* Xanh đêm sao: chữ và nét kẻ vàng kim trên cửa xanh thẫm */
+.t-navy-gold {
+  --gate-ink: var(--gold);
+  --cin-ink: #ecd592;
+  --cin-sub: #e6d7ae;
+}
+
+/* Tối giản đen trắng: cửa trắng, kẻ đen, chữ trắng trên ảnh */
+.t-mono-minimal {
+  --gate-line: var(--ink);
+  --gate-ink: var(--ink);
+  --cin-ink: #fff;
+  --cin-sub: #fff;
+}
+
+.t-burgundy-envelope {
+  --cin-ink: #f3dfa6;
+}
+
+/* Hoa trắng, Hồng phấn: tên trên ảnh viết bằng chữ ký mềm như trên bìa */
+.t-white-blossom .cin-text .std-names,
+.t-blush-rose .cin-text .std-names {
+  font-family: var(--f-script), cursive;
+  font-size: 66px;
+  line-height: 1.05;
+}

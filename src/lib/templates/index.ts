@@ -28,7 +28,9 @@ export interface Theme {
   radius: string;
   texture: "marble" | "paper" | "linen" | "stars" | "none";
   ornament: "goldLeaf" | "burgundyRose" | "songHy" | "whiteBlossom" | "eucalyptus" | "peony" | "stars" | "none";
-  cover: "card" | "envelope" | "band" | "polaroid" | "arch" | "wreath";
+  cover: "card" | "envelope" | "band" | "polaroid" | "arch" | "wreath" | "gate";
+  /** màn đầu sau khi mở: mặc định hai ảnh + tên; "cinema" là ảnh bìa tràn màn hình, tên phủ trên ảnh */
+  hero?: "cinema";
   /** hiệu ứng rơi */ fall: "sparkle" | "petal" | "none";
   /** nền tối: form, lưu bút, hộp quà đổi sang nền mờ thay vì trắng */
   dark?: boolean;
@@ -49,7 +51,8 @@ export const THEMES: Record<TemplateId, Theme> = {
     radius: "14px",
     texture: "marble",
     ornament: "goldLeaf",
-    cover: "card",
+    cover: "gate",
+    hero: "cinema",
     fall: "sparkle",
   },
   "burgundy-envelope": {
@@ -67,6 +70,7 @@ export const THEMES: Record<TemplateId, Theme> = {
     texture: "paper",
     ornament: "burgundyRose",
     cover: "envelope",
+    hero: "cinema",
     fall: "sparkle",
   },
   "song-hy": {
@@ -83,7 +87,8 @@ export const THEMES: Record<TemplateId, Theme> = {
     radius: "4px",
     texture: "linen",
     ornament: "songHy",
-    cover: "band",
+    cover: "gate",
+    hero: "cinema",
     fall: "sparkle",
   },
   "white-blossom": {
@@ -101,6 +106,7 @@ export const THEMES: Record<TemplateId, Theme> = {
     texture: "none",
     ornament: "whiteBlossom",
     cover: "polaroid",
+    hero: "cinema",
     fall: "petal",
   },
   "sage-arch": {
@@ -118,6 +124,7 @@ export const THEMES: Record<TemplateId, Theme> = {
     texture: "none",
     ornament: "eucalyptus",
     cover: "arch",
+    hero: "cinema",
     fall: "none",
   },
   "navy-gold": {
@@ -134,7 +141,8 @@ export const THEMES: Record<TemplateId, Theme> = {
     radius: "14px",
     texture: "stars",
     ornament: "stars",
-    cover: "card",
+    cover: "gate",
+    hero: "cinema",
     fall: "sparkle",
     dark: true,
   },
@@ -153,6 +161,7 @@ export const THEMES: Record<TemplateId, Theme> = {
     texture: "paper",
     ornament: "peony",
     cover: "wreath",
+    hero: "cinema",
     fall: "petal",
   },
   "mono-minimal": {
@@ -169,7 +178,8 @@ export const THEMES: Record<TemplateId, Theme> = {
     radius: "0px",
     texture: "none",
     ornament: "none",
-    cover: "card",
+    cover: "gate",
+    hero: "cinema",
     fall: "none",
   },
 };

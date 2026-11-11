@@ -1,0 +1,656 @@
+/* Mẫu Cẩm thạch vàng: thiệp in nhũ vàng trên giấy ngà.
+   Mọi rule đều nằm dưới .t-marble-gold nên các mẫu khác không đổi. */
+
+.t-marble-gold {
+  /* nhũ vàng: dải sáng tối xen kẽ để có ánh kim, dùng cho nền nút, viền, dấu */
+  --foil: linear-gradient(105deg, #8f6d2d 0%, #c9a961 20%, #f3e2a9 42%, #b8924a 60%, #e6cc86 80%, #9a7632 100%);
+  /* nhũ vàng cho chữ: tối hơn để đọc rõ trên giấy ngà */
+  --foil-text: linear-gradient(100deg, #775719 0%, #a98533 26%, #cdab5a 47%, #987229 64%, #b9953f 83%, #775719 100%);
+  --foil-ink: #3a2a10;
+  --card: linear-gradient(180deg, #fffefa, #fbf6ea);
+}
+
+/* chữ nhũ vàng */
+.t-marble-gold .cover-names,
+.t-marble-gold .std-names,
+.t-marble-gold .couple .nm,
+.t-marble-gold .sec-title,
+.t-marble-gold .bigdate .d,
+.t-marble-gold .cd .tick span {
+  background: var(--foil-text);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* ---------- nút ---------- */
+.t-marble-gold .btn,
+.t-marble-gold .panel .btn-ghost {
+  background: var(--foil);
+  border: 0;
+  color: var(--foil-ink);
+  font-weight: 500;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
+  box-shadow: 0 12px 24px -12px rgba(90, 62, 14, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.t-marble-gold .btn-ghost {
+  background: transparent;
+  border: 1px solid var(--gold);
+  color: var(--accent);
+  text-shadow: none;
+  box-shadow: none;
+}
+
+/* nền ngoài cột thiệp (màn hình rộng) tối hơn một bậc để cột bìa đọc như một vệt sáng,
+   thay vì lệch tông với nền bìa */
+.inv-root:has(.t-marble-gold) {
+  background: linear-gradient(165deg, #a8854a 0%, #86662f 55%, #6b5024 100%);
+}
+
+/* ---------- bìa cửa và màn ảnh cưới: phần riêng của mẫu (khung chung ở opening.css) ---------- */
+.t-marble-gold {
+  --cin-sub: #f1e3bd;
+}
+
+/* dấu nhũ tròn, ánh kim trôi chậm qua lại */
+.t-marble-gold .gate-seal {
+  background: var(--foil);
+  background-size: 220% 100%;
+  box-shadow: 0 14px 26px -10px rgba(74, 52, 14, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.6), inset 0 -2px 4px rgba(90, 62, 14, 0.4);
+  color: var(--foil-ink);
+}
+
+.t-marble-gold .gate-seal::before {
+  border-color: rgba(58, 42, 16, 0.45);
+}
+
+.t-marble-gold .cover.is-closed .gate-seal {
+  animation: foil-shift 3.6s ease-in-out infinite alternate;
+}
+
+@keyframes foil-shift {
+  to {
+    background-position: 100% 0;
+  }
+}
+
+/* tên trên ảnh: nhũ vàng sáng */
+.t-marble-gold .cin-text .std-names {
+  background-image: linear-gradient(100deg, #c9a961 0%, #f6e7b4 30%, #d6b56c 52%, #f8ecc4 74%, #c9a961 100%);
+  text-shadow: none;
+  filter: drop-shadow(0 2px 14px rgba(0, 0, 0, 0.5));
+}
+
+/* ---------- tiêu đề phần ---------- */
+.t-marble-gold .sec + .sec {
+  padding-top: 20px;
+}
+
+.t-marble-gold .sec-title {
+  font-size: 21px;
+  letter-spacing: 0.16em;
+}
+
+.t-marble-gold .divider,
+.t-marble-gold .panel .divider {
+  color: var(--gold);
+  opacity: 1;
+}
+
+/* ---------- ngay dưới màn ảnh cưới: hai ảnh so le, khung nhũ lệch ---------- */
+.t-marble-gold .std-photos {
+  height: 372px;
+  max-width: 332px;
+  margin-top: 0;
+}
+
+.t-marble-gold .std-photo {
+  padding: 0;
+  background: none;
+  box-shadow: none;
+  transform: none;
+}
+
+.t-marble-gold .std-p1 {
+  left: 0;
+  top: 0;
+  width: 214px;
+}
+
+.t-marble-gold .std-p1 .photo {
+  height: 286px;
+  box-shadow: 0 24px 40px -22px rgba(60, 40, 10, 0.6);
+}
+
+/* khung nhũ nằm lệch sau ảnh lớn */
+.t-marble-gold .std-p1::before {
+  content: "";
+  position: absolute;
+  inset: 12px -12px -12px 12px;
+  border: 1px solid var(--gold);
+  z-index: -1;
+}
+
+.t-marble-gold .std-p2 {
+  right: 0;
+  top: 150px;
+  width: 152px;
+  padding: 5px;
+  background: #fffdf8;
+  border: 1px solid var(--gold);
+  box-shadow: 0 20px 32px -16px rgba(60, 40, 10, 0.55);
+  z-index: 2;
+}
+
+.t-marble-gold .std-p2 .photo {
+  height: 204px;
+}
+
+.t-marble-gold .std-label {
+  min-width: 0;
+}
+
+.t-marble-gold .std-l1 {
+  right: 0;
+  top: 78px;
+  width: 104px;
+  text-align: right;
+}
+
+.t-marble-gold .std-l2 {
+  left: 2px;
+  bottom: 4px;
+  width: 168px;
+  text-align: left;
+}
+
+.t-marble-gold .std-label .eyebrow {
+  color: var(--accent);
+  letter-spacing: 0.3em;
+}
+
+.t-marble-gold .std-label .nm {
+  color: var(--ink);
+}
+
+/* ---------- khung nội dung: giấy ngà, viền nhũ lùi vào trong ---------- */
+.t-marble-gold .panel {
+  padding: 44px 26px;
+  background: var(--card);
+  backdrop-filter: none;
+  border: 0;
+  border-radius: 6px;
+  box-shadow: 0 30px 50px -34px rgba(74, 52, 14, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.t-marble-gold .panel::before {
+  content: "";
+  position: absolute;
+  inset: 9px;
+  border: 1px solid transparent;
+  border-image: var(--foil) 1;
+  opacity: 0.8;
+  pointer-events: none;
+}
+
+/* ---------- thông tin lễ cưới ---------- */
+.t-marble-gold .parents {
+  gap: 18px;
+  margin: 26px 0 24px;
+}
+
+.t-marble-gold .parents .side {
+  margin-bottom: 8px;
+  font-size: 10px;
+  letter-spacing: 0.28em;
+  color: var(--accent);
+  opacity: 1;
+}
+
+.t-marble-gold .parents .who {
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+.t-marble-gold .parents .addr {
+  margin-top: 6px;
+  color: var(--muted);
+  opacity: 1;
+}
+
+.t-marble-gold .parents > div + div {
+  border-image: linear-gradient(transparent, var(--gold), transparent) 1;
+}
+
+/* câu dẫn: chữ nghiêng thường thay cho in hoa giãn cách */
+.t-marble-gold .announce {
+  max-width: 26ch;
+  font-size: 17px;
+  font-style: italic;
+  letter-spacing: 0.01em;
+  text-transform: none;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.t-marble-gold .couple {
+  margin: 26px 0 6px;
+}
+
+.t-marble-gold .couple .nm {
+  font-size: 38px;
+  line-height: 1.12;
+  text-wrap: balance;
+}
+
+.t-marble-gold .couple .role {
+  margin-top: 8px;
+  font-size: 10px;
+  color: var(--muted);
+  opacity: 1;
+}
+
+.t-marble-gold .couple .amp {
+  margin: 6px 0 8px;
+  font-size: 46px;
+  color: var(--gold);
+}
+
+/* mỗi lễ: tên lễ, địa chỉ, giờ, rồi một hàng "thứ | ngày | tháng năm" như thiệp in */
+.t-marble-gold .event {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  margin-top: 34px;
+  padding-top: 30px;
+  border-image: linear-gradient(90deg, transparent, var(--gold), transparent) 1;
+}
+
+.t-marble-gold .event > .t,
+.t-marble-gold .event > .venue,
+.t-marble-gold .event > .lunar,
+.t-marble-gold .event .when span:first-child {
+  grid-column: 1 / -1;
+}
+
+.t-marble-gold .event .t {
+  font-family: var(--f-display), Georgia, serif;
+  font-size: 21px;
+  letter-spacing: 0.01em;
+  text-transform: none;
+  line-height: 1.3;
+}
+
+.t-marble-gold .event .venue {
+  margin-top: 6px;
+  font-size: 14px;
+  color: var(--muted);
+  opacity: 1;
+}
+
+.t-marble-gold .event .when,
+.t-marble-gold .event .bigdate {
+  display: contents;
+}
+
+.t-marble-gold .event .when span:first-child {
+  margin-top: 18px;
+  font-size: 12px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.t-marble-gold .event .when span:last-child,
+.t-marble-gold .event .bigdate > span:last-child {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 12px;
+  padding: 8px 0;
+  border-top: 1px solid var(--gold);
+  border-bottom: 1px solid var(--gold);
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  line-height: 1.5;
+}
+
+.t-marble-gold .event .bigdate br {
+  display: none;
+}
+
+.t-marble-gold .event .bigdate .m,
+.t-marble-gold .event .bigdate .y {
+  font-size: 12px;
+  letter-spacing: 0.2em;
+}
+
+.t-marble-gold .event .bigdate .d {
+  margin-top: 12px;
+  padding: 0 16px;
+  border: 0;
+  font-size: 68px;
+}
+
+.t-marble-gold .lunar {
+  margin-top: 12px;
+  font-size: 14px;
+  font-style: italic;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  color: var(--muted);
+  opacity: 1;
+}
+
+/* ---------- tiệc cưới ---------- */
+.t-marble-gold .panel > .when {
+  margin-top: 16px;
+  font-size: 12px;
+  letter-spacing: 0.24em;
+  color: var(--accent);
+}
+
+.t-marble-gold .panel > .bigdate {
+  gap: 0 16px;
+  margin-top: 12px;
+}
+
+.t-marble-gold .panel > .bigdate .d {
+  padding-right: 16px;
+  border-right: 1px solid var(--gold);
+  font-size: 68px;
+}
+
+.t-marble-gold .times {
+  gap: 0;
+  margin-top: 24px;
+}
+
+.t-marble-gold .times > div {
+  padding: 0 28px;
+}
+
+.t-marble-gold .times > div + div {
+  border-left: 1px solid var(--gold);
+}
+
+.t-marble-gold .times .k {
+  font-size: 10px;
+  letter-spacing: 0.24em;
+  color: var(--accent);
+  opacity: 1;
+}
+
+.t-marble-gold .times .v {
+  font-family: var(--f-display), Georgia, serif;
+  font-size: 26px;
+}
+
+.t-marble-gold .cd-title {
+  margin-top: 36px;
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  color: var(--muted);
+}
+
+.t-marble-gold .cd {
+  margin-top: 14px;
+}
+
+.t-marble-gold .cd > div {
+  padding: 12px 0 10px;
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid color-mix(in srgb, var(--gold), transparent 45%);
+  border-radius: 4px;
+}
+
+.t-marble-gold .cd b {
+  font-size: 32px;
+}
+
+.t-marble-gold .cd > div > span {
+  font-size: 9px;
+  letter-spacing: 0.22em;
+  color: var(--muted);
+  opacity: 1;
+}
+
+.t-marble-gold .panel .cal {
+  max-width: 290px;
+  margin-top: 32px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+}
+
+.t-marble-gold .cal-h {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 6px;
+  padding-bottom: 0;
+  border-bottom: 0;
+  font-size: 20px;
+  white-space: nowrap;
+}
+
+.t-marble-gold .cal-h::before,
+.t-marble-gold .cal-h::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--gold);
+}
+
+.t-marble-gold .cal-g {
+  font-size: 14px;
+}
+
+.t-marble-gold .cal-g .w {
+  padding: 6px 0;
+  color: var(--accent);
+}
+
+.t-marble-gold .cal-g .d {
+  height: 34px;
+}
+
+.t-marble-gold .cal-g .on {
+  color: var(--foil-ink);
+  font-weight: 600;
+}
+
+.t-marble-gold .cal-g .on::before {
+  background: var(--foil);
+}
+
+/* ---------- địa điểm: mỗi nơi một thẻ, nút chỉ đường rõ ràng ---------- */
+.t-marble-gold .sec > .venue {
+  display: grid;
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.t-marble-gold .place {
+  position: relative;
+  padding: 24px 22px 22px 26px;
+  background: var(--card);
+  border-radius: 6px;
+  box-shadow: 0 26px 44px -32px rgba(74, 52, 14, 0.55);
+  text-align: left;
+  overflow: hidden;
+}
+
+.t-marble-gold .place + .place {
+  margin-top: 0;
+  padding-top: 24px;
+  border-top: 0;
+}
+
+.t-marble-gold .place::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: linear-gradient(180deg, #8f6d2d, #f3e2a9 45%, #b8924a 70%, #9a7632);
+}
+
+.t-marble-gold .place .t {
+  font-family: var(--f-body), Georgia, serif;
+  font-size: 10.5px;
+  letter-spacing: 0.26em;
+}
+
+.t-marble-gold .place .n {
+  margin-top: 8px;
+  font-family: var(--f-display), Georgia, serif;
+  font-size: 23px;
+  line-height: 1.25;
+}
+
+.t-marble-gold .place .a {
+  margin-top: 4px;
+}
+
+.t-marble-gold .place .actions {
+  justify-content: flex-start;
+  margin-top: 16px;
+}
+
+.t-marble-gold .place .link {
+  padding: 8px 16px;
+  background: color-mix(in srgb, var(--gold), transparent 90%);
+  border: 1px solid var(--gold);
+  border-radius: 999px;
+  color: var(--accent);
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  text-decoration: none;
+}
+
+/* ---------- dress code: các mẫu màu xếp chồng, viền nhũ ---------- */
+.t-marble-gold .swatches {
+  gap: 0;
+  margin-top: 22px;
+}
+
+.t-marble-gold .swatches i {
+  width: 54px;
+  height: 54px;
+  margin: 0 -5px;
+  border-color: #fffdf8;
+  box-shadow: 0 0 0 1px var(--gold), 0 10px 18px -8px rgba(0, 0, 0, 0.35);
+}
+
+/* ---------- lịch trình ---------- */
+.t-marble-gold .tl {
+  margin-top: 26px;
+}
+
+.t-marble-gold .tl .t {
+  padding-top: 0;
+  font-family: var(--f-display), Georgia, serif;
+  font-size: 18px;
+  line-height: 20px;
+  color: var(--accent);
+}
+
+.t-marble-gold .tl .dot::before {
+  width: 7px;
+  height: 7px;
+  border-radius: 0;
+  background: var(--gold);
+  rotate: 45deg;
+}
+
+.t-marble-gold .tl li:not(:last-child) .dot::after {
+  border-color: var(--gold);
+}
+
+.t-marble-gold .tl .n {
+  padding-top: 0;
+  font-size: 16px;
+  line-height: 20px;
+}
+
+/* ---------- chuyện tình ---------- */
+.t-marble-gold .story-i {
+  position: relative;
+}
+
+.t-marble-gold .story-i:not(:last-child)::before {
+  content: "";
+  position: absolute;
+  left: 22px;
+  top: 50px;
+  bottom: -18px;
+  border-left: 1px solid color-mix(in srgb, var(--gold), transparent 40%);
+}
+
+.t-marble-gold .story-y {
+  background: #fffdf8;
+  border-color: var(--gold);
+  font-family: var(--f-display), Georgia, serif;
+  font-size: 13px;
+}
+
+.t-marble-gold .story-i .photo {
+  height: 172px;
+  border-radius: 4px;
+  box-shadow: 0 20px 34px -22px rgba(60, 40, 10, 0.6);
+}
+
+.t-marble-gold .story-i h3 {
+  font-size: 24px;
+}
+
+/* ---------- hộp quà: thân vàng đậm, nơ vàng sáng, có bóng đổ ---------- */
+.t-marble-gold .giftbox {
+  --gold: #ecd592;
+  color: #94712f;
+}
+
+.t-marble-gold .giftbox svg {
+  filter: drop-shadow(0 18px 14px rgba(74, 52, 14, 0.3));
+}
+
+/* ---------- cuối trang ---------- */
+.t-marble-gold .end .sig {
+  margin-top: 22px;
+  font-size: 30px;
+  letter-spacing: 0.02em;
+  background: var(--foil-text);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.t-marble-gold .end .sig + .eyebrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: var(--accent);
+}
+
+.t-marble-gold .end .sig + .eyebrow::before,
+.t-marble-gold .end .sig + .eyebrow::after {
+  content: "";
+  width: 24px;
+  height: 1px;
+  background: var(--gold);
+}
+
+/* ---------- sổ lưu bút ---------- */
+.t-marble-gold .wish {
+  background: #fffdf8;
+  border: 0;
+  border-left: 2px solid var(--gold);
+  border-radius: 4px;
+}

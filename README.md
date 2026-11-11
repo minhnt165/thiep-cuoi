@@ -48,6 +48,7 @@ Lệnh khác: `npm test` (lịch âm, ngày tháng), `npm run typecheck`, `npm r
 - **QR mừng cưới tự sinh** chuẩn VietQR từ ngân hàng + số tài khoản (`src/lib/banks.ts`); vẫn tải ảnh QR riêng được.
 - Favicon theo màu mẫu của từng thiệp; `scripts/make-icons.py` sinh bộ icon.
 - **8 mẫu, mỗi mẫu một ngôn ngữ riêng** (`src/lib/templates/index.ts` + phần "điều chỉnh theo mẫu" trong `invitation.css`): cẩm thạch vàng, đỏ rượu phong bì, Song Hỷ, hoa trắng polaroid, xanh sage toàn vòm, xanh đêm sao art-deco (nền tối), hồng phấn màu nước, tối giản kiểu tạp chí. Họa tiết lớn rải dọc hai mép trang (`SideArt`).
+- **Mở thiệp**: mẫu nào cũng mở ra màn ảnh bìa tràn màn hình, tên phủ trên ảnh, ảnh trôi chậm khi cuộn. Bốn mẫu (cẩm thạch vàng, Song Hỷ, xanh đêm sao, tối giản) dùng bìa hai cánh cửa tách ra; bốn mẫu còn lại giữ bìa riêng. Khung chung ở `opening.css` (bìa cửa, màn ảnh) và `interior.css` (khối lễ cưới, thẻ địa điểm); `marble-gold.css` là phần riêng của mẫu cẩm thạch vàng.
 - **Chỉ đường từng lễ**: tiệc chính và các lễ được gom theo địa điểm, mỗi nơi một map (tối đa 3).
 - **Ảnh ngang trong album**: thẻ tự chuyển sang khung ngang, phần hở nhỏ lót bằng chính ảnh đó làm mờ.
 - **Ảnh demo** trong `public/demo/` lấy từ Unsplash (nguồn ghi ở `public/demo/CREDITS.md`), chỉ trang demo dùng; thiệp mới tạo để trống ảnh.

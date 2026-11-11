@@ -8,18 +8,30 @@ function svgUrl(svg: string): string {
   return `url("data:image/svg+xml;utf8,${encodeURIComponent(svg.replace(/\s+/g, " ").trim())}")`;
 }
 
+/** Bảng alpha chỉ nhô lên quanh một mức nhiễu: mức đó thành đường vân, càng nhiều ô thì vân càng mảnh */
+function ridge(cells: number, at: number): string {
+  return Array.from({ length: cells }, (_, i) => (i === at ? 1 : Math.abs(i - at) === 1 ? 0.2 : 0)).join(" ");
+}
+
 function marble(bg: string, vein: string, veinSoft: string): string {
   return svgUrl(`<svg xmlns='http://www.w3.org/2000/svg' width='900' height='900'>
     <filter id='v' x='0' y='0' width='100%' height='100%' color-interpolation-filters='sRGB'>
-      <feTurbulence type='fractalNoise' baseFrequency='0.004 0.007' numOctaves='5' seed='11' result='n'/>
+      <feTurbulence type='fractalNoise' baseFrequency='0.004 0.007' numOctaves='5' seed='11' stitchTiles='stitch' result='n'/>
       <feColorMatrix in='n' type='matrix' values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  1.4 0 0 0 -0.2' result='a'/>
-      <feComponentTransfer in='a' result='veins'><feFuncA type='table' tableValues='0 0 0 0 0 0 0 0 0 0 0 0 0.15 1 0.15 0 0 0 0 0 0 0 0 0 0 0 0'/></feComponentTransfer>
-      <feGaussianBlur in='veins' stdDeviation='0.35' result='vb'/>
-      <feFlood flood-color='${vein}' flood-opacity='0.6' result='c'/>
+      <feComponentTransfer in='a' result='veins'><feFuncA type='table' tableValues='${ridge(71, 35)}'/></feComponentTransfer>
+      <feGaussianBlur in='veins' stdDeviation='0.3' result='vb'/>
+      <feFlood flood-color='${vein}' flood-opacity='0.75' result='c'/>
       <feComposite in='c' in2='vb' operator='in'/>
     </filter>
+    <filter id='f' x='0' y='0' width='100%' height='100%' color-interpolation-filters='sRGB'>
+      <feTurbulence type='fractalNoise' baseFrequency='0.008 0.005' numOctaves='4' seed='23' stitchTiles='stitch' result='n'/>
+      <feColorMatrix in='n' type='matrix' values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  1.4 0 0 0 -0.2' result='a'/>
+      <feComponentTransfer in='a' result='veins'><feFuncA type='table' tableValues='${ridge(91, 41)}'/></feComponentTransfer>
+      <feFlood flood-color='#A89A84' flood-opacity='0.28' result='c'/>
+      <feComposite in='c' in2='veins' operator='in'/>
+    </filter>
     <filter id='s' x='0' y='0' width='100%' height='100%' color-interpolation-filters='sRGB'>
-      <feTurbulence type='fractalNoise' baseFrequency='0.006 0.004' numOctaves='3' seed='4' result='n'/>
+      <feTurbulence type='fractalNoise' baseFrequency='0.006 0.004' numOctaves='3' seed='4' stitchTiles='stitch' result='n'/>
       <feColorMatrix in='n' type='matrix' values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  1.2 0 0 0 -0.1' result='a'/>
       <feComponentTransfer in='a' result='veins'><feFuncA type='table' tableValues='0 0 0 0 0.5 0.1 0 0 0 0'/></feComponentTransfer>
       <feGaussianBlur in='veins' stdDeviation='10' result='vb'/>
@@ -28,6 +40,7 @@ function marble(bg: string, vein: string, veinSoft: string): string {
     </filter>
     <rect width='100%' height='100%' fill='${bg}'/>
     <rect width='100%' height='100%' filter='url(#s)'/>
+    <rect width='100%' height='100%' filter='url(#f)'/>
     <rect width='100%' height='100%' filter='url(#v)'/>
   </svg>`);
 }

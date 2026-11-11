@@ -41,34 +41,60 @@ function BigDate({ ymd }: { ymd: string }) {
 export function SaveTheDate({ data, theme }: { data: PublicInvitation; theme: Theme }) {
   const [p1, p2] = data.photos.saveTheDate;
   const initials = `${data.groom.shortName.slice(0, 1)}&${data.bride.shortName.slice(0, 1)}`;
+  /** Ảnh cô dâu chú rể: mẫu phong bì lồng một ảnh trong phong bì, các mẫu khác xếp hai ảnh */
+  const photos = theme.cover === "envelope" ? (
+    <div className="std-env">
+      <div className="std-env-back" />
+      <Photo src={p1 ?? data.photos.cover} alt="Ảnh cưới" />
+      <div className="std-env-front" />
+      <span className="std-env-seal"><WaxSeal text={initials} color={theme.colors.gold} ink={theme.colors.accent} /></span>
+    </div>
+  ) : (
+    <div className="std-photos">
+      <div className="std-photo std-p1"><Photo src={p1 ?? data.photos.cover} alt="Chú rể" /></div>
+      <div className="std-label std-l1"><p className="eyebrow">Cô dâu</p><p className="nm">{data.bride.shortName}</p></div>
+      <div className="std-photo std-p2"><Photo src={p2} alt="Cô dâu" /></div>
+      <div className="std-label std-l2"><p className="eyebrow">Chú rể</p><p className="nm">{data.groom.shortName}</p></div>
+    </div>
+  );
+  const names = (
+    <h2 className="std-names">
+      {data.groom.shortName}
+      <span className="amp">&amp;</span>
+      {data.bride.shortName}
+    </h2>
+  );
+  // Màn "cinema": ảnh bìa tràn màn hình với tên phủ trên ảnh, khối ảnh đôi tách thành phần riêng bên dưới
+  if (theme.hero === "cinema") {
+    return (
+      <>
+        <section className={`sec std-cinema reveal ${nameLengthClass(data)}`} id="s-std">
+          <div className="cin">
+            <div className="cin-photo"><Photo src={data.photos.cover || p1} alt="Ảnh cưới" label="Ảnh bìa" /></div>
+            <div className="cin-text">
+              <p className="eyebrow">{data.texts.saveTheDate}</p>
+              {names}
+              <p className="cin-date">{dotDate(data.mainEvent.date)}</p>
+            </div>
+            <span className="cin-cue" aria-hidden="true" />
+          </div>
+        </section>
+        <section className={`sec std std-duo reveal ${nameLengthClass(data)}`}>
+          <Corners theme={theme} where={["tl", "br"]} />
+          {photos}
+        </section>
+      </>
+    );
+  }
   return (
     <section className={`sec std reveal ${nameLengthClass(data)}`} id="s-std">
       <Corners theme={theme} where={["tl", "br"]} />
       <p className="eyebrow">{data.texts.saveTheDate}</p>
-      {theme.cover === "envelope" ? (
-        <div className="std-env">
-          <div className="std-env-back" />
-          <Photo src={p1 ?? data.photos.cover} alt="Ảnh cưới" />
-          <div className="std-env-front" />
-          <span className="std-env-seal"><WaxSeal text={initials} color={theme.colors.gold} ink={theme.colors.accent} /></span>
-        </div>
-      ) : (
-        <div className="std-photos">
-          <div className="std-photo std-p1"><Photo src={p1 ?? data.photos.cover} alt="Chú rể" /></div>
-          <div className="std-label std-l1"><p className="eyebrow">Cô dâu</p><p className="nm">{data.bride.shortName}</p></div>
-          <div className="std-photo std-p2"><Photo src={p2} alt="Cô dâu" /></div>
-          <div className="std-label std-l2"><p className="eyebrow">Chú rể</p><p className="nm">{data.groom.shortName}</p></div>
-        </div>
-      )}
-      <h2 className="std-names">
-        {data.groom.shortName}
-        <span className="amp">&amp;</span>
-        {data.bride.shortName}
-      </h2>
+      {photos}
+      {names}
     </section>
   );
 }
-
 /* ---------- Thông tin lễ cưới ---------- */
 /** Có địa điểm để chỉ đường không (tên nơi, địa chỉ hoặc link map) */
 function hasPlace(ev: WeddingEvent): boolean {

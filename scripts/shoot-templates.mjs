@@ -23,7 +23,8 @@ const { chromium } = await import("playwright").catch(() => {
 });
 
 mkdirSync("public/templates", { recursive: true });
-const browser = await chromium.launch();
+// PW_CHANNEL=msedge (hoặc chrome) để dùng trình duyệt đã cài trên máy, khỏi tải chromium của playwright
+const browser = await chromium.launch({ channel: process.env.PW_CHANNEL || undefined });
 const page = await browser.newPage({ viewport: { width: 840, height: 1280 } });
 for (const id of IDS) {
   await page.goto(`${BASE}/demo/${id}`, { waitUntil: "networkidle" });

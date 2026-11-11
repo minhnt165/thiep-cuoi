@@ -14,7 +14,7 @@ export const dynamic = "force-dynamic";
  * Đã là WebP nhỏ nên dùng <img> thường; tăng SHOT_VERSION mỗi lần chụp lại
  * để trình duyệt và CDN không giữ ảnh cũ.
  */
-const SHOT_VERSION = 3;
+const SHOT_VERSION = 4;
 const shot = (id: string) => `/templates/${id}.webp?v=${SHOT_VERSION}`;
 
 const FEATURES: { title: string; text: string; icon: React.ReactNode }[] = [

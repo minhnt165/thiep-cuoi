@@ -11,6 +11,9 @@ import { Album } from "./Album";
 import { SideArt } from "./Corner";
 import { DressCode, Family, Footer, Gift, Guestbook, Party, SaveTheDate, Story, Timeline, type RsvpInput } from "./sections";
 import "./invitation.css";
+import "./opening.css";
+import "./interior.css";
+import "./marble-gold.css";
 
 export type Mode = "live" | "preview" | "demo";
 
@@ -47,7 +50,7 @@ function FallEffect({ kind }: { kind: "sparkle" | "petal" }) {
  * Thời gian pha "đang mở" theo kiểu bìa (ms): phong bì cần bóc dấu sáp, lật nắp,
  * rút thiệp nên lâu hơn; các bìa khác chỉ một nhịp ngắn.
  */
-const OPENING_MS: Record<CoverKind, number> = { envelope: 1750, card: 700, band: 800, polaroid: 750, arch: 700, wreath: 800 };
+const OPENING_MS: Record<CoverKind, number> = { envelope: 1750, card: 700, band: 800, polaroid: 750, arch: 700, wreath: 800, gate: 900 };
 /** Thời gian bìa tan dần trước khi gỡ hẳn khỏi trang */
 const REVEAL_MS = 1100;
 

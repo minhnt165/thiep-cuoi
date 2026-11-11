@@ -155,6 +155,28 @@ export function Cover({ data, theme, phase, onOpen, guest = "" }: Props) {
         </div>
       );
       break;
+    case "gate":
+      inner = (
+        <button type="button" className="gate" onClick={onOpen} aria-label="Mở thiệp">
+          <span className="gate-door gate-l">
+            <Corners theme={theme} where={["tl"]} />
+            {theme.ornament === "songHy" && <span className="lantern lantern-l"><Lantern /></span>}
+          </span>
+          <span className="gate-door gate-r">
+            <Corners theme={theme} where={["br"]} />
+            {theme.ornament === "songHy" && <span className="lantern lantern-r"><Lantern /></span>}
+          </span>
+          <span className="gate-text">
+            <span className="gate-greet">{greet}</span>
+            <span className="cover-names">{data.groom.shortName}</span>
+            <span className="gate-seal"><span>{theme.ornament === "songHy" ? "囍" : initials}</span></span>
+            <span className="cover-names">{data.bride.shortName}</span>
+            <span className="cover-date">{date}</span>
+          </span>
+          <span className="gate-tap">Chạm để mở thiệp</span>
+        </button>
+      );
+      break;
     default:
       inner = (
         <div className="cover-card">
