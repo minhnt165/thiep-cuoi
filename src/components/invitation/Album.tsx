@@ -113,7 +113,8 @@ export function Album({ data }: { data: PublicInvitation }) {
   const dragFrac = swipe.drag.frac;
 
   function cardStyle(i: number): CSSProperties {
-    const off = circular(i, idx, n) + (n > 1 ? -dragFrac : 0);
+    // thẻ đi theo tay: kéo sang trái (dragFrac âm) thì thẻ lệch sang trái
+    const off = circular(i, idx, n) + (n > 1 ? dragFrac : 0);
     const a = Math.abs(off);
     const hidden = a > 1.6;
     return {

@@ -1766,7 +1766,8 @@
   font-variant-numeric: tabular-nums;
 }
 
-.cd span {
+/* chỉ nhãn (Ngày, Giờ…): chữ số nằm trong <b> nên không dính cỡ nhãn */
+.cd div > span {
   font-size: 11px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
