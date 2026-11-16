@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { MemberSchema } from "@/lib/members";
 
 /**
  * Mô hình dữ liệu một thiệp. Nội dung tách khỏi mẫu (template):
@@ -73,6 +74,13 @@ export const GuestSchema = z.object({
   name: trimmed.min(1).max(80),
   side: z.enum(["groom", "bride"]).default("groom"),
   note: trimmed.max(200).default(""),
+  /** Nhóm: "Họ hàng", "Bạn đại học", "Đồng nghiệp"… */
+  group: trimmed.max(60).default(""),
+  /** Số người đi cùng tên này (cả gia đình = 3, 4…) */
+  count: z.number().int().min(1).max(50).default(1),
+  phone: trimmed.max(30).default(""),
+  /** Đã gửi thiệp / đã mời */
+  sent: z.boolean().default(false),
 });
 export type Guest = z.infer<typeof GuestSchema>;
 
@@ -119,6 +127,8 @@ export const InvitationSchema = z.object({
   music: trimmed.default(""),
   /** Danh sách khách để tạo link riêng (?to=), chỉ chủ thiệp thấy */
   guests: z.array(GuestSchema).default([]),
+  /** Tài khoản được quản lý thiệp (khi bật đăng nhập). Rỗng = chưa ai nhận, dùng khóa sửa. */
+  members: z.array(MemberSchema).default([]),
   sections: z.array(z.enum(SECTION_IDS)).default([...SECTION_IDS]),
   /** Khóa sửa: ai có khóa mới vào được trang chỉnh sửa */
   editKey: trimmed.min(8),
@@ -132,12 +142,12 @@ export type Person = z.infer<typeof PersonSchema>;
 export type WeddingEvent = z.infer<typeof EventSchema>;
 export type GiftAccount = z.infer<typeof GiftAccountSchema>;
 
-/** Dữ liệu công khai gửi về trình duyệt: không có editKey và danh sách khách */
-export type PublicInvitation = Omit<Invitation, "editKey" | "guests">;
+/** Dữ liệu công khai gửi về trình duyệt: không có editKey, danh sách khách và người quản lý */
+export type PublicInvitation = Omit<Invitation, "editKey" | "guests" | "members">;
 
 export function toPublic(inv: Invitation): PublicInvitation {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { editKey, guests, ...rest } = inv;
+  const { editKey, guests, members, ...rest } = inv;
   return rest;
 }
 

@@ -4,9 +4,14 @@ import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { THEME_LIST } from "@/lib/templates";
 import { rememberKey } from "@/lib/client/edit-key";
+import { useAuth, type AuthMode } from "@/lib/client/auth";
+import { authHeaders } from "@/lib/client/api";
+import { AccountLine, InlineLogin } from "@/components/auth/AuthScreens";
 
-export function CreateForm({ needsCode = false }: { needsCode?: boolean }) {
+export function CreateForm({ needsCode = false, authMode = "off" }: { needsCode?: boolean; authMode?: AuthMode }) {
   const router = useRouter();
+  // Bật đăng nhập: phải đăng nhập trước, người tạo thành người quản lý thiệp
+  const session = useAuth(authMode);
   const [err, setErr] = useState("");
   const [busy, setBusy] = useState(false);
 
@@ -19,7 +24,7 @@ export function CreateForm({ needsCode = false }: { needsCode?: boolean }) {
     setBusy(true);
     setErr("");
     try {
-      const res = await fetch("/api/invitations", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ slug, template, code }) });
+      const res = await fetch("/api/invitations", { method: "POST", headers: await authHeaders(), body: JSON.stringify({ slug, template, code }) });
       const body = await res.json();
       if (!res.ok) throw new Error(body.error ?? "Tạo chưa được");
       rememberKey(body.slug, body.editKey);
@@ -30,8 +35,18 @@ export function CreateForm({ needsCode = false }: { needsCode?: boolean }) {
     }
   }
 
+  if (authMode !== "off" && session.ready && !session.email) {
+    return (
+      <div className="create">
+        <p className="hint">Đăng nhập trước để tạo thiệp. Thiệp gắn với tài khoản của bạn, đổi máy vẫn vào sửa được, không cần giữ link bí mật.</p>
+        <InlineLogin session={session} label="Đăng nhập bằng Google để tạo thiệp" />
+      </div>
+    );
+  }
+
   return (
     <form className="create" onSubmit={submit}>
+      <AccountLine session={session} />
       <label>
         Đường dẫn thiệp
         <input name="slug" placeholder="tuan-ha" pattern="[a-z0-9-]{3,60}" required autoComplete="off" />
@@ -54,7 +69,7 @@ export function CreateForm({ needsCode = false }: { needsCode?: boolean }) {
         </label>
       )}
       {err && <p className="err">{err}</p>}
-      <button type="submit" disabled={busy}>{busy ? "Đang tạo…" : "Tạo thiệp"}</button>
+      <button type="submit" disabled={busy || (authMode !== "off" && !session.email)}>{busy ? "Đang tạo…" : "Tạo thiệp"}</button>
     </form>
   );
 }

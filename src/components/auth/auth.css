@@ -1,0 +1,233 @@
+/* Màn đăng nhập / nhận thiệp / không có quyền */
+
+.au {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: 24px 16px;
+  background:
+    radial-gradient(80% 60% at 50% 0%, color-mix(in oklab, var(--ui-accent) 12%, transparent), transparent 70%),
+    var(--ui-bg);
+}
+
+.au-card {
+  display: grid;
+  gap: 14px;
+  width: min(420px, 100%);
+  padding: 28px 24px 22px;
+  border: 1px solid var(--ui-line);
+  border-radius: 20px;
+  background: var(--ui-surface);
+  box-shadow: 0 1px 2px rgba(40, 28, 20, 0.05), 0 24px 48px -28px rgba(40, 28, 20, 0.35);
+  text-align: center;
+}
+
+.au-mark {
+  justify-self: center;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: color-mix(in oklab, var(--ui-accent) 12%, #fff);
+  color: var(--ui-accent);
+  font-size: 22px;
+}
+
+.au-card h1 {
+  margin: 0;
+  font-family: var(--font-playfair), Georgia, serif;
+  font-size: 24px;
+  font-weight: 500;
+}
+
+.au-lede {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--ui-muted);
+}
+
+.au-lede b {
+  color: var(--ui-fg);
+  font-weight: 600;
+  word-break: break-all;
+}
+
+.au-form {
+  display: grid;
+  gap: 10px;
+  text-align: left;
+}
+
+.au-field {
+  display: grid;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ui-muted);
+}
+
+.au-field input,
+.au-input {
+  padding: 11px 12px;
+  border: 1px solid var(--ui-line);
+  border-radius: 10px;
+  background: #fff;
+  font-size: 15px;
+  color: var(--ui-fg);
+}
+
+.au-input {
+  flex: 1;
+  min-width: 180px;
+  padding: 8px 10px;
+  font-size: 14px;
+}
+
+.au-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  height: 46px;
+  padding: 0 18px;
+  border: 1px solid var(--ui-line);
+  border-radius: 999px;
+  background: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ui-fg);
+  cursor: pointer;
+  transition: box-shadow 0.15s ease, transform 0.12s ease;
+}
+
+.au-btn:hover:not(:disabled) {
+  box-shadow: 0 6px 16px -10px rgba(0, 0, 0, 0.4);
+  transform: translateY(-1px);
+}
+
+.au-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.au-btn.primary {
+  border-color: var(--ui-fg);
+  background: var(--ui-fg);
+  color: #fff;
+}
+
+.au-inline {
+  display: grid;
+  gap: 8px;
+  justify-items: start;
+}
+
+.au-inline .au-btn {
+  height: 42px;
+}
+
+/* Trong form tạo thiệp ở trang chủ: không nhận kiểu nút đen của form */
+.create .au-btn.google {
+  padding: 0 18px;
+  border: 1px solid var(--ui-line);
+  background: #fff;
+  color: var(--ui-fg);
+  font-weight: 600;
+}
+
+.au-err {
+  margin: 0;
+  font-size: 13px;
+  color: var(--ui-danger);
+}
+
+.au-link,
+.au-home {
+  justify-self: center;
+  border: 0;
+  background: none;
+  font-size: 13px;
+  color: var(--ui-muted);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.au-home {
+  text-decoration: none;
+}
+
+/* Danh sách người quản lý trong tab Chia sẻ */
+.au-members ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.au-members li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: var(--ui-bg);
+}
+
+.au-av {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  flex: none;
+  border-radius: 50%;
+  background: color-mix(in oklab, var(--ui-accent) 14%, #fff);
+  color: var(--ui-accent);
+  font-weight: 600;
+}
+
+.au-who {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+  word-break: break-all;
+}
+
+.au-who em {
+  font-style: normal;
+  color: var(--ui-muted);
+}
+
+.au-who small {
+  font-size: 11px;
+  color: var(--ui-muted);
+}
+
+.au-account {
+  margin: 0;
+  font-size: 12px;
+  color: var(--ui-muted);
+  word-break: break-all;
+}
+
+.au-account b {
+  font-weight: 600;
+  color: var(--ui-fg);
+}
+
+.au-account button,
+.create .au-account button {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  font-weight: inherit;
+  font-size: inherit;
+  color: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}

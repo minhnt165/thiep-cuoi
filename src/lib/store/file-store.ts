@@ -1,6 +1,7 @@
 import { mkdir, readFile, readdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { InvitationSchema, RsvpSchema, WishSchema, type Invitation, type Rsvp, type Wish } from "@/lib/schema";
+import { PlanSchema } from "@/lib/plan";
 import type { Store } from "./types";
 
 const ROOT = process.env.DATA_DIR ? path.resolve(process.env.DATA_DIR) : path.join(process.cwd(), "data");
@@ -44,6 +45,7 @@ async function writeJson(file: string, value: unknown): Promise<void> {
 const invFile = (slug: string) => path.join(ROOT, "invitations", `${safeSlug(slug)}.json`);
 const wishFile = (slug: string) => path.join(ROOT, "wishes", `${safeSlug(slug)}.json`);
 const rsvpFile = (slug: string) => path.join(ROOT, "rsvps", `${safeSlug(slug)}.json`);
+const planFile = (slug: string) => path.join(ROOT, "plans", `${safeSlug(slug)}.json`);
 const uploadDir = (slug: string) => path.join(ROOT, "uploads", safeSlug(slug));
 
 export const fileStore: Store = {
@@ -76,6 +78,24 @@ export const fileStore: Store = {
       .map(({ slug, template, groom, bride, mainEvent, updatedAt }) => ({ slug, template, groom, bride, mainEvent, updatedAt }));
   },
 
+  async listInvitationsFor(email) {
+    const dir = path.join(ROOT, "invitations");
+    let files: string[] = [];
+    try {
+      files = (await readdir(dir)).filter((f) => f.endsWith(".json"));
+    } catch {
+      return [];
+    }
+    const out: Invitation[] = [];
+    for (const f of files) {
+      const parsed = InvitationSchema.safeParse(await readJson<unknown>(path.join(dir, f), null));
+      if (parsed.success && parsed.data.members.some((m) => m.email === email)) out.push(parsed.data);
+    }
+    return out
+      .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
+      .map(({ slug, template, groom, bride, mainEvent, updatedAt }) => ({ slug, template, groom, bride, mainEvent, updatedAt }));
+  },
+
   async listWishes(slug) {
     const raw = await readJson<unknown[]>(wishFile(slug), []);
     return raw.map((w) => WishSchema.safeParse(w)).flatMap((r) => (r.success ? [r.data] : []));
@@ -94,6 +114,17 @@ export const fileStore: Store = {
   async addRsvp(slug, rsvp: Rsvp) {
     const list = await this.listRsvps(slug);
     await writeJson(rsvpFile(slug), [rsvp, ...list]);
+  },
+
+  async getPlan(slug) {
+    const raw = await readJson<unknown>(planFile(slug), null);
+    if (!raw) return null;
+    const parsed = PlanSchema.safeParse(raw);
+    return parsed.success ? parsed.data : null;
+  },
+
+  async savePlan(slug, plan) {
+    await writeJson(planFile(slug), plan);
   },
 
   async saveUpload(slug, fileName, data, contentType) {

@@ -11,6 +11,8 @@ npm run dev
 
 Mở <http://localhost:3100>. Dữ liệu ghi vào thư mục `data/` (không commit). Không cần tài khoản gì.
 
+Muốn thử luồng đăng nhập trên máy mà không cần Google: chạy với `AUTH=dev` (vd `npx cross-env AUTH=dev npm run dev`), màn đăng nhập sẽ cho gõ email. Chế độ này tự tắt khi build production hoặc khi `STORE=supabase`.
+
 Lệnh khác: `npm test` (lịch âm, ngày tháng), `npm run typecheck`, `npm run lint`, `npm run build`.
 
 ## Cấu trúc
@@ -24,6 +26,7 @@ Lệnh khác: `npm test` (lịch âm, ngày tháng), `npm run typecheck`, `npm r
 | `src/components/invitation/` | Thiệp cho khách xem: bìa, các phần, slideshow, CSS. |
 | `src/components/ornaments/` | Họa tiết SVG vẽ tay và chất liệu nền (feTurbulence). |
 | `src/components/editor/` | Trình chỉnh sửa: form theo tab + xem trước trong khung điện thoại. |
+| `src/components/plan/`, `src/lib/plan.ts` | Quản lý cưới `/plan/<slug>`: tổng quan, công việc, chi phí, khách mời, tiền mừng. |
 | `src/app/[slug]` | Trang thiệp công khai. `/demo/[template]` xem thử mẫu với dữ liệu giả. |
 | `src/app/api/` | Tạo/lưu thiệp, lời chúc, RSVP, tải file. |
 
@@ -33,12 +36,18 @@ Lệnh khác: `npm test` (lịch âm, ngày tháng), `npm run typecheck`, `npm r
 2. Trình chỉnh sửa lưu **khóa sửa** vào trình duyệt. Tab **Chia sẻ** có link chỉnh sửa kèm khóa để mở trên máy khác.
 3. Bấm **Lưu** (hoặc Ctrl+S) → link `/<slug>` cập nhật ngay.
 4. Tab **Khách** xem ai đã xác nhận và lời chúc.
+5. Nút **Quản lý cưới** (`/plan/<slug>`, cùng khóa sửa): danh sách việc theo mốc trước ngày cưới, chi phí so với ngân sách, danh sách khách và link riêng, sổ tiền mừng. Tự lưu, xuất được CSV.
+6. **Đăng nhập** (bản Supabase): trình chỉnh sửa và trang quản lý cần đăng nhập Google. Người tạo thiệp là người quản lý đầu tiên, mời người kia bằng email ở tab **Chia sẻ**; mọi người quản lý có quyền như nhau. Thiệp tạo từ trước khi có đăng nhập: người giữ khóa sửa đăng nhập rồi bấm **Nhận thiệp**, sau đó khóa sửa cũ hết tác dụng. Trang thiệp cho khách vẫn mở tự do.
 
 ## Đưa lên mạng (Vercel + Supabase)
 
-1. Tạo project Supabase, chạy `supabase/migrations/0001_init.sql` trong SQL editor.
-2. Đặt biến môi trường: `STORE=supabase`, `NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `NEXT_PUBLIC_SITE_URL`.
-3. Deploy lên Vercel. Bản Supabase đã chạy thử đủ luồng (tạo thiệp, lời chúc, RSVP, tải ảnh, ảnh OG).
+1. Tạo project Supabase, chạy lần lượt `supabase/migrations/0001_init.sql`, `0002_plans.sql`, `0003_members.sql` trong SQL editor.
+2. Đặt biến môi trường: `STORE=supabase`, `NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `NEXT_PUBLIC_SITE_URL`. Có `NEXT_PUBLIC_SUPABASE_ANON_KEY` thì đăng nhập tự bật; thiếu thì vẫn dùng khóa sửa như cũ.
+3. Bật đăng nhập Google:
+   - Google Cloud Console → APIs & Services → Credentials → tạo **OAuth client ID** loại *Web application*. Ô *Authorized redirect URIs* điền `https://<project>.supabase.co/auth/v1/callback`.
+   - Supabase → Authentication → Sign In / Providers → **Google**: bật, dán Client ID và Client secret.
+   - Supabase → Authentication → URL Configuration: *Site URL* là địa chỉ site; *Redirect URLs* thêm `https://<site>/**` (và `http://localhost:3100/**` nếu thử trên máy).
+4. Deploy lên Vercel. Bản Supabase đã chạy thử đủ luồng (tạo thiệp, lời chúc, RSVP, tải ảnh, ảnh OG). Đăng nhập Google mới chạy thử bằng chế độ `AUTH=dev`, chưa thử với Google thật.
 
 ## Tính năng đáng chú ý
 
@@ -58,6 +67,6 @@ Lệnh khác: `npm test` (lịch âm, ngày tháng), `npm run typecheck`, `npm r
 
 ## Chưa làm (giai đoạn sau)
 
-- Tài khoản người dùng, nhiều người cùng dùng, thanh toán.
+- Chia quyền chi tiết (vd người chỉ được ghi tiền mừng, không sửa thiệp), thanh toán.
 - Xuất video/ảnh thiệp.
 - Hình họa tiết chất lượng cao hơn (mua bản quyền hoặc vẽ tay).

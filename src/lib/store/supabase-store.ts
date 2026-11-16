@@ -1,11 +1,12 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { InvitationSchema, RsvpSchema, WishSchema } from "@/lib/schema";
+import { PlanSchema } from "@/lib/plan";
 import type { Store } from "./types";
 
 /**
  * Bản Supabase. Cần ba biến môi trường:
  *   NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, STORE=supabase
- * Bảng và bucket xem supabase/migrations/0001_init.sql.
+ * Bảng và bucket xem supabase/migrations/ (chạy lần lượt 0001, 0002…).
  * Chỉ dùng ở server (service role), không bao giờ gửi key xuống trình duyệt.
  */
 
@@ -62,6 +63,20 @@ export const supabaseStore: Store = {
       .map(({ slug, template, groom, bride, mainEvent, updatedAt }) => ({ slug, template, groom, bride, mainEvent, updatedAt }));
   },
 
+  async listInvitationsFor(email) {
+    // data @> {"members":[{"email": ...}]}: lọc ngay trong Postgres
+    const { data, error } = await db()
+      .from("invitations")
+      .select("data")
+      .contains("data", { members: [{ email }] })
+      .order("updated_at", { ascending: false });
+    if (error) throw error;
+    return (data ?? [])
+      .map((r) => InvitationSchema.safeParse(r.data))
+      .flatMap((r) => (r.success ? [r.data] : []))
+      .map(({ slug, template, groom, bride, mainEvent, updatedAt }) => ({ slug, template, groom, bride, mainEvent, updatedAt }));
+  },
+
   async listWishes(slug) {
     const { data, error } = await db().from("wishes").select("data").eq("slug", slug).order("created_at", { ascending: false });
     if (error) throw error;
@@ -81,6 +96,19 @@ export const supabaseStore: Store = {
 
   async addRsvp(slug, rsvp) {
     const { error } = await db().from("rsvps").insert({ id: rsvp.id, slug, data: rsvp, created_at: rsvp.createdAt });
+    if (error) throw error;
+  },
+
+  async getPlan(slug) {
+    const { data, error } = await db().from("plans").select("data").eq("slug", slug).maybeSingle();
+    if (error) throw error;
+    if (!data) return null;
+    const parsed = PlanSchema.safeParse(data.data);
+    return parsed.success ? parsed.data : null;
+  },
+
+  async savePlan(slug, plan) {
+    const { error } = await db().from("plans").upsert({ slug, data: plan, updated_at: plan.updatedAt }, { onConflict: "slug" });
     if (error) throw error;
   },
 

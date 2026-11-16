@@ -5,7 +5,9 @@ import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import type { Invitation } from "@/lib/schema";
 import { toPublic } from "@/lib/schema";
-import { api } from "@/lib/client/api";
+import { api, ApiError } from "@/lib/client/api";
+import { useAuth, type AuthMode } from "@/lib/client/auth";
+import { ClaimScreen, DeniedScreen, LoadingScreen, LoginScreen } from "@/components/auth/AuthScreens";
 import { readKey, rememberKey } from "@/lib/client/edit-key";
 import { Invitation as InvitationView } from "@/components/invitation/Invitation";
 import { ContentPanel, CouplePanel, EventsPanel, GiftPanel, GuestsPanel, PhotosPanel, SectionsPanel, SharePanel, TemplatePanel, type Patch } from "./panels";
@@ -24,7 +26,7 @@ const TABS = [
 ] as const;
 type Tab = (typeof TABS)[number][0];
 
-export function Editor({ slug }: { slug: string }) {
+export function Editor({ slug, authMode = "off" }: { slug: string; authMode?: AuthMode }) {
   const search = useSearchParams();
   // Khóa sửa: lấy từ ?key= (lần đầu mở link) rồi nhớ vào trình duyệt.
   // Component này chỉ chạy ở client (ssr: false) nên đọc localStorage ngay được.
@@ -47,18 +49,28 @@ export function Editor({ slug }: { slug: string }) {
   const [tab, setTab] = useState<Tab>("template");
   const [showCover, setShowCover] = useState(false);
   const [loadErr, setLoadErr] = useState("");
+  const [errCode, setErrCode] = useState("");
+  const [reload, setReload] = useState(0);
   const keyInput = useRef<HTMLInputElement>(null);
+  // Bật đăng nhập: vào bằng tài khoản; khóa sửa (nếu còn nhớ) chỉ dùng cho thiệp chưa ai nhận
+  const session = useAuth(authMode);
+  const authOn = authMode !== "off";
 
   useEffect(() => {
-    if (!key) return;
+    if (authOn ? !session.email : !key) return;
     api.load(slug, key)
       .then((inv) => {
         setDraft(inv);
         setSaved(JSON.stringify(inv));
         setLoadErr("");
+        setErrCode("");
       })
-      .catch((e) => setLoadErr((e as Error).message));
-  }, [slug, key]);
+      .catch((e) => {
+        setDraft(null);
+        setLoadErr((e as Error).message);
+        setErrCode(e instanceof ApiError ? e.code : "");
+      });
+  }, [slug, key, authOn, session.email, reload]);
 
   const patch = useCallback<Patch>((fn) => {
     setDraft((d) => {
@@ -79,7 +91,7 @@ export function Editor({ slug }: { slug: string }) {
   }, [dirty]);
 
   async function save() {
-    if (!draft || !key) return;
+    if (!draft) return;
     setStatus({ text: "Đang lưu…" });
     try {
       const inv = await api.save(draft, key);
@@ -114,7 +126,14 @@ export function Editor({ slug }: { slug: string }) {
     setKey(v);
   }
 
-  if (!key || loadErr) {
+  if (authOn) {
+    if (!session.ready) return <LoadingScreen />;
+    if (!session.email || errCode === "login") return <LoginScreen session={session} title={`Chỉnh sửa thiệp /${slug}`} />;
+    if (errCode === "claim") return <ClaimScreen slug={slug} session={session} initialKey={key} onDone={() => setReload((n) => n + 1)} />;
+    if (loadErr) return <DeniedScreen session={session} message={loadErr} />;
+  }
+
+  if (!authOn && (!key || loadErr)) {
     return (
       <main className="ed-gate">
         <form onSubmit={submitKey}>
@@ -130,7 +149,7 @@ export function Editor({ slug }: { slug: string }) {
 
   if (!draft || !publicDraft) return <main className="ed-gate"><p className="hint">Đang tải…</p></main>;
 
-  const panelProps = { d: draft, patch, editKey: key };
+  const panelProps = { d: draft, patch, editKey: key, session };
 
   return (
     <div className="ed">
@@ -138,6 +157,7 @@ export function Editor({ slug }: { slug: string }) {
         <header className="ed-top">
           <Link href="/">← Trang chủ</Link>
           <h1>{draft.groom.shortName} &amp; {draft.bride.shortName} · /{draft.slug}</h1>
+          <Link href={`/plan/${draft.slug}`}>Quản lý cưới</Link>
           <span className={`ed-status ${status.err ? "err" : ""}`}>{status.text || (dirty ? "Chưa lưu" : "")}</span>
           <button type="button" className="ed-save" onClick={save} disabled={!dirty && status.text !== "Đang lưu…"}>Lưu</button>
         </header>

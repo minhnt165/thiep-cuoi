@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { EditorLoader } from "@/components/editor/EditorLoader";
+import { authMode } from "@/lib/auth";
 import "@/components/editor/editor.css";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -8,5 +9,5 @@ export const metadata: Metadata = { title: "Chỉnh sửa thiệp", robots: { in
 
 export default async function EditPage({ params }: Props) {
   const { slug } = await params;
-  return <EditorLoader slug={slug} />;
+  return <EditorLoader slug={slug} authMode={authMode()} />;
 }

@@ -79,6 +79,7 @@ export function sampleInvitation(slug: string, template: TemplateId, editKey = m
     ],
     music: "",
     guests: [],
+    members: [],
     sections: ["saveTheDate", "family", "album", "party", "dressCode", "timeline", "story", "guestbook", "gift"],
     editKey,
     createdAt: now,

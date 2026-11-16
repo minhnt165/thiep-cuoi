@@ -1,0 +1,306 @@
+/* Lịch chọn ngày dùng chung cho trình chỉnh sửa và trang Quản lý cưới */
+
+.dp {
+  --dp-accent: var(--pl-accent, var(--ui-accent));
+  --dp-accent-ink: var(--pl-accent-ink, #fff);
+  position: relative;
+  min-width: 0;
+}
+
+/* Lịch nằm trong body nên tự tính màu phụ từ màu nhấn được truyền sang */
+.dp,
+.dp-pop {
+  --dp-soft: color-mix(in oklab, var(--dp-accent, var(--ui-accent)) 12%, #fff);
+  --dp-text: color-mix(in oklab, var(--dp-accent, var(--ui-accent)) 68%, #1d1712);
+  --dp-sun: #b0302a;
+}
+
+.dp-trigger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+  padding: 9px 11px;
+  border: 1px solid var(--ui-line);
+  border-radius: var(--ui-radius);
+  background: #fff;
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+  color: var(--ui-fg);
+  text-align: left;
+  cursor: pointer;
+}
+
+.dp-trigger svg {
+  width: 16px;
+  height: 16px;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  opacity: 0.6;
+}
+
+.dp-trigger span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dp-trigger.is-empty {
+  color: var(--ui-muted);
+}
+
+.dp-trigger.is-invalid {
+  color: var(--dp-sun);
+  font-weight: 600;
+}
+
+.dp-trigger:focus-visible,
+.dp.is-open .dp-trigger {
+  outline: none;
+  border-color: var(--dp-accent);
+  box-shadow: 0 0 0 3px var(--dp-soft);
+}
+
+.dp-backdrop {
+  display: none;
+}
+
+.dp-pop {
+  position: fixed;
+  z-index: 1000;
+  width: 312px;
+  padding: 12px;
+  border: 1px solid var(--ui-line);
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(30, 20, 10, 0.06), 0 24px 48px -20px rgba(30, 20, 10, 0.35);
+  animation: dp-in 0.14s ease both;
+}
+
+@keyframes dp-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
+  }
+}
+
+.dp-head {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-bottom: 8px;
+}
+
+.dp-head b {
+  flex: 1;
+  text-align: center;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.dp-nav {
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  font-size: 18px;
+  line-height: 1;
+  color: var(--ui-muted);
+  cursor: pointer;
+}
+
+.dp-nav:hover {
+  background: var(--ui-bg);
+  color: var(--ui-fg);
+}
+
+.dp-week,
+.dp-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 2px;
+}
+
+.dp-week span {
+  padding: 4px 0;
+  font-size: 11px;
+  font-weight: 600;
+  text-align: center;
+  color: var(--ui-muted);
+}
+
+.dp-week .sun {
+  color: var(--dp-sun);
+}
+
+.dp-day {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 0;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 10px;
+  background: none;
+  color: var(--ui-fg);
+  cursor: pointer;
+  font-variant-numeric: tabular-nums;
+}
+
+.dp-day b {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.dp-day small {
+  font-size: 9.5px;
+  line-height: 1.1;
+  color: var(--ui-muted);
+}
+
+.dp-day.sun b {
+  color: var(--dp-sun);
+}
+
+.dp-day.other {
+  opacity: 0.38;
+}
+
+.dp-day:hover {
+  background: var(--ui-bg);
+}
+
+.dp-day:focus-visible {
+  outline: 2px solid var(--dp-accent);
+  outline-offset: -2px;
+}
+
+.dp-day.today {
+  box-shadow: inset 0 0 0 1.5px var(--dp-accent);
+}
+
+.dp-day.marked {
+  background: var(--dp-soft);
+}
+
+.dp-day.marked i {
+  position: absolute;
+  top: 2px;
+  right: 4px;
+  font-size: 9px;
+  font-style: normal;
+  color: var(--dp-text);
+}
+
+.dp-day.selected,
+.dp-day.selected:hover {
+  background: var(--dp-accent);
+}
+
+.dp-day.selected b,
+.dp-day.selected small,
+.dp-day.selected i {
+  color: var(--dp-accent-ink);
+}
+
+.dp-foot {
+  display: grid;
+  gap: 8px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--ui-line);
+}
+
+.dp-lunar {
+  font-size: 12px;
+  color: var(--ui-muted);
+}
+
+.dp-lunar b {
+  font-weight: 600;
+  color: var(--ui-fg);
+}
+
+.dp-acts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.dp-btn {
+  padding: 5px 10px;
+  border: 1px solid var(--ui-line);
+  border-radius: 999px;
+  background: #fff;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ui-fg);
+  cursor: pointer;
+}
+
+.dp-btn:hover {
+  border-color: var(--dp-accent);
+  color: var(--dp-text);
+}
+
+/* Điện thoại: tấm trượt từ dưới lên, ô ngày to dễ bấm */
+@media (max-width: 560px) {
+  .dp-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 999;
+    background: rgba(20, 14, 10, 0.35);
+    animation: dp-fade 0.15s ease both;
+  }
+
+  .dp-pop {
+    top: auto !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0;
+    width: auto;
+    padding: 16px 16px calc(16px + env(safe-area-inset-bottom));
+    border-radius: 22px 22px 0 0;
+    animation: dp-sheet 0.2s ease both;
+  }
+
+  .dp-day {
+    height: 50px;
+  }
+
+  .dp-day b {
+    font-size: 16px;
+  }
+
+  .dp-day small {
+    font-size: 10.5px;
+  }
+}
+
+@keyframes dp-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes dp-sheet {
+  from {
+    transform: translateY(100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dp-pop,
+  .dp-backdrop {
+    animation: none;
+  }
+}

@@ -18,6 +18,18 @@ export function readKey(slug: string): string {
   }
 }
 
+/** Các thiệp mà trình duyệt này đang giữ khóa sửa */
+export function rememberedSlugs(): string[] {
+  try {
+    return Object.keys(localStorage)
+      .filter((k) => k.startsWith(prefix))
+      .map((k) => k.slice(prefix.length))
+      .filter((s) => /^[a-z0-9-]{3,60}$/.test(s));
+  } catch {
+    return [];
+  }
+}
+
 export function forgetKey(slug: string): void {
   try {
     localStorage.removeItem(prefix + slug);

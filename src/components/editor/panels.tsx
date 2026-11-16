@@ -9,6 +9,9 @@ import { api } from "@/lib/client/api";
 import { formatWishTime } from "@/lib/dates";
 import { BANKS, vietQrUrl } from "@/lib/banks";
 import { MUSIC_PRESETS, presetAvailable, presetUrl } from "@/lib/music";
+import { DatePicker } from "@/components/DatePicker";
+import type { AuthState } from "@/lib/client/auth";
+import { AccountLine, MembersPanel } from "@/components/auth/AuthScreens";
 
 export type Patch = (fn: (d: Invitation) => void) => void;
 
@@ -16,6 +19,7 @@ interface PanelProps {
   d: Invitation;
   patch: Patch;
   editKey: string;
+  session?: AuthState;
 }
 
 const SECTION_LABELS: Record<SectionId, string> = {
@@ -185,7 +189,8 @@ function EventFields({ d, patch, index }: PanelProps & { index: number | "main" 
     <>
       <F label="Tên sự kiện"><input value={ev.title} onChange={set("title")} /></F>
       <div className="g2">
-        <F label="Ngày"><input type="date" value={ev.date} onChange={set("date")} /></F>
+        {/* div thay vì label: bấm trong lịch không bị label chuyển thành bấm nút mở */}
+        <div className="f">Ngày<DatePicker value={ev.date} aria-label="Ngày" marks={[{ date: d.mainEvent.date, label: "Ngày cưới" }]} onChange={(v) => patch((x) => { (index === "main" ? x.mainEvent : x.events[index]).date = v; })} /></div>
         <F label="Giờ"><input type="time" value={ev.time} onChange={set("time")} /></F>
       </div>
       <F label="Địa điểm"><input value={ev.venue} onChange={set("venue")} /></F>
@@ -415,60 +420,7 @@ export function SectionsPanel({ d, patch }: PanelProps) {
 }
 
 /* ---------- Khách ---------- */
-function GuestLinks({ d, patch }: PanelProps) {
-  const [origin] = useState(() => (typeof window === "undefined" ? "" : window.location.origin));
-  const [copied, setCopied] = useState("");
-  const [bulk, setBulk] = useState("");
-  const link = (name: string) => `${origin}/${d.slug}?to=${encodeURIComponent(name)}`;
-  async function copy(text: string, which: string) {
-    try {
-      await navigator.clipboard.writeText(text);
-      setCopied(which);
-      setTimeout(() => setCopied(""), 1500);
-    } catch {
-      /* bỏ qua */
-    }
-  }
-  function addBulk() {
-    const names = bulk.split(/\r?\n/).map((s) => s.trim()).filter(Boolean);
-    if (!names.length) return;
-    patch((x) => { x.guests.push(...names.map((name) => ({ id: makeId(), name, side: "groom" as const, note: "" }))); });
-    setBulk("");
-  }
-  const all = d.guests.map((g) => `${g.name}: ${link(g.name)}`).join("\n");
-  return (
-    <>
-      <p className="ed-h">Link riêng cho từng khách</p>
-      <p className="hint">Mỗi khách một link: tên hiện trên bìa (Thân gửi …) và điền sẵn ở phần xác nhận. Nhớ bấm Lưu sau khi thêm khách.</p>
-      <div className="fs">
-        <F label="Thêm nhanh, mỗi dòng một tên">
-          <textarea value={bulk} onChange={(e) => setBulk(e.target.value)} placeholder={"Cô Lan\nGia đình anh Hùng\nBạn Minh Anh"} />
-        </F>
-        <div className="row">
-          <button type="button" className="btn2" onClick={addBulk}>Thêm vào danh sách</button>
-          {d.guests.length > 0 && <button type="button" className="btn2" onClick={() => copy(all, "all")}>{copied === "all" ? "Đã sao chép" : `Sao chép tất cả (${d.guests.length})`}</button>}
-        </div>
-      </div>
-      {d.guests.map((g, i) => (
-        <div className="item" key={g.id}>
-          <div className="row">
-            <input value={g.name} style={{ flex: 1, minWidth: 140 }} onChange={(e) => patch((x) => { x.guests[i].name = e.target.value; })} />
-            <select value={g.side} onChange={(e) => patch((x) => { x.guests[i].side = e.target.value === "bride" ? "bride" : "groom"; })}>
-              <option value="groom">Nhà trai</option>
-              <option value="bride">Nhà gái</option>
-            </select>
-            <button type="button" className="btn2" onClick={() => copy(link(g.name), g.id)}>{copied === g.id ? "Đã sao chép" : "Sao chép link"}</button>
-            <a className="btn2" href={link(g.name)} target="_blank" rel="noopener" style={{ textDecoration: "none" }}>Mở</a>
-            <button type="button" className="btn2 danger" onClick={() => patch((x) => { x.guests.splice(i, 1); })}>×</button>
-          </div>
-        </div>
-      ))}
-    </>
-  );
-}
-
-export function GuestsPanel(props: PanelProps) {
-  const { d, editKey } = props;
+export function GuestsPanel({ d, editKey }: PanelProps) {
   const [rsvps, setRsvps] = useState<Rsvp[] | null>(null);
   const [wishes, setWishes] = useState<Wish[] | null>(null);
   const [err, setErr] = useState("");
@@ -487,7 +439,13 @@ export function GuestsPanel(props: PanelProps) {
         <div><b>{(rsvps?.length ?? 0) - yes.length}</b>không đến được</div>
         <div><b>{wishes?.length ?? 0}</b>lời chúc</div>
       </div>
-      <GuestLinks {...props} />
+      <div className="share">
+        <b>Danh sách khách mời và link riêng</b>
+        <p className="hint">Đã chuyển sang trang Quản lý cưới: thêm khách theo nhóm, đánh dấu đã gửi thiệp, sao chép link riêng từng người, ghi tiền mừng.</p>
+        <div className="row">
+          <a className="btn2" href={`/plan/${d.slug}#guests`} style={{ textDecoration: "none" }}>Mở danh sách khách ↗</a>
+        </div>
+      </div>
       <p className="ed-h">Xác nhận tham dự</p>
       {rsvps && rsvps.length === 0 && <p className="hint">Chưa có ai xác nhận.</p>}
       {rsvps && rsvps.length > 0 && (
@@ -519,7 +477,7 @@ export function GuestsPanel(props: PanelProps) {
 }
 
 /* ---------- Chia sẻ ---------- */
-export function SharePanel({ d, editKey }: PanelProps) {
+export function SharePanel({ d, editKey, session }: PanelProps) {
   const [origin] = useState(() => (typeof window === "undefined" ? "" : window.location.origin));
   const [copied, setCopied] = useState("");
   const publicUrl = `${origin}/${d.slug}`;
@@ -544,14 +502,22 @@ export function SharePanel({ d, editKey }: PanelProps) {
         </div>
         <p className="hint">Nhớ bấm Lưu trước khi gửi. Sửa sau khi gửi thì link vẫn tự cập nhật.</p>
       </div>
-      <div className="share">
-        <b>Link chỉnh sửa (giữ riêng)</b>
-        <code>{editUrl}</code>
-        <div className="row">
-          <button type="button" className="btn2" onClick={() => copy(editUrl, "e")}>{copied === "e" ? "Đã sao chép" : "Sao chép"}</button>
+      {session && session.mode !== "off" ? (
+        // Bật đăng nhập: vào bằng tài khoản, mời nhau bằng email; khóa sửa không còn dùng
+        <>
+          <MembersPanel slug={d.slug} session={session} />
+          <AccountLine session={session} />
+        </>
+      ) : (
+        <div className="share">
+          <b>Link chỉnh sửa (giữ riêng)</b>
+          <code>{editUrl}</code>
+          <div className="row">
+            <button type="button" className="btn2" onClick={() => copy(editUrl, "e")}>{copied === "e" ? "Đã sao chép" : "Sao chép"}</button>
+          </div>
+          <p className="hint">Ai có link này đều sửa được thiệp. Chỉ gửi cho cô dâu chú rể.</p>
         </div>
-        <p className="hint">Ai có link này đều sửa được thiệp. Chỉ gửi cho cô dâu chú rể.</p>
-      </div>
+      )}
     </>
   );
 }

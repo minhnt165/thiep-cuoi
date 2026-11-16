@@ -3,6 +3,10 @@ import Link from "next/link";
 import { THEME_LIST } from "@/lib/templates";
 import { getStore } from "@/lib/store";
 import { CreateForm } from "@/components/editor/CreateForm";
+import { MyInvitations } from "@/components/auth/MyInvitations";
+import { PlanShowcase } from "@/components/home/PlanShowcase";
+import { RecentInvitations } from "@/components/home/RecentInvitations";
+import { authMode } from "@/lib/auth";
 import { Donate } from "@/components/Donate";
 import "./home.css";
 
@@ -38,6 +42,7 @@ export default async function Home() {
   const isLocal = process.env.STORE !== "supabase";
   const list = isLocal ? await (await getStore()).listInvitations() : [];
   const needsCode = Boolean(process.env.CREATE_CODE);
+  const auth = authMode();
   const fan = ["blush-rose", "marble-gold", "navy-gold"];
 
   return (
@@ -51,6 +56,7 @@ export default async function Home() {
           </p>
           <div className="hero-cta">
             <a className="btn-main" href="#create">Tạo thiệp ngay</a>
+            <a className="btn-ghost" href="#mine">Thiệp của tôi</a>
             <a className="btn-text" href="#templates">Xem {THEME_LIST.length} mẫu ↓</a>
           </div>
         </div>
@@ -72,6 +78,8 @@ export default async function Home() {
           </div>
         ))}
       </section>
+
+      <PlanShowcase loginOn={auth !== "off"} />
 
       <section id="templates">
         <div className="sec-head">
@@ -112,14 +120,29 @@ export default async function Home() {
       <section className="home-create" id="create">
         <div className="sec-head">
           <h2 className="home-h2">Tạo thiệp mới</h2>
-          <p className="home-sub">Miễn phí. Sau khi tạo bạn nhận một link chỉnh sửa riêng, giữ kỹ để sửa thiệp về sau.</p>
+          <p className="home-sub">{auth === "off" ? "Miễn phí. Sau khi tạo bạn nhận một link chỉnh sửa riêng, giữ kỹ để sửa thiệp về sau." : "Miễn phí. Đăng nhập bằng Google, thiệp gắn với tài khoản của bạn và người bạn mời."}</p>
         </div>
-        <CreateForm needsCode={needsCode} />
+        <CreateForm needsCode={needsCode} authMode={auth} />
       </section>
 
+      {auth !== "off" && <MyInvitations authMode={auth} />}
+
+      {/* Lối vào trình chỉnh sửa và trang Quản lý cưới (#mine): theo tài khoản, theo máy, hoặc theo trình duyệt */}
+      {auth === "off" && !isLocal && (
+        <section id="mine">
+          <h2 className="home-h2">Thiệp của tôi</h2>
+          <RecentInvitations />
+        </section>
+      )}
+      {auth === "off" && isLocal && list.length === 0 && (
+        <section id="mine">
+          <h2 className="home-h2">Thiệp của tôi</h2>
+          <p className="home-sub">Chưa có thiệp nào. Tạo thiệp ở trên, thiệp sẽ hiện ở đây kèm nút Sửa và Quản lý.</p>
+        </section>
+      )}
       {list.length > 0 && (
-        <section>
-          <h2 className="home-h2">Thiệp đã tạo trên máy này</h2>
+        <section id={auth === "off" ? "mine" : undefined}>
+          <h2 className="home-h2">{auth === "off" ? "Thiệp của tôi" : "Thiệp đã tạo trên máy này"}</h2>
           <ul className="inv-list">
             {list.map((i) => (
               <li key={i.slug}>
@@ -130,6 +153,7 @@ export default async function Home() {
                 <div className="inv-list-actions">
                   <Link href={`/${i.slug}`}>Xem</Link>
                   <Link href={`/edit/${i.slug}`}>Sửa</Link>
+                  <Link href={`/plan/${i.slug}`}>Quản lý</Link>
                 </div>
               </li>
             ))}
