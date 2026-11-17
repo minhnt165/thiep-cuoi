@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { makeId, type Guest, type Rsvp } from "@/lib/schema";
 import { giftsFor, rsvpFor, sameName, summarize } from "@/lib/plan";
-import { Avatar, Empty, SIDES, SplitBar, Stat, Vnd, downloadCsv, useCopy, type PageProps } from "./ui";
+import { Avatar, Empty, SIDES, SplitBar, Stat, Vnd, downloadXlsx, useCopy, type PageProps } from "./ui";
 import { Icon } from "./icons";
 import { confirmDelete, quote } from "@/components/ConfirmDialog";
 
@@ -83,11 +83,16 @@ export function Guests({ inv, plan, guests, setGuests, rsvps, today }: PageProps
     });
   }
 
-  function exportCsv() {
-    downloadCsv(`khach-moi-${inv.slug}.csv`, [
-      ["Tên", "Bên", "Nhóm", "Số người", "Điện thoại", "Đã gửi thiệp", "Xác nhận", "Tiền mừng", "Link riêng"],
-      ...guests.map((g) => [g.name, SIDES[g.side], g.group, g.count, g.phone, g.sent ? "Có" : "", rsvpLabel(rsvpFor(g, rsvps)).text, giftsFor(g, plan.gifts) || "", link(g.name)]),
-    ]);
+  function exportXlsx() {
+    downloadXlsx(`khach-moi-${inv.slug}.xlsx`, {
+      name: "Khách mời",
+      header: ["Tên", "Bên", "Nhóm", "Số người", "Điện thoại", "Đã gửi thiệp", "Xác nhận", "Tiền mừng", "Link riêng"],
+      // Số điện thoại giữ dạng chữ để không mất số 0 đầu
+      rows: guests.map((g) => [g.name, SIDES[g.side], g.group, g.count, g.phone, g.sent ? "Có" : "", rsvpLabel(rsvpFor(g, rsvps)).text, giftsFor(g, plan.gifts) || null, link(g.name)]),
+      widths: [28, 10, 18, 10, 14, 12, 18, 14, 48],
+      moneyCols: [7],
+      totalCols: [3, 7],
+    });
   }
 
   return (
@@ -201,7 +206,7 @@ export function Guests({ inv, plan, guests, setGuests, rsvps, today }: PageProps
             <button type="button" className="btn2 pl-btn-ic" onClick={() => copy(shown.map((g) => `${g.name}: ${link(g.name)}`).join("\n"), "all")}>
               <Icon name="link" size={16} />{copied === "all" ? "Đã sao chép" : `Sao chép link ${shown.length} khách đang lọc`}
             </button>
-            <button type="button" className="btn2 pl-btn-ic" onClick={exportCsv}><Icon name="download" size={16} />Xuất file Excel (CSV)</button>
+            <button type="button" className="btn2 pl-btn-ic" onClick={exportXlsx}><Icon name="download" size={16} />Xuất file Excel</button>
           </div>
         )}
       </section>

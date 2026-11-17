@@ -4,7 +4,7 @@ import { useRef, useState, type FormEvent } from "react";
 import { makeId } from "@/lib/schema";
 import { GIFT_METHODS, sameName, sum, summarize, type Gift } from "@/lib/plan";
 import { formatWishTime } from "@/lib/dates";
-import { Avatar, Empty, MoneyInput, SIDES, SplitBar, Stat, downloadCsv, type PageProps } from "./ui";
+import { Avatar, Empty, MoneyInput, SIDES, SplitBar, Stat, downloadXlsx, type PageProps } from "./ui";
 import { formatMoneyShort } from "@/lib/money";
 import { Icon } from "./icons";
 import { confirmDelete, quote } from "@/components/ConfirmDialog";
@@ -46,11 +46,15 @@ export function Gifts({ inv, plan, setPlan, guests, rsvps, today }: PageProps) {
     setPlan((p) => { p.gifts = p.gifts.filter((x) => x.id !== g.id); });
   }
 
-  function exportCsv() {
-    downloadCsv(`tien-mung-${inv.slug}.csv`, [
-      ["Tên", "Bên", "Số tiền", "Hình thức", "Ghi chú", "Thời gian ghi"],
-      ...plan.gifts.map((g) => [g.name, SIDES[g.side], g.amount, GIFT_METHODS[g.method], g.note, formatWishTime(g.createdAt)]),
-    ]);
+  function exportXlsx() {
+    downloadXlsx(`tien-mung-${inv.slug}.xlsx`, {
+      name: "Tiền mừng",
+      header: ["Tên", "Bên", "Số tiền", "Hình thức", "Ghi chú", "Thời gian ghi"],
+      rows: plan.gifts.map((g) => [g.name, SIDES[g.side], g.amount, GIFT_METHODS[g.method], g.note, formatWishTime(g.createdAt)]),
+      widths: [28, 10, 14, 14, 30, 20],
+      moneyCols: [2],
+      totalCols: [2],
+    });
   }
 
   return (
@@ -151,7 +155,7 @@ export function Gifts({ inv, plan, setPlan, guests, rsvps, today }: PageProps) {
           </div>
         )}
         {plan.gifts.length > 0 && shown.length === 0 && <p className="hint">Không có phong bì nào khớp.</p>}
-        {plan.gifts.length > 0 && <div className="row"><button type="button" className="btn2 pl-btn-ic" onClick={exportCsv}><Icon name="download" size={16} />Xuất file Excel (CSV)</button></div>}
+        {plan.gifts.length > 0 && <div className="row"><button type="button" className="btn2 pl-btn-ic" onClick={exportXlsx}><Icon name="download" size={16} />Xuất file Excel</button></div>}
       </section>
     </>
   );

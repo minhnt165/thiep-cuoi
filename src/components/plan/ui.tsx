@@ -4,6 +4,7 @@ import { useState, type InputHTMLAttributes } from "react";
 import type { Guest, Invitation, Rsvp } from "@/lib/schema";
 import type { Plan } from "@/lib/plan";
 import { formatMoney, parseMoney } from "@/lib/money";
+import { buildXlsx, type SheetSpec } from "@/lib/xlsx";
 
 /** Sửa bản nháp kiểu Immer: hàm nhận bản sao, sửa tại chỗ */
 export type Update<T> = (fn: (draft: T) => void) => void;
@@ -79,13 +80,10 @@ export function Stat({ label, children, tone }: { label: string; children: React
   );
 }
 
-/** Tải bảng thành file CSV (có BOM để Excel đọc đúng tiếng Việt) */
-export function downloadCsv(fileName: string, rows: (string | number)[][]) {
-  const esc = (v: string | number) => {
-    const s = String(v);
-    return /[",\n;]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
-  };
-  const blob = new Blob(["﻿" + rows.map((r) => r.map(esc).join(",")).join("\r\n")], { type: "text/csv;charset=utf-8" });
+/** Tải bảng thành file Excel .xlsx (tiêu đề đậm, bộ lọc, số tiền là số, dòng tổng) */
+export function downloadXlsx(fileName: string, spec: SheetSpec) {
+  const bytes = buildXlsx(spec);
+  const blob = new Blob([bytes.buffer as ArrayBuffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;

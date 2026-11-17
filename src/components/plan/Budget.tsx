@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { makeId } from "@/lib/schema";
 import { EXPENSE_CATEGORIES, PAYERS, expenseCost, expenseRemaining, summarize, sum, type CategoryId, type Expense } from "@/lib/plan";
-import { Bar, Empty, MoneyInput, Stat, Vnd, downloadCsv, type PageProps } from "./ui";
+import { Bar, Empty, MoneyInput, Stat, Vnd, downloadXlsx, type PageProps } from "./ui";
 import { Icon } from "./icons";
 import { confirmDelete, quote } from "@/components/ConfirmDialog";
 import { formatMoney } from "@/lib/money";
@@ -27,12 +27,17 @@ export function Budget({ plan, setPlan, guests, rsvps, today, inv }: PageProps) 
     setFocusId(id);
   }
 
-  function exportCsv() {
+  function exportXlsx() {
     const label = Object.fromEntries(EXPENSE_CATEGORIES.map((c) => [c.id, c.label]));
-    downloadCsv(`chi-phi-${inv.slug}.csv`, [
-      ["Hạng mục", "Khoản chi", "Nơi cung cấp", "Dự kiến", "Chốt giá", "Đã trả", "Còn phải trả", "Bên chi", "Ghi chú"],
-      ...plan.expenses.map((e) => [label[e.category], e.title, e.vendor, e.estimate, e.actual, e.paid, expenseRemaining(e), PAYERS[e.payer], e.note]),
-    ]);
+    downloadXlsx(`chi-phi-${inv.slug}.xlsx`, {
+      name: "Chi phí",
+      header: ["Hạng mục", "Khoản chi", "Nơi cung cấp", "Dự kiến", "Chốt giá", "Đã trả", "Còn phải trả", "Bên chi", "Ghi chú"],
+      // Chốt giá để trống khi chưa chốt (0 nghĩa là tính theo dự kiến)
+      rows: plan.expenses.map((e) => [label[e.category], e.title, e.vendor, e.estimate, e.actual || null, e.paid, expenseRemaining(e), PAYERS[e.payer], e.note]),
+      widths: [18, 30, 22, 14, 14, 14, 14, 10, 30],
+      moneyCols: [3, 4, 5, 6],
+      totalCols: [3, 5, 6],
+    });
   }
 
   const used = EXPENSE_CATEGORIES.filter((c) => plan.expenses.some((e) => e.category === c.id));
@@ -111,7 +116,7 @@ export function Budget({ plan, setPlan, guests, rsvps, today, inv }: PageProps) 
           ))}
         </div>
         {plan.expenses.length > 0 && (
-          <div className="row"><button type="button" className="btn2 pl-btn-ic" onClick={exportCsv}><Icon name="download" size={16} />Xuất file Excel (CSV)</button></div>
+          <div className="row"><button type="button" className="btn2 pl-btn-ic" onClick={exportXlsx}><Icon name="download" size={16} />Xuất file Excel</button></div>
         )}
       </section>
     </>
