@@ -11,20 +11,29 @@ import { ClaimScreen, DeniedScreen, LoadingScreen, LoginScreen } from "@/compone
 import { readKey, rememberKey } from "@/lib/client/edit-key";
 import { Invitation as InvitationView } from "@/components/invitation/Invitation";
 import { ContentPanel, CouplePanel, EventsPanel, GiftPanel, GuestsPanel, PhotosPanel, SectionsPanel, SharePanel, TemplatePanel, type Patch } from "./panels";
+import { Icon, type IconName } from "@/components/plan/icons";
 import "./editor.css";
 
 const TABS = [
-  ["template", "Mẫu"],
-  ["couple", "Cặp đôi"],
-  ["events", "Sự kiện"],
-  ["photos", "Ảnh"],
-  ["content", "Nội dung"],
-  ["gift", "Mừng cưới"],
-  ["sections", "Hiển thị"],
-  ["guests", "Khách"],
-  ["share", "Chia sẻ"],
-] as const;
-type Tab = (typeof TABS)[number][0];
+  { id: "template", label: "Mẫu", icon: "palette", desc: "Chọn kiểu thiệp, màu nhấn và nhạc nền. Đổi mẫu không mất nội dung." },
+  { id: "couple", label: "Cặp đôi", icon: "heart", desc: "Tên cô dâu chú rể và bố mẹ hai bên, hiện ở phần báo tin." },
+  { id: "events", label: "Sự kiện", icon: "calendar", desc: "Giờ, địa điểm tiệc chính và các lễ. Tiệc chính dùng cho đếm ngược và xác nhận tham dự." },
+  { id: "photos", label: "Ảnh", icon: "image", desc: "Ảnh bìa, ảnh save the date và album. Ảnh tự nén trước khi tải lên." },
+  { id: "content", label: "Nội dung", icon: "text", desc: "Câu chữ trên thiệp, màu dress code và chuyện của hai bạn." },
+  { id: "gift", label: "Mừng cưới", icon: "gift", desc: "Tài khoản nhận mừng cưới. Nhập số tài khoản là có mã QR." },
+  { id: "sections", label: "Hiển thị", icon: "layers", desc: "Bật tắt các phần hiện trên thiệp." },
+  { id: "guests", label: "Khách", icon: "users", desc: "Ai đã xác nhận tham dự và lời chúc của khách." },
+  { id: "share", label: "Chia sẻ", icon: "share", desc: "Link gửi khách và quyền chỉnh sửa thiệp." },
+] as const satisfies readonly { id: string; label: string; icon: IconName; desc: string }[];
+type Tab = (typeof TABS)[number]["id"];
+
+/** Tab còn thiếu thứ quan trọng: hiện chấm nhắc trên thanh tab */
+function needsAttention(tab: Tab, d: Invitation): boolean {
+  if (tab === "photos") return !d.photos.cover && d.photos.album.length === 0;
+  if (tab === "gift") return d.gifts.length === 0 && d.sections.includes("gift");
+  if (tab === "events") return !d.mainEvent.venue;
+  return false;
+}
 
 export function Editor({ slug, authMode = "off" }: { slug: string; authMode?: AuthMode }) {
   const search = useSearchParams();
@@ -48,6 +57,9 @@ export function Editor({ slug, authMode = "off" }: { slug: string; authMode?: Au
   const [status, setStatus] = useState<{ text: string; err?: boolean }>({ text: "" });
   const [tab, setTab] = useState<Tab>("template");
   const [showCover, setShowCover] = useState(false);
+  // Điện thoại: khung xem trước mở toàn màn hình bằng nút nổi
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const rail = useRef<HTMLElement>(null);
   const [loadErr, setLoadErr] = useState("");
   const [errCode, setErrCode] = useState("");
   const [reload, setReload] = useState(0);
@@ -118,6 +130,25 @@ export function Editor({ slug, authMode = "off" }: { slug: string; authMode?: Au
 
   const publicDraft = useMemo(() => (draft ? toPublic(draft) : null), [draft]);
 
+  // Đổi tab: đưa tab đang chọn vào giữa thanh (điện thoại) và cuộn lên đầu phần nội dung
+  useEffect(() => {
+    rail.current?.querySelector('[aria-selected="true"]')?.scrollIntoView({ inline: "center", block: "nearest" });
+    window.scrollTo({ top: 0 });
+  }, [tab]);
+
+  // Đang mở xem trước toàn màn hình thì khóa cuộn trang phía sau
+  useEffect(() => {
+    if (!previewOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const h = (e: KeyboardEvent) => { if (e.key === "Escape") setPreviewOpen(false); };
+    window.addEventListener("keydown", h);
+    return () => {
+      document.body.style.overflow = prev;
+      window.removeEventListener("keydown", h);
+    };
+  }, [previewOpen]);
+
   function submitKey(e: FormEvent) {
     e.preventDefault();
     const v = keyInput.current?.value.trim() ?? "";
@@ -150,39 +181,65 @@ export function Editor({ slug, authMode = "off" }: { slug: string; authMode?: Au
   if (!draft || !publicDraft) return <main className="ed-gate"><p className="hint">Đang tải…</p></main>;
 
   const panelProps = { d: draft, patch, editKey: key, session };
+  const saving = status.text === "Đang lưu…";
+  const saveKind = status.err ? "err" : saving ? "busy" : dirty ? "dirty" : "ok";
+  const saveText = status.err ? status.text : saving ? "Đang lưu…" : dirty ? "Chưa lưu" : "Đã lưu";
+  const idx = TABS.findIndex((t) => t.id === tab);
+  const current = TABS[idx];
+  const prevTab = TABS[idx - 1];
+  const nextTab = TABS[idx + 1];
 
   return (
     <div className="ed">
-      <section className="ed-side">
-        <header className="ed-top">
-          <Link href="/">← Trang chủ</Link>
-          <h1>{draft.groom.shortName} &amp; {draft.bride.shortName} · /{draft.slug}</h1>
-          <Link href={`/plan/${draft.slug}`}>Quản lý cưới</Link>
-          <span className={`ed-status ${status.err ? "err" : ""}`}>{status.text || (dirty ? "Chưa lưu" : "")}</span>
-          <button type="button" className="ed-save" onClick={save} disabled={!dirty && status.text !== "Đang lưu…"}>Lưu</button>
-        </header>
-        <nav className="ed-tabs" role="tablist">
-          {TABS.map(([id, label]) => (
-            <button key={id} role="tab" type="button" aria-selected={tab === id} onClick={() => setTab(id)}>{label}</button>
-          ))}
-        </nav>
-        <div className="ed-body">
-          {tab === "template" && <TemplatePanel {...panelProps} />}
-          {tab === "couple" && <CouplePanel {...panelProps} />}
-          {tab === "events" && <EventsPanel {...panelProps} />}
-          {tab === "photos" && <PhotosPanel {...panelProps} />}
-          {tab === "content" && <ContentPanel {...panelProps} />}
-          {tab === "gift" && <GiftPanel {...panelProps} />}
-          {tab === "sections" && <SectionsPanel {...panelProps} />}
-          {tab === "guests" && <GuestsPanel {...panelProps} />}
-          {tab === "share" && <SharePanel {...panelProps} />}
+      <header className="ed-top">
+        <Link href="/" className="ed-icon-btn" aria-label="Về trang chủ"><Icon name="back" size={20} /></Link>
+        <div className="ed-title">
+          <b>{draft.groom.shortName} &amp; {draft.bride.shortName}</b>
+          <span>/{draft.slug}</span>
         </div>
-      </section>
-      <aside className="ed-prev">
+        <span className={`ed-state ${saveKind}`} role="status" title={saveText}><i aria-hidden="true" /><span>{saveText}</span></span>
+        <Link href={`/plan/${draft.slug}`} className="ed-btn ghost"><Icon name="tasks" size={16} /><span>Quản lý cưới</span></Link>
+        <button type="button" className="ed-save" onClick={save} disabled={!dirty || saving} title="Lưu (Ctrl+S)">Lưu</button>
+      </header>
+
+      <nav className="ed-rail" role="tablist" aria-label="Các phần của thiệp" ref={rail}>
+        {TABS.map((t) => (
+          <button key={t.id} role="tab" type="button" aria-selected={tab === t.id} onClick={() => setTab(t.id)}>
+            <Icon name={t.icon} size={20} />
+            <span>{t.label}</span>
+            {needsAttention(t.id, draft) && <i className="ed-dot" aria-label="Còn thiếu" />}
+          </button>
+        ))}
+      </nav>
+
+      <main className="ed-body" key={tab}>
+        <div className="ed-body-h">
+          <h2>{current.label}</h2>
+          <p>{current.desc}</p>
+        </div>
+        {tab === "template" && <TemplatePanel {...panelProps} />}
+        {tab === "couple" && <CouplePanel {...panelProps} />}
+        {tab === "events" && <EventsPanel {...panelProps} />}
+        {tab === "photos" && <PhotosPanel {...panelProps} />}
+        {tab === "content" && <ContentPanel {...panelProps} />}
+        {tab === "gift" && <GiftPanel {...panelProps} />}
+        {tab === "sections" && <SectionsPanel {...panelProps} />}
+        {tab === "guests" && <GuestsPanel {...panelProps} />}
+        {tab === "share" && <SharePanel {...panelProps} />}
+        <div className="ed-pager">
+          {prevTab ? <button type="button" className="ed-btn ghost" onClick={() => setTab(prevTab.id)}><Icon name="back" size={16} />{prevTab.label}</button> : <span />}
+          {nextTab && <button type="button" className="ed-btn" onClick={() => setTab(nextTab.id)}>Tiếp: {nextTab.label}<Icon name="chevron" size={16} /></button>}
+        </div>
+      </main>
+
+      <aside className={`ed-prev ${previewOpen ? "open" : ""}`} aria-label="Xem trước thiệp">
         <div className="ed-prev-bar">
-          <span>Xem trước</span>
-          <label><input type="checkbox" checked={showCover} onChange={(e) => setShowCover(e.target.checked)} /> Hiện bìa</label>
-          <a href={`/${draft.slug}`} target="_blank" rel="noopener" style={{ marginLeft: "auto" }}>Mở bản thật ↗</a>
+          <div className="ed-seg" role="group" aria-label="Xem phần nào">
+            <button type="button" aria-pressed={!showCover} onClick={() => setShowCover(false)}>Bên trong</button>
+            <button type="button" aria-pressed={showCover} onClick={() => setShowCover(true)}>Bìa</button>
+          </div>
+          <a href={`/${draft.slug}`} target="_blank" rel="noopener" className="ed-prev-open">Mở bản thật ↗</a>
+          <button type="button" className="ed-icon-btn ed-prev-close" aria-label="Đóng xem trước" onClick={() => setPreviewOpen(false)}><Icon name="close" size={20} /></button>
         </div>
         <div className="phone">
           <div className="phone-screen">
@@ -190,6 +247,7 @@ export function Editor({ slug, authMode = "off" }: { slug: string; authMode?: Au
           </div>
         </div>
       </aside>
+      <button type="button" className="ed-fab" onClick={() => setPreviewOpen(true)}><Icon name="eye" size={18} />Xem trước</button>
     </div>
   );
 }

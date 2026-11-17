@@ -32,10 +32,9 @@ export function PlanShowcase({ loginOn }: { loginOn: boolean }) {
           ))}
         </ul>
         <div className="hero-cta">
-          <a className="btn-main" href="#mine">Mở thiệp của tôi</a>
-          <a className="btn-text" href="#create">Chưa có thiệp? Tạo mới ↓</a>
+          <a className="btn-main" href="#create">Tạo thiệp để bắt đầu</a>
         </div>
-        <p className="plan-show-hint">Đang sửa thiệp thì bấm <b>Quản lý cưới</b> ở thanh trên cùng của trình chỉnh sửa.</p>
+        <p className="plan-show-hint">Đã có thiệp? Bấm <b>Quản lý cưới</b> ở mục <b>Thiệp của bạn</b> đầu trang, hoặc trên thanh trên cùng của trình chỉnh sửa.</p>
       </div>
 
       {/* Minh họa trang tổng quan */}

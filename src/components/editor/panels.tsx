@@ -5,15 +5,25 @@ import { useEffect, useState, type ChangeEvent } from "react";
 import type { Invitation, Rsvp, SectionId, Wish } from "@/lib/schema";
 import { makeId } from "@/lib/schema";
 import { THEME_LIST } from "@/lib/templates";
+import { templateShot } from "@/lib/template-shots";
 import { api } from "@/lib/client/api";
 import { formatWishTime } from "@/lib/dates";
 import { BANKS, vietQrUrl } from "@/lib/banks";
 import { MUSIC_PRESETS, presetAvailable, presetUrl } from "@/lib/music";
 import { DatePicker } from "@/components/DatePicker";
+import { confirmDelete, quote } from "@/components/ConfirmDialog";
 import type { AuthState } from "@/lib/client/auth";
 import { AccountLine, MembersPanel } from "@/components/auth/AuthScreens";
 
 export type Patch = (fn: (d: Invitation) => void) => void;
+
+/** Trình chỉnh sửa lưu tay: xóa xong vẫn hoàn tác được bằng cách không bấm Lưu */
+const EDITOR_NOTE = "Thiệp chỉ thay đổi khi bạn bấm Lưu.";
+
+/** Hỏi trước rồi mới chạy thao tác xóa */
+async function ask(title: string, run: () => void, detail: React.ReactNode = EDITOR_NOTE, label = "Xóa") {
+  if (await confirmDelete(title, detail, label)) run();
+}
 
 interface PanelProps {
   d: Invitation;
@@ -111,10 +121,12 @@ export function TemplatePanel({ d, patch, editKey }: PanelProps) {
             key={t.id}
             type="button"
             aria-pressed={d.template === t.id}
-            style={{ "--sw": t.colors.outer, "--sw-card": t.colors.bg } as React.CSSProperties}
+            style={{ "--sw": t.colors.outer } as React.CSSProperties}
             onClick={() => patch((x) => { x.template = t.id; })}
           >
-            <span className="sw"><i /></span>
+            {/* Ảnh chụp bìa thật của mẫu (scripts/shoot-templates.mjs) */}
+            <span className="sw"><img src={templateShot(t.id)} alt="" loading="lazy" decoding="async" /></span>
+            {d.template === t.id && <span className="tpl-check" aria-hidden="true">✓</span>}
             <b>{t.name}</b>
             <span>{t.tagline}</span>
           </button>
@@ -135,7 +147,7 @@ export function TemplatePanel({ d, patch, editKey }: PanelProps) {
         {d.music ? (
           <div className="row">
             <audio controls src={d.music} style={{ height: 36, maxWidth: "100%" }} />
-            <button type="button" className="btn2 danger" onClick={() => patch((x) => { x.music = ""; })}>Bỏ nhạc</button>
+            <button type="button" className="btn2 danger" onClick={() => ask("Bỏ nhạc nền", () => patch((x) => { x.music = ""; }), EDITOR_NOTE, "Bỏ nhạc")}>Bỏ nhạc</button>
           </div>
         ) : (
           <p className="hint">Chưa có nhạc. Nhạc tự phát khi khách bấm Mở thiệp.</p>
@@ -220,7 +232,7 @@ export function EventsPanel(props: PanelProps) {
             <div className="row">
               <button type="button" className="btn2" disabled={i === 0} onClick={() => patch((x) => { [x.events[i - 1], x.events[i]] = [x.events[i], x.events[i - 1]]; })}>↑</button>
               <button type="button" className="btn2" disabled={i === d.events.length - 1} onClick={() => patch((x) => { [x.events[i + 1], x.events[i]] = [x.events[i], x.events[i + 1]]; })}>↓</button>
-              <button type="button" className="btn2 danger" onClick={() => patch((x) => { x.events.splice(i, 1); })}>Xóa</button>
+              <button type="button" className="btn2 danger" onClick={() => ask(`Xóa ${quote(ev.title || `Lễ ${i + 1}`)}`, () => patch((x) => { x.events.splice(i, 1); }))}>Xóa</button>
             </div>
           </div>
           <EventFields {...props} index={i} />
@@ -233,7 +245,7 @@ export function EventsPanel(props: PanelProps) {
         <div className="row" key={i}>
           <input type="time" value={t.time} style={{ width: 110 }} className="f" onChange={(e) => patch((x) => { x.timeline[i].time = e.target.value; })} />
           <input value={t.title} style={{ flex: 1, minWidth: 140 }} onChange={(e) => patch((x) => { x.timeline[i].title = e.target.value; })} />
-          <button type="button" className="btn2 danger" onClick={() => patch((x) => { x.timeline.splice(i, 1); })}>×</button>
+          <button type="button" className="btn2 danger" aria-label="Xóa mốc" onClick={() => (t.title.trim() ? ask(`Xóa mốc ${t.time} ${quote(t.title)}`, () => patch((x) => { x.timeline.splice(i, 1); })) : patch((x) => { x.timeline.splice(i, 1); }))}>×</button>
         </div>
       ))}
       <button type="button" className="btn2" onClick={() => patch((x) => { x.timeline.push({ time: "12:00", title: "" }); })}>+ Thêm mốc</button>
@@ -246,7 +258,7 @@ function Thumb({ src, onRemove, onLeft, onRight }: { src: string; onRemove: () =
   return (
     <div className="thumb">
       <img src={src} alt="" />
-      <button type="button" onClick={onRemove} aria-label="Xóa ảnh">×</button>
+      <button type="button" onClick={() => ask("Xóa ảnh này", onRemove, <><img src={src} alt="" className="cf-thumb" />{EDITOR_NOTE}</>)} aria-label="Xóa ảnh">×</button>
       {onLeft && <button type="button" className="mv" onClick={onLeft} aria-label="Chuyển lên trước">‹</button>}
       {onRight && <button type="button" className="mv" onClick={onRight} aria-label="Chuyển ra sau">›</button>}
     </div>
@@ -313,7 +325,7 @@ export function ContentPanel({ d, patch, editKey }: PanelProps) {
           {d.dressCode.map((c, i) => (
             <span key={i} className="row" style={{ gap: 2 }}>
               <input type="color" value={c} onChange={(e) => patch((x) => { x.dressCode[i] = e.target.value; })} style={{ width: 44, height: 36, padding: 2, border: "1px solid var(--ui-line)", borderRadius: 8 }} />
-              <button type="button" className="btn2 danger" onClick={() => patch((x) => { x.dressCode.splice(i, 1); })}>×</button>
+              <button type="button" className="btn2 danger" aria-label={`Xóa màu ${c}`} onClick={() => ask(`Xóa màu ${c}`, () => patch((x) => { x.dressCode.splice(i, 1); }))}>×</button>
             </span>
           ))}
           {d.dressCode.length < 6 && <button type="button" className="btn2" onClick={() => patch((x) => { x.dressCode.push("#888888"); })}>+ Màu</button>}
@@ -326,7 +338,7 @@ export function ContentPanel({ d, patch, editKey }: PanelProps) {
         <div className="item" key={i}>
           <div className="item-h">
             <span>Mốc {i + 1}</span>
-            <button type="button" className="btn2 danger" onClick={() => patch((x) => { x.story.splice(i, 1); })}>Xóa</button>
+            <button type="button" className="btn2 danger" onClick={() => (s.title.trim() || s.text.trim() || s.photo ? ask(`Xóa mốc ${quote(s.title || `Mốc ${i + 1}`)}`, () => patch((x) => { x.story.splice(i, 1); })) : patch((x) => { x.story.splice(i, 1); }))}>Xóa</button>
           </div>
           <div className="g2">
             <F label="Năm / nhãn"><input value={s.label} onChange={(e) => patch((x) => { x.story[i].label = e.target.value; })} /></F>
@@ -353,7 +365,7 @@ export function GiftPanel({ d, patch, editKey }: PanelProps) {
         <div className="item" key={g.id}>
           <div className="item-h">
             <span>{g.label || `Tài khoản ${i + 1}`}</span>
-            <button type="button" className="btn2 danger" onClick={() => patch((x) => { x.gifts.splice(i, 1); })}>Xóa</button>
+            <button type="button" className="btn2 danger" onClick={() => ask(`Xóa tài khoản ${quote(g.label || g.bank || `Tài khoản ${i + 1}`)}`, () => patch((x) => { x.gifts.splice(i, 1); }))}>Xóa</button>
           </div>
           <div className="g2">
             <F label="Nhãn (Nhà trai / Nhà gái)"><input value={g.label} onChange={(e) => patch((x) => { x.gifts[i].label = e.target.value; })} /></F>

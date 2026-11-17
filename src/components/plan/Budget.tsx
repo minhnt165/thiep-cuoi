@@ -5,12 +5,21 @@ import { makeId } from "@/lib/schema";
 import { EXPENSE_CATEGORIES, PAYERS, expenseCost, expenseRemaining, summarize, sum, type CategoryId, type Expense } from "@/lib/plan";
 import { Bar, Empty, MoneyInput, Stat, Vnd, downloadCsv, type PageProps } from "./ui";
 import { Icon } from "./icons";
+import { confirmDelete, quote } from "@/components/ConfirmDialog";
+import { formatMoney } from "@/lib/money";
 
 export function Budget({ plan, setPlan, guests, rsvps, today, inv }: PageProps) {
   const [focusId, setFocusId] = useState("");
   const s = summarize(plan, guests, rsvps, today).money;
   const over = s.budget > 0 && s.cost > s.budget;
   const byPayer = (k: Expense["payer"]) => sum(plan.expenses.filter((e) => e.payer === k), expenseCost);
+
+  async function remove(e: Expense) {
+    const blank = !e.title.trim() && !e.vendor.trim() && !e.estimate && !e.actual && !e.paid;
+    const detail = `${e.paid ? `Khoản này đã trả ${formatMoney(e.paid)} đ. ` : ""}Xóa xong là lưu luôn, không hoàn tác được.`;
+    if (!blank && !(await confirmDelete(`Xóa khoản chi ${e.title.trim() ? quote(e.title) : "chưa đặt tên"}`, detail))) return;
+    setPlan((p) => { p.expenses = p.expenses.filter((x) => x.id !== e.id); });
+  }
 
   function add(category: CategoryId) {
     const id = makeId();
@@ -81,7 +90,7 @@ export function Budget({ plan, setPlan, guests, rsvps, today, inv }: PageProps) 
                           </select>
                         </td>
                         <td className="num c-wide" data-label="Còn phải trả">{expenseRemaining(e) > 0 ? <Vnd n={expenseRemaining(e)} /> : <span className="pl-ok">Đã trả đủ</span>}</td>
-                        <td className="c-act"><button type="button" className="pl-x" aria-label={`Xóa ${e.title}`} onClick={() => setPlan((p) => { p.expenses.splice(i, 1); })}><Icon name="trash" size={16} /></button></td>
+                        <td className="c-act"><button type="button" className="pl-x" aria-label={`Xóa ${e.title}`} onClick={() => remove(e)}><Icon name="trash" size={16} /></button></td>
                       </tr>
                     );
                   })}

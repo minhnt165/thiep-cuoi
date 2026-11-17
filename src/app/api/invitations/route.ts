@@ -9,6 +9,10 @@ const CreateSchema = z.object({
   slug: z.string().regex(/^[a-z0-9-]{3,60}$/, "Đường dẫn chỉ gồm chữ thường, số và dấu gạch ngang"),
   template: z.enum(TEMPLATE_IDS),
   code: z.string().optional(),
+  /** Tên gọi hai bạn và ngày cưới nhập ngay lúc tạo, thay cho dữ liệu mẫu */
+  groom: z.string().trim().max(40).optional(),
+  bride: z.string().trim().max(40).optional(),
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
 });
 
 /**
@@ -29,6 +33,13 @@ export async function POST(req: Request) {
     if (await store.getInvitation(body.data.slug)) return Response.json({ error: "Đường dẫn này đã có người dùng" }, { status: 409 });
     const inv = sampleInvitation(body.data.slug, body.data.template, makeId() + makeId());
     if (user) inv.members = addMember([], user.email);
+    const { groom, bride, date } = body.data;
+    if (groom) inv.groom = { ...inv.groom, shortName: groom, fullName: groom };
+    if (bride) inv.bride = { ...inv.bride, shortName: bride, fullName: bride };
+    if (date) {
+      inv.mainEvent = { ...inv.mainEvent, date };
+      inv.events = inv.events.map((ev) => ({ ...ev, date }));
+    }
     await store.saveInvitation(inv);
     return Response.json({ slug: inv.slug, editKey: inv.editKey }, { status: 201 });
   } catch (e) {

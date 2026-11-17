@@ -1,11 +1,12 @@
 /* eslint-disable @next/next/no-img-element -- ảnh mẫu đã là WebP nhỏ, gắn ?v= nên không qua next/image */
 import Link from "next/link";
 import { THEME_LIST } from "@/lib/templates";
+import { templateShot } from "@/lib/template-shots";
 import { getStore } from "@/lib/store";
 import { CreateForm } from "@/components/editor/CreateForm";
-import { MyInvitations } from "@/components/auth/MyInvitations";
 import { PlanShowcase } from "@/components/home/PlanShowcase";
-import { RecentInvitations } from "@/components/home/RecentInvitations";
+import { HomeNav } from "@/components/home/HomeNav";
+import { YourInvitations } from "@/components/home/YourInvitations";
 import { authMode } from "@/lib/auth";
 import { Donate } from "@/components/Donate";
 import "./home.css";
@@ -13,13 +14,8 @@ import "./home.css";
 // Danh sách thiệp đọc từ store mỗi lần mở trang
 export const dynamic = "force-dynamic";
 
-/**
- * Ảnh chụp bìa thật của từng mẫu, sinh bằng `node scripts/shoot-templates.mjs` (840×1280).
- * Đã là WebP nhỏ nên dùng <img> thường; tăng SHOT_VERSION mỗi lần chụp lại
- * để trình duyệt và CDN không giữ ảnh cũ.
- */
-const SHOT_VERSION = 4;
-const shot = (id: string) => `/templates/${id}.webp?v=${SHOT_VERSION}`;
+/** Ảnh chụp bìa thật của từng mẫu: WebP nhỏ nên dùng <img> thường (xem src/lib/template-shots.ts) */
+const shot = templateShot;
 
 const FEATURES: { title: string; text: string; icon: React.ReactNode }[] = [
   { title: "Bìa mở có hiệu ứng", text: "Phong bì, dấu sáp, ảnh vòm, vòng hoa… mỗi mẫu một kiểu mở.", icon: <path d="M3 8l9 6 9-6M4 6h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1Z" /> },
@@ -46,7 +42,12 @@ export default async function Home() {
   const fan = ["blush-rose", "marble-gold", "navy-gold"];
 
   return (
-    <main className="home">
+    <>
+    <HomeNav authMode={auth} />
+    <main className="home" id="top">
+      {/* Người quay lại: thiệp của họ ngay đầu trang (không có thì không hiện) */}
+      <YourInvitations authMode={auth} local={auth === "off" && isLocal ? list : null} />
+
       <header className="hero">
         <div className="hero-text">
           <p className="home-kicker">Thiệp cưới online</p>
@@ -56,7 +57,6 @@ export default async function Home() {
           </p>
           <div className="hero-cta">
             <a className="btn-main" href="#create">Tạo thiệp ngay</a>
-            <a className="btn-ghost" href="#mine">Thiệp của tôi</a>
             <a className="btn-text" href="#templates">Xem {THEME_LIST.length} mẫu ↓</a>
           </div>
         </div>
@@ -99,7 +99,7 @@ export default async function Home() {
                 <p className="tpl-desc">{t.description}</p>
                 <div className="tpl-actions">
                   <Link className="tpl-link" href={`/demo/${t.id}`}>Xem thử</Link>
-                  <a className="tpl-link tpl-link-ghost" href={`#create`}>Dùng mẫu này</a>
+                  <a className="tpl-link tpl-link-ghost" href={`?mau=${t.id}#create`}>Dùng mẫu này</a>
                 </div>
               </div>
             </article>
@@ -125,46 +125,11 @@ export default async function Home() {
         <CreateForm needsCode={needsCode} authMode={auth} />
       </section>
 
-      {auth !== "off" && <MyInvitations authMode={auth} />}
-
-      {/* Lối vào trình chỉnh sửa và trang Quản lý cưới (#mine): theo tài khoản, theo máy, hoặc theo trình duyệt */}
-      {auth === "off" && !isLocal && (
-        <section id="mine">
-          <h2 className="home-h2">Thiệp của tôi</h2>
-          <RecentInvitations />
-        </section>
-      )}
-      {auth === "off" && isLocal && list.length === 0 && (
-        <section id="mine">
-          <h2 className="home-h2">Thiệp của tôi</h2>
-          <p className="home-sub">Chưa có thiệp nào. Tạo thiệp ở trên, thiệp sẽ hiện ở đây kèm nút Sửa và Quản lý.</p>
-        </section>
-      )}
-      {list.length > 0 && (
-        <section id={auth === "off" ? "mine" : undefined}>
-          <h2 className="home-h2">{auth === "off" ? "Thiệp của tôi" : "Thiệp đã tạo trên máy này"}</h2>
-          <ul className="inv-list">
-            {list.map((i) => (
-              <li key={i.slug}>
-                <div>
-                  <b>{i.groom.shortName} &amp; {i.bride.shortName}</b>
-                  <span>/{i.slug} · {i.mainEvent.date} · {THEME_LIST.find((t) => t.id === i.template)?.name}</span>
-                </div>
-                <div className="inv-list-actions">
-                  <Link href={`/${i.slug}`}>Xem</Link>
-                  <Link href={`/edit/${i.slug}`}>Sửa</Link>
-                  <Link href={`/plan/${i.slug}`}>Quản lý</Link>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
-
       <footer className="home-foot">
         <span>Thiệp cưới online · mã nguồn mở, tự chạy trên Vercel + Supabase</span>
         <Donate />
       </footer>
     </main>
+    </>
   );
 }

@@ -7,6 +7,7 @@ import { dotDate } from "@/lib/dates";
 import { Bar, Empty, Ring, type PageProps } from "./ui";
 import { Icon } from "./icons";
 import { DatePicker } from "@/components/DatePicker";
+import { confirmDelete, quote } from "@/components/ConfirmDialog";
 
 type Filter = "all" | "todo" | "overdue";
 
@@ -23,6 +24,12 @@ export function Tasks({ inv, plan, setPlan, today }: PageProps) {
   const visible = (t: Task) => (filter === "todo" ? !t.done : filter === "overdue" ? isOverdue(t, today) : true);
   // Mốc hiện tại: mốc đầu tiên mà ngày của mốc chưa qua
   const currentPhase = PHASES.find((p) => addDays(inv.mainEvent.date, p.offset) >= today)?.id;
+
+  // Việc chưa đặt tên (vừa bấm thêm) thì xóa luôn, không hỏi
+  async function remove(t: Task) {
+    if (t.title.trim() && !(await confirmDelete(`Xóa việc ${quote(t.title)}`, "Xóa xong là lưu luôn, không hoàn tác được."))) return;
+    setPlan((p) => { p.tasks = p.tasks.filter((x) => x.id !== t.id); });
+  }
 
   function add(phase: PhaseId) {
     const id = makeId();
@@ -91,7 +98,7 @@ export function Tasks({ inv, plan, setPlan, today }: PageProps) {
                                 onChange={(e) => setPlan((p) => { p.tasks[i].owner = e.target.value; })} />
                               <DatePicker className="pl-in date" value={t.due} aria-label="Hạn" placeholder="Đặt hạn" clearable withWeekday={false} invalid={late}
                                 marks={[{ date: inv.mainEvent.date, label: "Ngày cưới" }]} onChange={(v) => setPlan((p) => { p.tasks[i].due = v; })} />
-                              <button type="button" className="pl-x" aria-label={`Xóa việc ${t.title}`} onClick={() => setPlan((p) => { p.tasks.splice(i, 1); })}><Icon name="trash" size={16} /></button>
+                              <button type="button" className="pl-x" aria-label={`Xóa việc ${t.title}`} onClick={() => remove(t)}><Icon name="trash" size={16} /></button>
                             </span>
                           </li>
                         );

@@ -5,6 +5,7 @@ import { makeId, type Guest, type Rsvp } from "@/lib/schema";
 import { giftsFor, rsvpFor, sameName, summarize } from "@/lib/plan";
 import { Avatar, Empty, SIDES, SplitBar, Stat, Vnd, downloadCsv, useCopy, type PageProps } from "./ui";
 import { Icon } from "./icons";
+import { confirmDelete, quote } from "@/components/ConfirmDialog";
 
 type Status = "all" | "unsent" | "yes" | "no" | "waiting";
 
@@ -65,6 +66,22 @@ export function Guests({ inv, plan, guests, setGuests, rsvps, today }: PageProps
     if (status === "waiting") return !r;
     return true;
   });
+
+  async function remove(g: Guest) {
+    if (g.name.trim()) {
+      const gift = giftsFor(g, plan.gifts);
+      const detail = (
+        <>
+          Link riêng đã gửi cho khách vẫn mở được thiệp.{gift ? " Phong bì đã ghi cho khách này vẫn giữ trong sổ tiền mừng." : ""} Xóa xong là lưu luôn.
+        </>
+      );
+      if (!(await confirmDelete(`Xóa khách ${quote(g.name)}`, detail))) return;
+    }
+    setGuests((list) => {
+      const k = list.findIndex((x) => x.id === g.id);
+      if (k >= 0) list.splice(k, 1);
+    });
+  }
 
   function exportCsv() {
     downloadCsv(`khach-moi-${inv.slug}.csv`, [
@@ -168,7 +185,7 @@ export function Guests({ inv, plan, guests, setGuests, rsvps, today }: PageProps
                       <td className="c-act">
                         <div className="pl-acts">
                           <button type="button" className="btn2 pl-btn-ic" onClick={() => copy(link(g.name), g.id)}><Icon name={copied === g.id ? "check" : "link"} size={14} />{copied === g.id ? "Đã chép" : "Chép link"}</button>
-                          <button type="button" className="pl-x" aria-label={`Xóa ${g.name}`} onClick={() => setGuests((list) => { list.splice(i, 1); })}><Icon name="trash" size={16} /></button>
+                          <button type="button" className="pl-x" aria-label={`Xóa ${g.name}`} onClick={() => remove(g)}><Icon name="trash" size={16} /></button>
                         </div>
                       </td>
                     </tr>

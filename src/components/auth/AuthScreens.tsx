@@ -6,6 +6,7 @@ import type { AuthState } from "@/lib/client/auth";
 import { api, ApiError } from "@/lib/client/api";
 import { readKey } from "@/lib/client/edit-key";
 import type { Member } from "@/lib/members";
+import { confirmDialog } from "@/components/ConfirmDialog";
 import "./auth.css";
 
 /** Logo Google 4 màu (nhận diện nút đăng nhập, không dùng cho mục đích khác) */
@@ -161,7 +162,13 @@ export function MembersPanel({ slug, session }: { slug: string; session: AuthSta
 
   async function remove(m: Member) {
     const self = m.email === session.email;
-    if (!window.confirm(self ? "Bỏ chính bạn khỏi thiệp? Bạn sẽ không vào được nữa." : `Bỏ ${m.email} khỏi danh sách quản lý?`)) return;
+    const ok = await confirmDialog({
+      title: self ? "Rời khỏi thiệp này?" : `Bỏ ${m.email} khỏi người quản lý?`,
+      message: self ? "Bạn sẽ không vào được trình chỉnh sửa và trang quản lý nữa, trừ khi được mời lại." : "Người này sẽ không vào được thiệp nữa. Mời lại bằng email lúc nào cũng được.",
+      confirmLabel: self ? "Rời thiệp" : "Bỏ",
+      danger: true,
+    });
+    if (!ok) return;
     if (await run(() => api.removeMember(slug, m.email)) && self) await session.signOut();
   }
 

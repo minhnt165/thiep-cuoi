@@ -381,7 +381,7 @@
   font-weight: 400;
 }
 
-.create button {
+.create .create-submit {
   justify-self: start;
   padding: 11px 24px;
   border: 0;
@@ -957,5 +957,371 @@
   }
   .plan-mock {
     transform: none;
+  }
+}
+
+/* ---------- thanh điều hướng dính đầu trang ---------- */
+.home-nav {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 10px max(16px, calc((100vw - 1120px) / 2 + 16px));
+  background: color-mix(in srgb, var(--ui-bg) 88%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid color-mix(in srgb, var(--ui-line) 70%, transparent);
+}
+
+.home-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-playfair), Georgia, serif;
+  font-size: 19px;
+  color: var(--ui-fg);
+  text-decoration: none;
+}
+
+.home-brand span {
+  color: var(--ui-accent);
+  font-size: 15px;
+}
+
+.home-nav-links {
+  display: flex;
+  gap: 4px;
+  margin-left: 12px;
+}
+
+.home-nav-links a,
+.home-nav-link {
+  padding: 7px 12px;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ui-muted);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.home-nav-links a:hover,
+.home-nav-link:hover {
+  background: var(--ui-surface);
+  color: var(--ui-fg);
+}
+
+.home-nav-acts {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.home-nav-cta {
+  padding: 9px 18px;
+  border-radius: 999px;
+  background: var(--ui-fg);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.home-nav-cta:hover {
+  background: var(--ui-accent);
+}
+
+#top,
+#templates,
+#quan-ly,
+#create {
+  scroll-margin-top: 76px;
+}
+
+/* ---------- thiệp của bạn (đầu trang, chỉ hiện khi đã có thiệp) ---------- */
+.mine {
+  display: grid;
+  gap: 12px;
+  margin-bottom: -32px;
+}
+
+.mine h2 {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ui-muted);
+}
+
+.mine ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 12px;
+}
+
+.mine li {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  gap: 10px 14px;
+  padding: 14px;
+  border: 1px solid var(--ui-line);
+  border-radius: 18px;
+  background: var(--ui-surface);
+  box-shadow: 0 1px 2px rgba(40, 28, 20, 0.04), 0 14px 30px -24px rgba(40, 28, 20, 0.4);
+}
+
+.mine img {
+  grid-row: 1 / 3;
+  width: 64px;
+  height: 96px;
+  object-fit: cover;
+  object-position: top;
+  border-radius: 10px;
+}
+
+.mine-info {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.mine-info b {
+  font-family: var(--font-playfair), Georgia, serif;
+  font-size: 20px;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mine-info span {
+  font-size: 13px;
+  color: var(--ui-muted);
+}
+
+.mine-slug {
+  font-size: 12px !important;
+}
+
+.mine-acts {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.mine-acts a {
+  padding: 7px 12px;
+  border: 1px solid var(--ui-line);
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ui-fg);
+  text-decoration: none;
+}
+
+.mine-acts a:hover {
+  border-color: var(--ui-fg);
+}
+
+.mine-acts .mine-main {
+  border-color: var(--ui-fg);
+  background: var(--ui-fg);
+  color: #fff;
+}
+
+/* ---------- form tạo thiệp mới ---------- */
+.create {
+  max-width: 620px;
+  gap: 16px;
+}
+
+.create-g2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.create-field {
+  display: grid;
+  gap: 6px;
+}
+
+.create-label {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.create .dp-trigger {
+  padding: 10px 12px;
+  font-size: 15px;
+}
+
+.create input:focus,
+.create-slug:focus-within {
+  outline: none;
+  border-color: var(--ui-accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ui-accent), transparent 85%);
+}
+
+.create-slug {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--ui-line);
+  border-radius: var(--ui-radius);
+  background: #fff;
+  overflow: hidden;
+}
+
+.create-slug-host {
+  padding: 0 0 0 12px;
+  font-size: 15px;
+  font-weight: 400;
+  color: var(--ui-muted);
+  white-space: nowrap;
+}
+
+.create .create-slug input {
+  padding-left: 0;
+  border: 0;
+  box-shadow: none;
+}
+
+.create-slug.free {
+  border-color: #2f6f4f;
+}
+
+.create-slug.taken,
+.create-slug.invalid {
+  border-color: var(--ui-danger);
+}
+
+.create .slug-hint.free {
+  color: #2f6f4f;
+  font-weight: 500;
+}
+
+.create .slug-hint.taken,
+.create .slug-hint.invalid {
+  color: var(--ui-danger);
+}
+
+.create-tpl {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.create-tpl legend {
+  margin-bottom: 8px;
+  padding: 0;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.create-tpl-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.create .create-tpl-grid label {
+  position: relative;
+  gap: 4px;
+  font-size: 11.5px;
+  font-weight: 500;
+  text-align: center;
+  cursor: pointer;
+}
+
+.create-tpl-grid input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.create-tpl-grid img {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  object-position: top;
+  border-radius: 10px;
+  border: 2px solid transparent;
+  box-shadow: 0 0 0 1px var(--ui-line);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.create-tpl-grid label:hover img {
+  transform: translateY(-2px);
+}
+
+.create-tpl-grid label.on img {
+  border-color: var(--ui-accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ui-accent), transparent 80%);
+}
+
+.create-tpl-grid label.on span {
+  color: var(--ui-accent);
+}
+
+.create-tpl-grid input:focus-visible + img {
+  outline: 2px solid var(--ui-accent);
+  outline-offset: 2px;
+}
+
+.create .create-submit {
+  padding: 13px 26px;
+  font-size: 15px;
+  transition: background 0.15s ease;
+}
+
+.create .create-submit:hover:not(:disabled) {
+  background: var(--ui-accent);
+}
+
+.create .create-submit:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+@media (max-width: 860px) {
+  .home-nav-links {
+    display: none;
+  }
+  .mine {
+    margin-bottom: -20px;
+  }
+}
+
+@media (max-width: 520px) {
+  .home-nav {
+    gap: 8px;
+  }
+  .create {
+    padding: 16px;
+  }
+  .create-g2 {
+    grid-template-columns: 1fr;
+  }
+  .create-tpl-grid {
+    grid-template-columns: repeat(4, 72px);
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+  .mine ul {
+    grid-template-columns: minmax(0, 1fr);
   }
 }

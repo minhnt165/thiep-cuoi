@@ -7,6 +7,7 @@ import { formatWishTime } from "@/lib/dates";
 import { Avatar, Empty, MoneyInput, SIDES, SplitBar, Stat, downloadCsv, type PageProps } from "./ui";
 import { formatMoneyShort } from "@/lib/money";
 import { Icon } from "./icons";
+import { confirmDelete, quote } from "@/components/ConfirmDialog";
 
 const EMPTY = { name: "", side: "groom" as Gift["side"], amount: 0, method: "cash" as Gift["method"], note: "" };
 
@@ -37,6 +38,13 @@ export function Gifts({ inv, plan, setPlan, guests, rsvps, today }: PageProps) {
   const needle = q.trim().toLocaleLowerCase("vi");
   const shown = plan.gifts.filter((g) => (!needle || g.name.toLocaleLowerCase("vi").includes(needle) || g.note.toLocaleLowerCase("vi").includes(needle)) && (!side || g.side === side));
   const methods = (Object.keys(GIFT_METHODS) as Gift["method"][]).map((m) => [m, sum(plan.gifts.filter((g) => g.method === m), (g) => g.amount)] as const).filter(([, n]) => n > 0);
+
+  async function remove(g: Gift) {
+    const blank = !g.name.trim() && !g.amount;
+    const detail = `${g.amount.toLocaleString("vi-VN")} đ · ${SIDES[g.side]} · ${GIFT_METHODS[g.method]}. Xóa xong là lưu luôn, không hoàn tác được.`;
+    if (!blank && !(await confirmDelete(`Xóa phong bì của ${g.name.trim() ? quote(g.name) : "khách chưa ghi tên"}`, detail))) return;
+    setPlan((p) => { p.gifts = p.gifts.filter((x) => x.id !== g.id); });
+  }
 
   function exportCsv() {
     downloadCsv(`tien-mung-${inv.slug}.csv`, [
@@ -134,7 +142,7 @@ export function Gifts({ inv, plan, setPlan, guests, rsvps, today }: PageProps) {
                         </select>
                       </td>
                       <td data-label="Ghi chú"><input className="pl-in" value={g.note} placeholder="—" aria-label="Ghi chú" onChange={(e) => set((x) => { x.note = e.target.value; })} /></td>
-                      <td className="c-act"><button type="button" className="pl-x" aria-label={`Xóa ${g.name}`} onClick={() => setPlan((p) => { p.gifts.splice(i, 1); })}><Icon name="trash" size={16} /></button></td>
+                      <td className="c-act"><button type="button" className="pl-x" aria-label={`Xóa ${g.name}`} onClick={() => remove(g)}><Icon name="trash" size={16} /></button></td>
                     </tr>
                   );
                 })}
