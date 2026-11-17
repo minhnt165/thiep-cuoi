@@ -804,6 +804,30 @@
   font-size: 14px;
 }
 
+/* Hàng lịch trình: giờ | việc | nút xóa luôn trên một dòng.
+   Ô giờ để trình duyệt tự đo (width: auto + cột auto): "08:00 AM" hay "08:00",
+   font nào, cỡ chữ nào thì icon đồng hồ cũng nằm gọn bên trong */
+.ed-body .ed-tl {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 8px;
+}
+
+.ed-body .ed-tl > input {
+  width: 100%;
+  min-width: 0;
+}
+
+.ed-body .ed-tl > input[type="time"] {
+  width: auto;
+  min-width: max-content;
+}
+
+/* Nút "+ Thêm…" chỉ rộng vừa chữ, không kéo hết ngang */
+.ed-body > .btn2 {
+  justify-self: start;
+}
+
 .btn2 {
   transition: border-color 0.15s ease, background 0.15s ease;
 }

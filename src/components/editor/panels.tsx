@@ -242,9 +242,9 @@ export function EventsPanel(props: PanelProps) {
 
       <p className="ed-h">Lịch trình ngày cưới</p>
       {d.timeline.map((t, i) => (
-        <div className="row" key={i}>
-          <input type="time" value={t.time} style={{ width: 110 }} className="f" onChange={(e) => patch((x) => { x.timeline[i].time = e.target.value; })} />
-          <input value={t.title} style={{ flex: 1, minWidth: 140 }} onChange={(e) => patch((x) => { x.timeline[i].title = e.target.value; })} />
+        <div className="row ed-tl" key={i}>
+          <input type="time" value={t.time} aria-label="Giờ" onChange={(e) => patch((x) => { x.timeline[i].time = e.target.value; })} />
+          <input value={t.title} aria-label="Việc" placeholder="Đón dâu, khai tiệc…" onChange={(e) => patch((x) => { x.timeline[i].title = e.target.value; })} />
           <button type="button" className="btn2 danger" aria-label="Xóa mốc" onClick={() => (t.title.trim() ? ask(`Xóa mốc ${t.time} ${quote(t.title)}`, () => patch((x) => { x.timeline.splice(i, 1); })) : patch((x) => { x.timeline.splice(i, 1); }))}>×</button>
         </div>
       ))}
